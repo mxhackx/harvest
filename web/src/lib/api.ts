@@ -1,4 +1,16 @@
+/**
+ * Adresse de l'API : absolue en développement (http://localhost:4000), ou relative (« /api ») quand le site relaie
+ * l'API sous son propre domaine (voir next.config.ts).
+ */
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/$/, "");
+
+/** Adresse de démarrage d'une connexion Google / GitHub, que l'API soit sur un autre domaine ou relayée par le site. */
+export function oauthStartUrl(provider: "google" | "github", origin: string, apiUrl: string = API_URL): string {
+  const base = /^https?:\/\//.test(apiUrl) ? apiUrl : `${origin}${apiUrl}`;
+  const url = new URL(`${base}/auth/${provider}`);
+  url.searchParams.set("returnTo", origin);
+  return url.toString();
+}
 
 export type ApiIssue = { message: string; path: (string | number)[] };
 

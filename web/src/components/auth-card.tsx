@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { API_URL, ApiError, api, errorMessage } from "@/lib/api";
+import { ApiError, api, errorMessage, oauthStartUrl } from "@/lib/api";
 import Image from "next/image";
 import { GitHubIcon, GoogleIcon } from "./icons";
 import { Button, Field, Notice, PasswordField } from "./ui";
@@ -17,9 +17,7 @@ export function AuthCard() {
   const [loading, setLoading] = useState(false);
 
   const oauth = (provider: "google" | "github") => {
-    const url = new URL(`/auth/${provider}`, API_URL);
-    url.searchParams.set("returnTo", window.location.origin);
-    window.location.href = url.toString();
+    window.location.href = oauthStartUrl(provider, window.location.origin);
   };
 
   async function submit(e: FormEvent<HTMLFormElement>) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ApiError, LEAD_STATUSES, STATUS_COLOR, STATUS_LABEL, describeError, errorMessage, formatDay, formatValue, leadLinks, safeHttpUrl, savedMessage } from "./api";
+import { ApiError, LEAD_STATUSES, STATUS_COLOR, STATUS_LABEL, describeError, errorMessage, formatDay, formatValue, leadLinks, oauthStartUrl, safeHttpUrl, savedMessage } from "./api";
 
 describe("safeHttpUrl", () => {
   it("accepte http et https", () => {
@@ -83,5 +83,15 @@ describe("étapes", () => {
     expect(STATUS_COLOR.interested).toBe("#0868c9");
     expect(STATUS_COLOR.mockup_sent).toMatch(/^rgba\(34, 170, 94, 0\.\d+\)$/); // transparent
     expect(STATUS_COLOR.deposit_paid).toBe("#12c457");
+  });
+});
+
+describe("oauthStartUrl", () => {
+  it("API sur un autre domaine : l'adresse est utilisée telle quelle", () => {
+    expect(oauthStartUrl("google", "https://site.example", "https://api.example.com")).toBe("https://api.example.com/auth/google?returnTo=https%3A%2F%2Fsite.example");
+    expect(oauthStartUrl("github", "http://localhost:3000", "http://localhost:4000")).toBe("http://localhost:4000/auth/github?returnTo=http%3A%2F%2Flocalhost%3A3000");
+  });
+  it("API relayée par le site (adresse relative) : on part de l'origine du site", () => {
+    expect(oauthStartUrl("google", "https://site.example", "/api")).toBe("https://site.example/api/auth/google?returnTo=https%3A%2F%2Fsite.example");
   });
 });
