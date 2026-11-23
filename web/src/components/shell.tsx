@@ -151,11 +151,11 @@ export function Shell({ children }: { children: ReactNode }) {
                 <Image src="/logo.png" alt="" width={24} height={28} />
               </Link>
               <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-small">
-                <span className="hidden text-muted sm:inline">Admin</span>
+                <Link href="/" className="hidden text-muted hover:text-ink hover:underline sm:inline">Admin</Link>
                 <span aria-hidden className="hidden text-muted sm:inline">›</span>
-                <span className="text-muted">{active.label}</span>
+                <Link href={active.href} className="text-muted hover:text-ink hover:underline">{active.label}</Link>
                 <span aria-hidden className="text-muted">›</span>
-                <span className="font-medium text-ink">{page.label}</span>
+                <span aria-current="page" className="font-medium text-ink">{page.label}</span>
               </nav>
             </div>
             <div className="flex items-center gap-2">
