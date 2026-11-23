@@ -100,7 +100,10 @@ describe("fil d'activité : enregistrement automatique", () => {
     const a = await mkLead(ceo, "A");
     const b = await mkLead(ceo, "B", { status: "interested" });
     await http(ceo, "POST", "/leads/bulk-update", { ids: [a.id, b.id], status: "interested", visited: true });
-    expect(await kinds(ceo, a.id)).toEqual(["visited", "stage_change", "created"].sort((x, y) => 0)); // les deux changements
+    // les deux changements sont écrits au même instant : leur ordre entre eux n'est pas garanti
+    const ka = await kinds(ceo, a.id);
+    expect(ka.slice(0, 2).sort()).toEqual(["stage_change", "visited"]);
+    expect(ka[2]).toBe("created");
     expect((await kinds(ceo, b.id)).filter((k) => k === "stage_change")).toHaveLength(0); // déjà « intéressé » : rien à écrire
     expect((await kinds(ceo, b.id)).filter((k) => k === "visited")).toHaveLength(1);
   });

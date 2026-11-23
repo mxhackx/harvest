@@ -57,6 +57,9 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci
         working-directory: web
+      # génère les types globaux de Next (LayoutProps, PageProps…) absents d'un dépôt fraîchement cloné
+      - run: npx next typegen
+        working-directory: web
       - run: npm run typecheck
         working-directory: web
       - run: npx eslint src --max-warnings=0
