@@ -50,6 +50,13 @@
       "when": 1795452365761,
       "tag": "0006_event_permissions",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795459111816,
+      "tag": "0007_enable_rls",
+      "breakpoints": true
     }
   ]
 }

@@ -143,7 +143,7 @@ export async function authRoutes(app: FastifyInstance) {
         httpOnly: true,
         sameSite: "lax", // doit survivre à la redirection depuis Google / GitHub
         secure: config.isProd,
-        path: "/auth",
+        path: config.oauthCookiePath,
         maxAge: 600,
       });
       return reply.redirect(authorizationUrl(provider, state, verifier));
@@ -160,7 +160,7 @@ export async function authRoutes(app: FastifyInstance) {
       try {
         saved = JSON.parse(req.cookies[OAUTH_COOKIE] ?? "null");
       } catch {}
-      reply.clearCookie(OAUTH_COOKIE, { path: "/auth" });
+      reply.clearCookie(OAUTH_COOKIE, { path: config.oauthCookiePath });
       const back = safeOrigin(saved?.returnTo);
       const fail = (code: string) => reply.redirect(`${back}/login?error=${code}`);
 
