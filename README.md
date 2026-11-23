@@ -20,7 +20,13 @@ Installés par `npm install` à la racine (script `prepare`).
 | Hook | Ce qu'il fait |
 | --- | --- |
 | `pre-commit` | refuse tout secret ou fichier `.env` (`scripts/check-secrets.mjs`), lance ESLint sur les fichiers web indexés, puis le contrôle de types de `api/` et `web/` |
-| `pre-push` | contrôle de types, tests unitaires du web, et tests de l'API si la base de test tourne (`scripts/pre-push.sh`) |
+| `pre-push` | dépend de la branche poussée (`scripts/pre-push.sh`) : **vers `main`**, types + tests unitaires du web + tests de l'API (la base de test est obligatoire) ; **vers toute autre branche**, types seulement |
+
+### Branches
+
+- `main` : toujours vert, déployé.
+- `feat/<sujet>` : nouvelle fonctionnalité. `test/<sujet>` : ajout ou réparation de tests. `fix/`, `chore/` et `docs/` sont aussi acceptés.
+- Tout autre nom est refusé au push. On fusionne dans `main` par pull request ; le push vers `main` déclenche le contrôle complet.
 
 Passer outre exceptionnellement : `git commit --no-verify`, ou `SKIP_PREPUSH=1 git push`.
 
