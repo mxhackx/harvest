@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { and, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { companies, contacts, leads, users } from "../db/schema.js";
+import { companies, contacts, leads, memberships, notifications, users } from "../db/schema.js";
 import { config } from "../config.js";
 import { toCsv, toExportRow } from "../leads/export.js";
 import { googleMapsField } from "../leads/fields.js";
@@ -83,6 +83,22 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
     const { subject } = req.member!;
     const { visited, ...data } = body.data;
+    // Responsable : soi-même par défaut ; une autre personne demande le droit d'attribuer (lead:assign) dans la portée de cette personne.
+    const wanted = z.object({ ownerId: z.string().uuid().optional() }).safeParse(req.body);
+    if (!wanted.success) return reply.code(400).send({ error: "invalid_body", issues: wanted.error.issues });
+    let owner = { userId: subject.userId, teamId: subject.teamId, name: req.user!.name };
+    if (wanted.data.ownerId && wanted.data.ownerId !== subject.userId) {
+      const [target] = await db
+        .select({ userId: memberships.userId, teamId: memberships.teamId, name: users.name })
+        .from(memberships)
+        .innerJoin(users, eq(users.id, memberships.userId))
+        .where(and(eq(memberships.companyId, subject.companyId), eq(memberships.userId, wanted.data.ownerId)))
+        .limit(1);
+      if (!target || !can(subject, "lead:assign", { companyId: subject.companyId, ownerId: target.userId, teamId: target.teamId })) {
+        return reply.code(400).send({ error: "invalid_body", issues: [{ message: "personne introuvable ou non attribuable", path: ["ownerId"] }] });
+      }
+      owner = target;
+    }
     // Deux leads ne portent jamais exactement le même nom : le suivant devient « Nom (1) », « Nom (2)»…
     data.name = pickUniqueName(data.name, await takenNames(subject.companyId, data.name));
     // Position : celle fournie par l'utilisateur, sinon déduite du lien Google Maps puis de l'adresse,
@@ -113,13 +129,26 @@ export async function leadRoutes(app: FastifyInstance) {
         status: stage.key,
         ...closingFields(stage, { closedAt: null, lostReason: "" }, data.lostReason),
         companyId: subject.companyId,
-        teamId: subject.teamId,
-        ownerId: subject.userId,
+        teamId: owner.teamId,
+        ownerId: owner.userId,
         visitedAt: visited ? new Date() : null,
       })
       .returning();
     if (lead.contactName) await ensurePrimaryContact(lead.id, subject.companyId, lead.contactName);
     await logActivities([{ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "created", meta: { source: "manual", stage: stage.name } }], logError(req));
+    if (owner.userId !== subject.userId) {
+      await logActivities(
+        [{ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "assigned", meta: { from: { id: subject.userId, name: req.user!.name }, to: { id: owner.userId, name: owner.name } } }],
+        logError(req),
+      );
+      await db.insert(notifications).values({
+        companyId: subject.companyId,
+        userId: owner.userId,
+        kind: "lead_assigned",
+        title: `${req.user!.name} vous a attribué : ${lead.name}`,
+        leadId: lead.id,
+      });
+    }
     return reply.code(201).send(lead);
   });
 

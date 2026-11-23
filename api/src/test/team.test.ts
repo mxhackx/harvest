@@ -188,6 +188,35 @@ describe("attribution des leads", () => {
     expect((await http(a.ceo, "POST", "/leads/assign", { ids: [], ownerId: await uid(p) })).status).toBe(400);
   });
 
+  it("à la création : le lead est attribué directement, avec fil et notification ; sans choix, on en est le responsable", async () => {
+    const { ceo, add } = await setup();
+    const p = await add("prospecteur", "Prospecteur");
+    const mine = await mkLead(ceo, "Pour moi");
+    expect(mine.ownerId).toBe(await uid(ceo));
+    const lead = await mkLead(ceo, "Pour lui", { ownerId: await uid(p) });
+    expect(lead).toMatchObject({ ownerId: await uid(p) });
+    expect(((await http(p, "GET", "/leads")).json() as any[]).map((l) => l.name)).toEqual(["Pour lui"]);
+    const kinds = ((await http(ceo, "GET", `/leads/${lead.id}/activities`)).json().items as any[]).map((i) => i.kind).sort();
+    expect(kinds).toEqual(["assigned", "created"]);
+    expect((await http(p, "GET", "/notifications")).json().items[0]).toMatchObject({ kind: "lead_assigned", leadId: lead.id, title: "Le CEO vous a attribué : Pour lui" });
+    expect((await http(ceo, "GET", "/notifications")).json().unread).toBe(0);
+  });
+
+  it("à la création : sans le droit d'attribuer ou vers une personne inconnue ou d'une autre entreprise : refusé, rien n'est créé", async () => {
+    const a = await setup();
+    const b = await setup();
+    const p = await a.add("prospecteur");
+    const q = await a.add("prospecteur");
+    const before = ((await http(a.ceo, "GET", "/leads")).json() as any[]).length;
+    expect((await http(p, "POST", "/leads", { name: "X", ownerId: await uid(q) })).status).toBe(400);
+    expect((await http(a.ceo, "POST", "/leads", { name: "X", ownerId: await uid(b.ceo) })).status).toBe(400);
+    expect((await http(a.ceo, "POST", "/leads", { name: "X", ownerId: crypto.randomUUID() })).status).toBe(400);
+    expect((await http(a.ceo, "POST", "/leads", { name: "X", ownerId: "pas-un-uuid" })).status).toBe(400);
+    // se désigner soi-même reste permis à tout le monde
+    expect((await http(p, "POST", "/leads", { name: "Y", ownerId: await uid(p) })).status).toBe(201);
+    expect(((await http(a.ceo, "GET", "/leads")).json() as any[]).length).toBe(before + 1);
+  });
+
   it("on ne déplace pas les leads d'une autre entreprise", async () => {
     const a = await setup();
     const b = await setup();
