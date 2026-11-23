@@ -1,0 +1,51 @@
+# Blueprint Render : l'API Harvest (Fastify).
+# Architecture : site sur Vercel, API ici, base Postgres sur Supabase.
+# Pas à pas : README.md, section « Déploiement ».
+#
+# Les variables « sync: false » sont demandées par Render à la création du Blueprint.
+# Les secrets ne sont jamais écrits dans ce fichier.
+services:
+  - type: web
+    name: harvest-api
+    runtime: node
+    region: frankfurt # à choisir proche de la région du projet Supabase
+    # « free » s'endort après 15 min sans requête : la première requête suivante prend environ une minute.
+    # Pour un usage réel, passez à « starter » (toujours allumé).
+    plan: free
+    rootDir: api
+    # devDependencies incluses : tsc en a besoin pour compiler.
+    buildCommand: npm ci --include=dev && npm run build
+    # applique les migrations (avec un verrou), puis démarre le serveur
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+
+      # Supabase : « Session pooler » (port 5432), PAS le pooler en mode transaction (6543).
+      # Render gratuit est en IPv4 uniquement, ce que la connexion directe de Supabase n'est pas.
+      - key: DATABASE_URL
+        sync: false
+
+      # Adresse publique du site (Vercel), ex. https://harvest.vercel.app — origine autorisée par CORS
+      # et destination des redirections après connexion. Plusieurs adresses : séparées par des virgules.
+      - key: APP_URLS
+        sync: false
+
+      # Adresse publique de l'API VUE PAR LE NAVIGATEUR, utilisée pour les retours Google / GitHub.
+      # Avec le relais /api du site : https://harvest.vercel.app/api  (voir README).
+      - key: API_URL
+        sync: false
+
+      # Connexion Google / GitHub (facultatif : laissez vide pour la désactiver)
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false

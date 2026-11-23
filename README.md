@@ -31,3 +31,64 @@ npm --prefix api test          # nécessite la base de test (scripts/db-local.sh
 npm --prefix web test          # tests unitaires
 npm --prefix web run test:e2e  # tests de bout en bout (Chrome, ports 3100 et 4100, base de test)
 ```
+
+## Déploiement
+
+Site sur **Vercel**, API sur **Render**, base sur **Supabase**. Les migrations s'appliquent toutes seules à chaque
+démarrage de l'API (`npm run start:prod`).
+
+### 1. Supabase
+
+1. Créez un projet, dans une région proche de celle de Render (`render.yaml` : Francfort).
+2. *Project Settings › Database › Connection string* : choisissez **Session pooler** (port **5432**).
+   - pas la connexion directe : elle est en IPv6 uniquement, et Render gratuit est en IPv4 ;
+   - pas le pooler en mode transaction (port 6543) : les migrations ont besoin d'une session (verrou). L'API
+     refuse de migrer dessus, avec un message qui l'explique.
+3. Remplacez `[YOUR-PASSWORD]` par le mot de passe de la base. Les caractères spéciaux doivent être encodés
+   dans l'URL (`@` → `%40`, `/` → `%2F`).
+
+### 2. Render
+
+*New › Blueprint*, choisissez ce dépôt : Render lit `render.yaml` et demande les variables :
+
+| Variable | Valeur |
+| --- | --- |
+| `DATABASE_URL` | l'URL du Session pooler de Supabase |
+| `APP_URLS` | l'adresse du site, ex. `https://harvest.vercel.app` |
+| `API_URL` | `https://harvest.vercel.app/api` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
+| `GOOGLE_*`, `GITHUB_*` | vos clés OAuth, ou vides |
+
+Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok"}`.
+
+### 3. Vercel (dossier racine du projet : `web`)
+
+| Variable | Valeur |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | `/api` |
+| `API_PROXY_TARGET` | `https://<votre-service>.onrender.com` |
+| `NEXT_PUBLIC_SITE_URL` | l'adresse du site, ex. `https://harvest.vercel.app` |
+
+Redéployez : ces variables sont lues à la compilation.
+
+**Pourquoi un relais `/api` ?** Le site et l'API sont sur deux domaines différents. Le cookie de session de l'API serait
+alors un cookie « tiers », bloqué par Safari et Firefox. Le site relaie donc `/api/*` vers l'API : le navigateur ne
+parle qu'à un seul domaine et le cookie reste un cookie du site. Si vous préférez deux sous-domaines d'un même domaine
+(`app.exemple.com` et `api.exemple.com`), le relais est inutile : mettez l'adresse de l'API dans
+`NEXT_PUBLIC_API_URL` et dans `API_URL`.
+
+### 4. Connexion Google / GitHub
+
+Dans les consoles, déclarez comme adresse de retour :
+
+- `https://harvest.vercel.app/api/auth/google/callback`
+- `https://harvest.vercel.app/api/auth/github/callback`
+
+### À savoir
+
+- **Plan gratuit de Render** : le service s'endort après 15 minutes. La première requête suivante peut échouer
+  (le relais de Vercel n'attend pas une minute) : rechargez. Le plan `starter` supprime ce défaut.
+- **Sécurité par ligne** : la migration `enable_rls` active la RLS sur toutes les tables, pour qu'elles ne soient
+  pas lisibles par l'API REST que Supabase expose. L'API se connecte avec le rôle propriétaire, qui la contourne.
+  Une nouvelle table doit être ajoutée à une migration équivalente (un test le vérifie).
+- **Recherche d'adresse et fonds de carte** : ils passent par les services publics d'OpenStreetMap, dont l'usage
+  intensif est limité. Prévoyez un fournisseur dédié avant une vraie mise en production.
