@@ -10,6 +10,7 @@ import { BoardIcon, CheckIcon, ChevronIcon, DownloadIcon, FilterIcon, PlusIcon, 
 import { LeadBoard } from "./lead-board";
 import { AddLeadChooser } from "./add-lead-chooser";
 import { ImportModal } from "./import-modal";
+import { AssignModal } from "./assign-modal";
 import { LeadModal } from "./lead-modal";
 import { LostReasonModal } from "./lost-reason-modal";
 import { LeadTable } from "./lead-table";
@@ -41,6 +42,8 @@ export function LeadsPage() {
   const canRead = perms.includes("lead:read");
   const canCreate = perms.includes("lead:create");
   const canUpdate = perms.includes("lead:update");
+  const canAssign = perms.includes("lead:assign") && perms.includes("member:read");
+  const [assigning, setAssigning] = useState<string[] | null>(null);
   const canDelete = perms.includes("lead:delete");
   const canExport = perms.includes("lead:export");
 
@@ -263,6 +266,11 @@ export function LeadsPage() {
               </Menu>
             </>
           )}
+          {canAssign && (
+            <button type="button" onClick={() => setAssigning([...sel])} disabled={busy} className={ghost}>
+              Attribuer à…
+            </button>
+          )}
           {canExport &&
             exportMenu([...sel], `${plural(sel.size, "lead sélectionné", "leads sélectionnés")}`, "left", ({ toggle }) => (
               <button type="button" onClick={toggle} disabled={busy} className={ghost}>
@@ -454,6 +462,19 @@ export function LeadsPage() {
           onDeleted={(gone) => {
             setEditing(null);
             setNotice(`« ${gone.name} » supprimé.`);
+            load();
+          }}
+        />
+      )}
+
+      {assigning && (
+        <AssignModal
+          ids={assigning}
+          onClose={() => setAssigning(null)}
+          onDone={(n) => {
+            setAssigning(null);
+            setSelected(new Set());
+            setNotice(n === 0 ? "Aucun lead déplacé (déjà à cette personne, ou hors de vos droits)." : `${plural(n, "lead attribué", "leads attribués")}.`);
             load();
           }}
         />

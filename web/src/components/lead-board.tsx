@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { formatDay, formatValue, type Lead } from "@/lib/api";
 import { useStages } from "@/lib/stages-store";
@@ -58,9 +59,9 @@ function Card({
           className="mt-[3px] size-4 shrink-0 accent-accent"
         />
         <h3 className="text-body font-semibold leading-snug">
-          <button type="button" onClick={onOpen} className="text-left hover:underline">
+          <Link href={`/leads/${lead.id}`} className="text-left hover:underline">
             {lead.name}
-          </button>
+          </Link>
         </h3>
         <button
           type="button"

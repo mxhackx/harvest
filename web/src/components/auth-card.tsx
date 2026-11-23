@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ApiError, api, errorMessage, oauthStartUrl } from "@/lib/api";
+import { safeNext } from "@/lib/navigation";
 import Image from "next/image";
 import { GitHubIcon, GoogleIcon } from "./icons";
 import { Button, Field, Notice, PasswordField } from "./ui";
@@ -34,7 +35,7 @@ export function AuthCard() {
           ...(mode === "register" ? { name: f.get("name") } : {}),
         },
       });
-      router.replace("/");
+      router.replace(safeNext(params.get("next")) ?? "/");
     } catch (err) {
       setNotice(errorMessage(err instanceof ApiError ? err.code : null));
       setLoading(false);

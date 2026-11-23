@@ -35,6 +35,26 @@ export const DOCS: DocPage[] = [
     ],
   },
   {
+    href: "/docs/pipeline",
+    title: "Pipeline et étapes",
+    description: "Personnalisez les étapes de votre pipeline : noms, couleurs, probabilités, étapes gagnées et perdues, motif de perte et valeur pondérée.",
+  },
+  {
+    href: "/docs/fiche-lead",
+    title: "La fiche d'un lead",
+    description: "Tout sur un lead au même endroit : étape, informations, fil d'activité, notes, appels, contacts multiples et attribution.",
+  },
+  {
+    href: "/docs/taches",
+    title: "Tâches et rappels",
+    description: "Créez des tâches avec échéance, confiez-les à un collègue, repérez les retards et suivez les notifications de la cloche.",
+  },
+  {
+    href: "/docs/equipe",
+    title: "Équipe, rôles et invitations",
+    description: "Invitez des collaborateurs par lien, gérez rôles et équipes, réattribuez des leads et passez d'une entreprise à l'autre.",
+  },
+  {
     href: "/docs/export",
     title: "Exporter des leads",
     description: "Exportez vos leads en CSV ou JSON : formats, colonnes, droits requis et réimport.",

@@ -7,14 +7,16 @@ import { useEffect, useMemo, type ComponentType, type ReactNode } from "react";
 import { LeadsProvider } from "@/lib/leads";
 import { StagesProvider } from "@/lib/stages-store";
 import { SessionProvider, type Session } from "@/lib/session";
+import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, CalendarIcon, HomeIcon, UsersIcon } from "./icons";
+import { BoardIcon, CalendarIcon, CheckIcon, HomeIcon, UserIcon, UsersIcon } from "./icons";
+import { NotificationsBell } from "./notifications-bell";
 import { Notice } from "./ui";
 
 type Icon = ComponentType<{ size?: number }>;
 type Page = { label: string; short: string; href: string; icon: Icon };
-type Module = { key: string; label: string; href: string; icon: Icon; pages: Page[] };
+type Module = { key: string; label: string; href: string; icon: Icon; pages: Page[]; /** droit requis pour voir le module */ needs?: string };
 
 // Seuls les modules et pages réellement construits apparaissent.
 const MODULES: Module[] = [
@@ -35,14 +37,22 @@ const MODULES: Module[] = [
     icon: UsersIcon,
     pages: [
       { label: "Leads", short: "Leads", href: "/leads", icon: UsersIcon },
+      { label: "Tâches", short: "Tâches", href: "/taches", icon: CheckIcon },
       { label: "Pipeline", short: "Pipeline", href: "/pipeline", icon: BoardIcon },
     ],
   },
+  {
+    key: "team",
+    label: "Équipe",
+    href: "/equipe",
+    icon: UserIcon,
+    needs: "member:read",
+    pages: [{ label: "Membres", short: "Équipe", href: "/equipe", icon: UserIcon }],
+  },
 ];
 
-const moduleFor = (path: string) => (path.startsWith("/leads") || path.startsWith("/pipeline") ? MODULES[1] : MODULES[0]);
-// Navigation basse sur mobile : toutes les pages à plat, le gérant est en tournée.
-const MOBILE_PAGES = MODULES.flatMap((m) => m.pages);
+const moduleFor = (path: string, modules: Module[]) =>
+  modules.find((m) => m.pages.some((p) => p.href !== "/" && path.startsWith(p.href))) ?? modules[0];
 
 export function Shell({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -56,8 +66,10 @@ export function Shell({ children }: { children: ReactNode }) {
 
   const session = useMemo<Session | null>(() => {
     if (s.status !== "ready" || s.me.memberships.length === 0) return null;
-    const { company } = s.me.memberships[0];
-    return { me: s.me, companyId: company.id, company };
+    // l'entreprise choisie passe en tête : tout l'espace lit `memberships[0]` comme entreprise active
+    const memberships = withActiveFirst(s.me.memberships, getActiveCompanyId());
+    const { company } = memberships[0];
+    return { me: { ...s.me, memberships }, companyId: company.id, company };
   }, [s]);
 
   if (s.status === "error")
@@ -70,7 +82,10 @@ export function Shell({ children }: { children: ReactNode }) {
     );
   if (!session) return <main className="min-h-dvh" aria-busy />;
 
-  const active = moduleFor(path);
+  const granted = session.me.memberships[0].permissions.map((p) => p.permission);
+  const modules = MODULES.filter((m) => !m.needs || granted.includes(m.needs));
+  const mobilePages = modules.flatMap((m) => m.pages);
+  const active = moduleFor(path, modules);
   const page = active.pages.find((p) => p.href === path) ?? active.pages[0];
 
   return (
@@ -83,7 +98,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <Link href="/" aria-label="Harvest" className="mb-2 flex size-11 items-center justify-center">
             <Image src="/logo.png" alt="" width={34} height={39} priority />
           </Link>
-          {MODULES.map((m) => (
+          {modules.map((m) => (
             <Link
               key={m.key}
               href={m.href}
@@ -137,7 +152,10 @@ export function Shell({ children }: { children: ReactNode }) {
                 <span className="font-medium text-ink">{page.label}</span>
               </nav>
             </div>
-            <AvatarMenu />
+            <div className="flex items-center gap-2">
+              <NotificationsBell />
+              <AvatarMenu />
+            </div>
           </header>
           <main className="flex-1 p-6 pb-24 md:pb-6">{children}</main>
         </div>
@@ -145,7 +163,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
       {/* Navigation basse sur mobile : le gérant est en tournée */}
       <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 justify-around bg-accent md:hidden">
-        {MOBILE_PAGES.map((p) => (
+        {mobilePages.map((p) => (
           <Link
             key={p.href}
             href={p.href}

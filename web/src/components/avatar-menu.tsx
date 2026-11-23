@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
+import { setActiveCompanyId } from "@/lib/active-company";
 import { BookIcon } from "./icons";
 
 const initials = (name: string) =>
@@ -108,6 +109,28 @@ export function AvatarMenu() {
             <dt className="text-muted">Membre depuis</dt>
             <dd>{new Date(membership.joinedAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</dd>
           </dl>
+          {me.memberships.length > 1 && (
+            <>
+              <hr className="my-2 border-rule" />
+              <p className="px-2 py-1 text-small text-muted">Changer d’entreprise</p>
+              {me.memberships.slice(1).map((m) => (
+                <button
+                  key={m.company.id}
+                  role="menuitem"
+                  type="button"
+                  onClick={() => {
+                    setActiveCompanyId(m.company.id);
+                    // rechargement complet : plus aucune donnée de l'ancienne entreprise ne peut rester affichée
+                    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+                    window.location.assign("/");
+                  }}
+                  className="flex h-10 w-full items-center rounded-control px-2 text-left text-body hover:bg-field"
+                >
+                  <span className="truncate">{m.company.name}</span>
+                </button>
+              ))}
+            </>
+          )}
           <hr className="my-2 border-rule" />
           <Link
             role="menuitem"

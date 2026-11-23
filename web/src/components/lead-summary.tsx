@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LOCATION_SOURCE_NOTE, formatValue, type Lead } from "@/lib/api";
 import { PencilIcon } from "./icons";
 import { LeadLinks } from "./lead-links";
@@ -61,6 +62,12 @@ export function LeadSummary({
           </a>
         )}
       </div>
+      <Link
+        href={`/leads/${lead.id}`}
+        className="flex h-9 items-center justify-center rounded-control border border-frame text-small font-medium hover:bg-field"
+      >
+        Ouvrir la fiche
+      </Link>
       {onEdit && (
         <button
           type="button"

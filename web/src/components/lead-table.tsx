@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { formatDay, formatValue, type Lead } from "@/lib/api";
 import { PencilIcon } from "./icons";
 import { LeadLinks } from "./lead-links";
@@ -66,9 +67,9 @@ export function LeadTable({ leads, selected, onToggle, onToggleAll, onOpen }: Pr
                   />
                 </td>
                 <td className="px-3 py-2 font-medium">
-                  <button type="button" onClick={() => onOpen(l)} className="text-left hover:underline">
+                  <Link href={`/leads/${l.id}`} className="text-left hover:underline">
                     {l.name}
-                  </button>
+                  </Link>
                 </td>
                 <td className="px-3 py-2 text-muted">{l.sector || "—"}</td>
                 <td className="px-3 py-2 text-muted">{l.contactName || "—"}</td>

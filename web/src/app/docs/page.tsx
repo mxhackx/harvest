@@ -16,6 +16,13 @@ export default function Page() {
       </p>
       <ol>
         <li>
+          Réglez votre <Link href="/docs/pipeline">pipeline</Link>, puis suivez chaque lead depuis sa{" "}
+          <Link href="/docs/fiche-lead">fiche</Link> : activité, contacts, <Link href="/docs/taches">tâches</Link>.
+        </li>
+        <li>
+          <Link href="/docs/equipe">Invitez votre équipe</Link> et répartissez les leads.
+        </li>
+        <li>
           <Link href="/docs/import">Importer des leads</Link> depuis un tableur ou un autre outil : un fichier CSV ou
           JSON suffit.
         </li>
