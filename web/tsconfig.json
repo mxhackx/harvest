@@ -39,6 +39,11 @@
     ".next-e2e/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.test.ts",
+    "e2e",
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "playwright.config.ts"
   ]
 }
