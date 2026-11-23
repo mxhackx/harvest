@@ -1,4 +1,7 @@
+import { sql } from "drizzle-orm";
 import {
+  index,
+  jsonb,
   doublePrecision,
   integer,
   pgEnum,
@@ -208,3 +211,58 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+/** Personnes à contacter dans l'entreprise d'un lead. Elles suivent les droits du lead. */
+export const contacts = pgTable(
+  "contacts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    role: text("role").notNull().default(""),
+    phone: text("phone").notNull().default(""),
+    whatsapp: text("whatsapp").notNull().default(""),
+    email: text("email").notNull().default(""),
+    notes: text("notes").notNull().default(""),
+    isPrimary: boolean("is_primary").notNull().default(false),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    index("contacts_lead").on(t.leadId),
+    // un seul contact principal par lead
+    uniqueIndex("contacts_one_primary").on(t.leadId).where(sql`${t.isPrimary}`),
+  ],
+);
+
+export const activityKindEnum = pgEnum("activity_kind", ["note", "call", "message", "visit", "email", "created", "stage_change", "visited", "assigned"]);
+
+/** Fil d'activité d'un lead : ce que l'équipe y a fait (saisi à la main) et ce que le système a enregistré. */
+export const activities = pgTable(
+  "activities",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    authorId: uuid("author_id")
+      .notNull()
+      .references(() => users.id),
+    kind: activityKindEnum("kind").notNull(),
+    body: text("body").notNull().default(""),
+    // détails des événements système : { from, to, lostReason }, { visited }, { to }…
+    meta: jsonb("meta").$type<Record<string, unknown>>(),
+    // quand l'action a eu lieu (modifiable pour un appel passé), distinct de la date de saisie
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [index("activities_lead_time").on(t.leadId, t.occurredAt)],
+);

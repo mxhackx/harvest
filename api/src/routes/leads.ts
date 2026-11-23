@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { and, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { companies, leads, users } from "../db/schema.js";
+import { companies, contacts, leads, users } from "../db/schema.js";
 import { config } from "../config.js";
 import { toCsv, toExportRow } from "../leads/export.js";
 import { googleMapsField } from "../leads/fields.js";
@@ -15,25 +15,19 @@ import { scopeCondition } from "../rbac/sql.js";
 import { requireMember, requirePermission } from "../plugins/auth.js";
 
 import { createBody, patchBody } from "../leads/schema.js";
+import { logActivities } from "../activities/log.js";
+import { findReadableLead, leadAttrs } from "../leads/access.js";
+import { ensurePrimaryContact } from "./contacts.js";
 import { closingFields, defaultStage, listStages } from "../stages/store.js";
 
 const uuid = z.string().uuid();
 
 const scopeWhere = (subject: Subject, permission: string) => scopeCondition(leads, subject, permission);
 
-const attrs = (l: typeof leads.$inferSelect) => ({ companyId: l.companyId, ownerId: l.ownerId, teamId: l.teamId });
+const attrs = leadAttrs;
+const findLead = findReadableLead;
 
-async function findLead(subject: Subject, id: string) {
-  if (!uuid.safeParse(id).success) return null;
-  const [lead] = await db
-    .select()
-    .from(leads)
-    .where(and(eq(leads.id, id), eq(leads.companyId, subject.companyId)))
-    .limit(1);
-  // Hors de la portée de lecture : on répond « introuvable », pas « interdit ».
-  return lead && can(subject, "lead:read", attrs(lead)) ? lead : null;
-}
-
+const logError = (req: { log: { error: (o: object, m: string) => void } }) => (e: unknown) => req.log.error({ err: e }, "activity log failed");
 
 const unknownStage = { error: "invalid_body", issues: [{ message: "étape inconnue", path: ["status"] }] };
 
@@ -124,6 +118,8 @@ export async function leadRoutes(app: FastifyInstance) {
         visitedAt: visited ? new Date() : null,
       })
       .returning();
+    if (lead.contactName) await ensurePrimaryContact(lead.id, subject.companyId, lead.contactName);
+    await logActivities([{ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "created", meta: { source: "manual", stage: stage.name } }], logError(req));
     return reply.code(201).send(lead);
   });
 
@@ -278,6 +274,14 @@ export async function leadRoutes(app: FastifyInstance) {
         return out;
       });
       report.imported = created.length;
+      const withContact = created.filter((l) => l.contactName);
+      if (withContact.length) {
+        await db.insert(contacts).values(withContact.map((l) => ({ leadId: l.id, companyId: subject.companyId, name: l.contactName, isPrimary: true })));
+      }
+      await logActivities(
+        created.map((l) => ({ companyId: subject.companyId, leadId: l.id, authorId: subject.userId, kind: "created" as const, meta: { source: "import" } })),
+        logError(req),
+      );
 
       // adresses et liens courts : recherchés en arrière-plan, sans faire attendre l'utilisateur
       const toLocate = created.filter((l) => l.lat === null && (l.address || l.googleMapsUrl)).map((l) => l.id);
@@ -328,6 +332,19 @@ export async function leadRoutes(app: FastifyInstance) {
           updatedAt: new Date(),
         })
         .where(inArray(leads.id, allowed.map((l) => l.id)));
+      const stages = stage ? await listStages(subject.companyId) : [];
+      const name = (key: string) => stages.find((st) => st.key === key)?.name ?? key;
+      await logActivities(
+        allowed.flatMap((l) => [
+          ...(stage && stage.key !== l.status
+            ? [{ companyId: subject.companyId, leadId: l.id, authorId: subject.userId, kind: "stage_change" as const, meta: { from: { key: l.status, name: name(l.status) }, to: { key: stage.key, name: stage.name }, ...(stage.kind === "lost" && body.data.lostReason ? { lostReason: body.data.lostReason } : {}) } }]
+            : []),
+          ...(body.data.visited !== undefined && (l.visitedAt === null) === body.data.visited
+            ? [{ companyId: subject.companyId, leadId: l.id, authorId: subject.userId, kind: "visited" as const, meta: { visited: body.data.visited } }]
+            : []),
+        ]),
+        logError(req),
+      );
     }
     return { affected: allowed.length, skipped: new Set(body.data.ids).size - allowed.length };
   });
@@ -375,6 +392,13 @@ export async function leadRoutes(app: FastifyInstance) {
       if (!target) return reply.code(400).send(unknownStage);
       stageFields = { status: target.key, ...closingFields(target, lead, data.lostReason) };
     }
+    // « Contact » est le nom du contact principal : le saisir crée ou renomme ce contact. Le vider ne le supprime
+    // pas (une personne se supprime depuis l'onglet Contacts) : la valeur reste.
+    if (data.contactName !== undefined) {
+      const name = data.contactName.trim();
+      if (name) await ensurePrimaryContact(lead.id, subject.companyId, name);
+      else delete data.contactName;
+    }
     const [updated] = await db
       .update(leads)
       .set({
@@ -386,6 +410,22 @@ export async function leadRoutes(app: FastifyInstance) {
       })
       .where(eq(leads.id, lead.id))
       .returning();
+    const events: Parameters<typeof logActivities>[0] = [];
+    if (updated.status !== lead.status) {
+      const stages = await listStages(subject.companyId);
+      const name = (key: string) => stages.find((st) => st.key === key)?.name ?? key;
+      events.push({
+        companyId: subject.companyId,
+        leadId: lead.id,
+        authorId: subject.userId,
+        kind: "stage_change",
+        meta: { from: { key: lead.status, name: name(lead.status) }, to: { key: updated.status, name: name(updated.status) }, ...(updated.lostReason ? { lostReason: updated.lostReason } : {}) },
+      });
+    }
+    if ((updated.visitedAt === null) !== (lead.visitedAt === null)) {
+      events.push({ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "visited", meta: { visited: updated.visitedAt !== null } });
+    }
+    await logActivities(events, logError(req));
     return updated;
   });
 

@@ -11,6 +11,8 @@ import { memberRoutes } from "./routes/members.js";
 import { leadRoutes } from "./routes/leads.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
+import { contactRoutes } from "./routes/contacts.js";
+import { activityRoutes } from "./routes/activities.js";
 
 export async function buildApp(opts: { logger?: boolean } = {}) {
   const app = Fastify({ logger: opts.logger ?? true, trustProxy: config.isProd });
@@ -38,5 +40,7 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(leadRoutes);
   await app.register(eventRoutes);
   await app.register(stageRoutes);
+  await app.register(contactRoutes);
+  await app.register(activityRoutes);
   return app;
 }

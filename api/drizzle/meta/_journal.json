@@ -71,6 +71,20 @@
       "when": 1795462065815,
       "tag": "0009_pipeline_stages_data",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795462654410,
+      "tag": "0010_contacts_activities",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795462663394,
+      "tag": "0011_contacts_activities_data",
+      "breakpoints": true
     }
   ]
 }
