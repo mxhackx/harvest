@@ -19,14 +19,14 @@ const toLocalInput = (iso: string | null) => {
 };
 
 /** Création et modification d'une tâche. Le choix de la personne n'apparaît que si l'on a le droit d'attribuer. */
-export function TaskModal({ task, leadId, onClose, onSaved }: { task?: Task; leadId?: string; onClose: () => void; onSaved: () => void }) {
+export function TaskModal({ task, leadId, defaultDay, onClose, onSaved }: { task?: Task; leadId?: string; /** jour proposé pour l'échéance à la création (9 h) */ defaultDay?: Date; onClose: () => void; onSaved: () => void }) {
   const { me, companyId } = useSession();
   const { leads } = useLeads();
   const perms = me.memberships[0].permissions.map((p) => p.permission);
   const canAssign = perms.includes("task:assign") && perms.includes("member:read");
   const [members, setMembers] = useState<Member[]>([]);
   const [title, setTitle] = useState(task?.title ?? "");
-  const [due, setDue] = useState(toLocalInput(task?.dueAt ?? null));
+  const [due, setDue] = useState(toLocalInput(task?.dueAt ?? (defaultDay ? new Date(defaultDay.getFullYear(), defaultDay.getMonth(), defaultDay.getDate(), 9).toISOString() : null)));
   const [lead, setLead] = useState(task?.leadId ?? leadId ?? "");
   const [assignee, setAssignee] = useState(task?.ownerId ?? me.user.id);
   const [error, setError] = useState<string | null>(null);

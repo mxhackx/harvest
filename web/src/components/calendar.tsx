@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ApiError, EVENT_KIND_LABEL, api, errorMessage, type CalEvent, type EventKind } from "@/lib/api";
+import type { Task } from "@/lib/tasks";
 import { WEEKDAYS, addMonths, dayKey, eventsByDay, formatDayLong, formatMonth, formatTime, gridRange, monthGrid, sameDay, startOfDay, startOfMonth } from "@/lib/calendar";
 import { useLeads } from "@/lib/leads";
 import { useSession } from "@/lib/session";
 import { EventModal } from "./event-modal";
 import { ChevronIcon, PencilIcon, PlusIcon } from "./icons";
-import { Button, Notice, Panel } from "./ui";
+import { TaskModal } from "./task-list";
+import { Button, Menu, MenuItem, Notice, Panel } from "./ui";
 
 // Un type de rendez-vous = une couleur ; un rendez-vous fait = point creux.
 const KIND_COLOR: Record<EventKind, string> = { visit: "#0868c9", call: "#07625a", followup: "#14222e", other: "#8a99a6" };
@@ -19,6 +21,9 @@ export function Calendar() {
   const perms = me.memberships[0].permissions.map((p) => p.permission);
   const canCreate = perms.includes("event:create");
   const canUpdate = perms.includes("event:update");
+  const canTasks = perms.includes("task:read");
+  const canCreateTask = perms.includes("task:create");
+  const canUpdateTask = perms.includes("task:update");
 
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
   const [selected, setSelected] = useState(() => startOfDay(new Date()));
@@ -26,6 +31,8 @@ export function Calendar() {
   const [loaded, setLoaded] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [editing, setEditing] = useState<CalEvent | "new" | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [newTask, setNewTask] = useState(false);
 
   const days = useMemo(() => monthGrid(month), [month]);
   const byDay = useMemo(() => eventsByDay(events), [events]);
@@ -40,20 +47,38 @@ export function Calendar() {
       .catch((e) => setNotice(errorMessage(e instanceof ApiError ? e.code : null)));
   }, [month, companyId]);
 
+  const loadTasks = useCallback(() => {
+    if (!canTasks) return Promise.resolve();
+    return api<Task[]>("/tasks?status=all", { companyId }).then(setTasks).catch(() => {});
+  }, [canTasks, companyId]);
+
   useEffect(() => {
     load();
+    loadTasks();
     // comme pour les leads : on suit les changements faits ailleurs (autre appareil, autre membre)
-    const refresh = () => document.visibilityState === "visible" && load();
+    const refresh = () => document.visibilityState === "visible" && (load(), loadTasks());
     const timer = setInterval(refresh, 60_000);
     window.addEventListener("focus", refresh);
     return () => {
       clearInterval(timer);
       window.removeEventListener("focus", refresh);
     };
-  }, [load]);
+  }, [load, loadTasks]);
 
   const today = new Date();
   const dayEvents = byDay.get(dayKey(selected)) ?? [];
+  const dayTasks = tasks.filter((t) => t.dueAt && sameDay(new Date(t.dueAt), selected));
+  const canAdd = canCreate || canCreateTask;
+
+  async function toggleTask(t: Task) {
+    try {
+      await api(`/tasks/${t.id}`, { method: "PATCH", body: { done: !t.doneAt }, companyId });
+    } catch (err) {
+      setNotice(errorMessage(err instanceof ApiError ? err.code : null));
+    } finally {
+      loadTasks();
+    }
+  }
 
   const goTo = (d: Date) => {
     setSelected(startOfDay(d));
@@ -91,7 +116,7 @@ export function Calendar() {
           <Notice onClose={() => setNotice(null)}>{notice}</Notice>
         </div>
       )}
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(300px,1fr)]">
         <div>
           <div className="mb-3 flex items-center gap-2">
             <button type="button" onClick={() => setMonth(addMonths(month, -1))} aria-label="Mois précédent" className={nav}>
@@ -179,12 +204,31 @@ export function Calendar() {
           </p>
         </div>
 
-        <section aria-label={`Rendez-vous du ${formatDayLong(selected)}`} className="flex flex-col gap-3">
-          <h3 className="text-title font-semibold">{capitalize(formatDayLong(selected))}</h3>
+        <section aria-label={`Programme du ${formatDayLong(selected)}`} className="flex flex-col gap-3 self-start rounded-card border border-border bg-card p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="min-w-0 text-title font-semibold">{capitalize(formatDayLong(selected))}</h3>
+            {canAdd && (
+              <Menu
+                align="right"
+                trigger={({ toggle }) => (
+                  <Button type="button" onClick={toggle} className="h-9 w-auto shrink-0">
+                    <PlusIcon size={16} /> Ajouter
+                  </Button>
+                )}
+              >
+                {(close) => (
+                  <>
+                    {canCreate && <MenuItem onClick={() => { close(); setEditing("new"); }}>Rendez-vous</MenuItem>}
+                    {canCreateTask && <MenuItem onClick={() => { close(); setNewTask(true); }}>Tâche à faire</MenuItem>}
+                  </>
+                )}
+              </Menu>
+            )}
+          </div>
           {!loaded ? (
             <p className="text-small text-muted">Chargement…</p>
-          ) : dayEvents.length === 0 ? (
-            <p className="text-small text-muted">Rien de prévu ce jour.</p>
+          ) : dayEvents.length === 0 && dayTasks.length === 0 ? (
+            <p className="text-small text-muted">Rien de prévu ce jour.{canAdd && " Utilisez « Ajouter » pour programmer quelque chose."}</p>
           ) : (
             <ul className="flex flex-col">
               {dayEvents.map((e, i) => (
@@ -220,10 +264,43 @@ export function Calendar() {
                   </button>
                 </li>
               ))}
+              {dayTasks.map((t, i) => (
+                <li key={t.id} className={`flex items-start gap-3 py-2 ${i > 0 || dayEvents.length > 0 ? "border-t border-rule" : ""}`}>
+                  <input
+                    type="checkbox"
+                    checked={!!t.doneAt}
+                    disabled={!canUpdateTask}
+                    onChange={() => toggleTask(t)}
+                    aria-label={`Marquer la tâche « ${t.title} » comme faite`}
+                    className="mt-1 size-4 shrink-0 accent-accent"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-body font-medium ${t.doneAt ? "text-muted line-through" : ""}`}>
+                      <span className="mr-2 font-mono text-small text-muted">{formatTime(t.dueAt!)}</span>
+                      {t.title}
+                    </p>
+                    <p className="text-small text-muted">
+                      Tâche{t.leadName && <span className="truncate"> · {t.leadName}</span>}
+                    </p>
+                  </div>
+                </li>
+              ))}
             </ul>
           )}
         </section>
       </div>
+
+      {newTask && (
+        <TaskModal
+          defaultDay={selected}
+          onClose={() => setNewTask(false)}
+          onSaved={() => {
+            setNewTask(false);
+            setNotice("Tâche ajoutée.");
+            loadTasks();
+          }}
+        />
+      )}
 
       {editing && (
         <EventModal
