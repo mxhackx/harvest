@@ -13,6 +13,10 @@ import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
 import { contactRoutes } from "./routes/contacts.js";
 import { activityRoutes } from "./routes/activities.js";
+import { invitationRoutes } from "./routes/invitations.js";
+import { leadAssignRoutes } from "./routes/lead-assign.js";
+import { taskRoutes } from "./routes/tasks.js";
+import { notificationRoutes } from "./routes/notifications.js";
 
 export async function buildApp(opts: { logger?: boolean } = {}) {
   const app = Fastify({ logger: opts.logger ?? true, trustProxy: config.isProd });
@@ -42,5 +46,9 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(stageRoutes);
   await app.register(contactRoutes);
   await app.register(activityRoutes);
+  await app.register(taskRoutes);
+  await app.register(invitationRoutes);
+  await app.register(leadAssignRoutes);
+  await app.register(notificationRoutes);
   return app;
 }

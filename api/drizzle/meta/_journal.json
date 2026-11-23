@@ -85,6 +85,20 @@
       "when": 1795462663394,
       "tag": "0011_contacts_activities_data",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795464121787,
+      "tag": "0012_tasks_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795464303902,
+      "tag": "0013_invitations",
+      "breakpoints": true
     }
   ]
 }

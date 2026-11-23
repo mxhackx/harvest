@@ -2,14 +2,14 @@ import type { FastifyInstance } from "fastify";
 import { and, eq, inArray, ne } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { membershipRoles, memberships, rolePermissions, roles, teams, users } from "../db/schema.js";
+import { events, leads, membershipRoles, memberships, rolePermissions, roles, tasks, teams, users } from "../db/schema.js";
 import { exceedsOwnRights } from "../rbac/policy.js";
 import { requirePermission } from "../plugins/auth.js";
 
 const uuid = z.string().uuid();
 
 /** Rôles de l'entreprise (jamais d'une autre) + vérif anti-escalade. */
-async function resolveRoles(subject: { companyId: string; grants: any }, roleIds: string[], actor: any) {
+export async function resolveRoles(subject: { companyId: string; grants: any }, roleIds: string[], actor: any) {
   const found = roleIds.length
     ? await db
         .select()
@@ -153,7 +153,14 @@ export async function memberRoutes(app: FastifyInstance) {
         .where(and(eq(teams.id, body.data.teamId), eq(teams.companyId, subject.companyId)));
       if (!t) return reply.code(400).send({ error: "unknown_team" });
     }
-    await db.update(memberships).set({ teamId: body.data.teamId }).where(eq(memberships.id, target.id));
+    await db.transaction(async (tx) => {
+      await tx.update(memberships).set({ teamId: body.data.teamId }).where(eq(memberships.id, target.id));
+      // la portée « team » des leads, tâches et rendez-vous de cette personne la suit dans sa nouvelle équipe
+      const mine = (t: { companyId: any; ownerId: any }) => and(eq(t.companyId, subject.companyId), eq(t.ownerId, target.userId));
+      await tx.update(leads).set({ teamId: body.data.teamId }).where(mine(leads));
+      await tx.update(tasks).set({ teamId: body.data.teamId }).where(mine(tasks));
+      await tx.update(events).set({ teamId: body.data.teamId }).where(mine(events));
+    });
     return { id: target.id, teamId: body.data.teamId };
   });
 

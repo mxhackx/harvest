@@ -266,3 +266,78 @@ export const activities = pgTable(
   },
   (t) => [index("activities_lead_time").on(t.leadId, t.occurredAt)],
 );
+
+/**
+ * Tâche / rappel. `ownerId` est la personne à qui elle est attribuée : les portées own / team / company
+ * s'appliquent donc à elle comme pour les leads. `createdBy` garde qui l'a créée.
+ */
+export const tasks = pgTable(
+  "tasks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    // équipe de la personne assignée au moment de l'attribution (portée « team »)
+    teamId: uuid("team_id").references(() => teams.id, { onDelete: "set null" }),
+    ownerId: uuid("owner_id")
+      .notNull()
+      .references(() => users.id),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id),
+    leadId: uuid("lead_id").references(() => leads.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    doneAt: timestamp("done_at", { withTimezone: true }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [index("tasks_owner_open").on(t.companyId, t.ownerId, t.doneAt, t.dueAt), index("tasks_lead").on(t.leadId)],
+);
+
+/** Notification personnelle : une attribution de tâche ou de lead. Les retards se calculent à la volée, pas ici. */
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    title: text("title").notNull(),
+    leadId: uuid("lead_id").references(() => leads.id, { onDelete: "cascade" }),
+    taskId: uuid("task_id").references(() => tasks.id, { onDelete: "cascade" }),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("notifications_user").on(t.userId, t.companyId, t.readAt, t.createdAt)],
+);
+
+/**
+ * Invitation à rejoindre une entreprise. Le jeton n'est jamais stocké : seule son empreinte l'est, comme pour les
+ * sessions. Il est affiché une seule fois à la personne qui invite, qui transmet le lien.
+ */
+export const invitations = pgTable(
+  "invitations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    email: text("email").notNull(),
+    roleIds: uuid("role_ids").array().notNull(),
+    teamId: uuid("team_id").references(() => teams.id, { onDelete: "set null" }),
+    tokenHash: text("token_hash").notNull(),
+    invitedBy: uuid("invited_by")
+      .notNull()
+      .references(() => users.id),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("invitations_token").on(t.tokenHash), index("invitations_company").on(t.companyId)],
+);

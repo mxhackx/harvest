@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db, type Db } from "../db/index.js";
 import { companies, membershipRoles, memberships, pipelineStages, rolePermissions, roles, teams } from "../db/schema.js";
@@ -79,5 +79,27 @@ export async function companyRoutes(app: FastifyInstance) {
       .values({ companyId: req.member!.subject.companyId, name: body.data.name })
       .returning();
     return reply.code(201).send(team);
+  });
+
+  const teamId = z.string().uuid();
+  app.patch<{ Params: { id: string } }>("/teams/:id", { preHandler: requirePermission("team:update") }, async (req, reply) => {
+    const body = z.object({ name: z.string().trim().min(1).max(100) }).safeParse(req.body);
+    if (!body.success || !teamId.safeParse(req.params.id).success) return reply.code(body.success ? 404 : 400).send({ error: body.success ? "not_found" : "invalid_body" });
+    const [team] = await db
+      .update(teams)
+      .set({ name: body.data.name })
+      .where(and(eq(teams.id, req.params.id), eq(teams.companyId, req.member!.subject.companyId)))
+      .returning();
+    return team ?? reply.code(404).send({ error: "not_found" });
+  });
+
+  // Les membres, leads, tâches et rendez-vous de l'équipe supprimée n'ont plus d'équipe (clés étrangères « set null »).
+  app.delete<{ Params: { id: string } }>("/teams/:id", { preHandler: requirePermission("team:delete") }, async (req, reply) => {
+    if (!teamId.safeParse(req.params.id).success) return reply.code(404).send({ error: "not_found" });
+    const gone = await db
+      .delete(teams)
+      .where(and(eq(teams.id, req.params.id), eq(teams.companyId, req.member!.subject.companyId)))
+      .returning({ id: teams.id });
+    return gone.length ? reply.code(204).send() : reply.code(404).send({ error: "not_found" });
   });
 }
