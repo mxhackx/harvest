@@ -10,6 +10,8 @@ export const CATALOG = {
   event: { actions: ["read", "create", "update", "delete"], scoped: true },
   // tout membre lit les étapes de son entreprise ; seules la création, la modification et la suppression sont des droits
   stage: { actions: ["create", "update", "delete"], scoped: false },
+  // tout membre lit les modèles de messages de l'entreprise ; les gérer est un droit
+  template: { actions: ["create", "update", "delete"], scoped: false },
   task: { actions: ["read", "create", "update", "delete", "assign"], scoped: true },
   verification: { actions: ["read", "create", "update"], scoped: true },
   workflow: { actions: ["read", "create", "update", "delete"], scoped: true },

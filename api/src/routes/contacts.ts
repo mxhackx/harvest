@@ -1,11 +1,12 @@
 import type { FastifyInstance } from "fastify";
-import { and, asc, desc, eq, ne } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
 import { contacts, leads } from "../db/schema.js";
 import { findReadableLead, leadAttrs } from "../leads/access.js";
 import { whatsappField } from "../leads/fields.js";
 import { can } from "../rbac/policy.js";
+import { scopeCondition } from "../rbac/sql.js";
 import { requirePermission } from "../plugins/auth.js";
 
 const email = z
@@ -27,6 +28,14 @@ const createBody = base.partial().required({ name: true });
 const patchBody = base.partial();
 
 const uuid = z.string().uuid();
+
+const listQuery = z.object({
+  q: z.string().trim().max(100).default(""),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+  offset: z.coerce.number().int().min(0).max(100_000).default(0),
+});
+/** « 50% » doit chercher « 50% », pas « 50 suivi de n'importe quoi » : on neutralise les jokers LIKE. */
+const likeEscape = (s: string) => s.replace(/[\\%_]/g, (m) => `\\${m}`);
 
 /** `leads.contactName` reste le nom du contact principal : listes, import et export continuent de s'en servir. */
 export async function syncLeadContactName(leadId: string) {
@@ -51,6 +60,30 @@ async function makePrimary(leadId: string, contactId: string) {
 }
 
 export async function contactRoutes(app: FastifyInstance) {
+  // Toutes les personnes de tous les leads que l'utilisateur peut lire (même portée que les leads), avec recherche.
+  app.get("/contacts", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
+    const q = listQuery.safeParse(req.query);
+    if (!q.success) return reply.code(400).send({ error: "invalid_query", issues: q.error.issues });
+    const { subject } = req.member!;
+    const term = q.data.q ? `%${likeEscape(q.data.q)}%` : null;
+    const where = and(
+      scopeCondition(leads, subject, "lead:read")!,
+      term ? or(ilike(contacts.name, term), ilike(contacts.role, term), ilike(contacts.phone, term), ilike(contacts.whatsapp, term), ilike(contacts.email, term), ilike(leads.name, term)) : undefined,
+    );
+    const [items, [{ total }]] = await Promise.all([
+      db
+        .select({ contact: contacts, leadName: leads.name })
+        .from(contacts)
+        .innerJoin(leads, eq(leads.id, contacts.leadId))
+        .where(where)
+        .orderBy(asc(contacts.name), asc(contacts.id))
+        .limit(q.data.limit)
+        .offset(q.data.offset),
+      db.select({ total: sql<number>`count(*)::int` }).from(contacts).innerJoin(leads, eq(leads.id, contacts.leadId)).where(where),
+    ]);
+    return { items: items.map((r) => ({ ...r.contact, leadName: r.leadName })), total };
+  });
+
   app.get<{ Params: { id: string } }>("/leads/:id/contacts", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
     const lead = await findReadableLead(req.member!.subject, req.params.id);
     if (!lead) return reply.code(404).send({ error: "not_found" });

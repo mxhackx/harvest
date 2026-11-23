@@ -341,3 +341,41 @@ export const invitations = pgTable(
   },
   (t) => [uniqueIndex("invitations_token").on(t.tokenHash), index("invitations_company").on(t.companyId)],
 );
+
+/** Modèle de message réutilisable (WhatsApp, e-mail). Partagé dans l'entreprise ; `{{contact}}`, `{{entreprise}}`, `{{moi}}` sont remplacés à l'envoi. */
+export const messageTemplates = pgTable(
+  "message_templates",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id),
+    name: text("name").notNull(),
+    channel: text("channel").notNull(),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("message_templates_name").on(t.companyId, sql`lower(${t.name})`)],
+);
+
+/** Vue de leads enregistrée par une personne : recherche, filtres et tri de la page Leads. Personnelle. */
+export const segments = pgTable(
+  "segments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    config: jsonb("config").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("segments_user_name").on(t.companyId, t.userId, sql`lower(${t.name})`)],
+);
