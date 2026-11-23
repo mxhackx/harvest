@@ -9,7 +9,7 @@ export default function Page() {
     <DocArticle href="/docs/equipe">
       <h2>Inviter un collaborateur</h2>
       <ol>
-        <li>Ouvrez <strong>Équipe › Membres</strong>.</li>
+        <li>Ouvrez <strong>ERP › Équipe</strong>.</li>
         <li>Dans « Inviter quelqu’un », saisissez son e-mail, choisissez un rôle et une équipe.</li>
         <li>Cliquez sur <strong>Créer le lien</strong>, copiez-le et transmettez-le (message, WhatsApp…).</li>
       </ol>

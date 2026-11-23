@@ -10,7 +10,7 @@ import { SessionProvider, type Session } from "@/lib/session";
 import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, CalendarIcon, CheckIcon, HomeIcon, UserIcon, UsersIcon } from "./icons";
+import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, HomeIcon, UsersIcon } from "./icons";
 import { NotificationsBell } from "./notifications-bell";
 import { Notice } from "./ui";
 
@@ -39,15 +39,16 @@ const MODULES: Module[] = [
       { label: "Leads", short: "Leads", href: "/leads", icon: UsersIcon },
       { label: "Tâches", short: "Tâches", href: "/taches", icon: CheckIcon },
       { label: "Pipeline", short: "Pipeline", href: "/pipeline", icon: BoardIcon },
+      { label: "Rapports", short: "Rapports", href: "/rapports", icon: CoinIcon },
     ],
   },
   {
     key: "team",
-    label: "Équipe",
+    label: "ERP",
     href: "/equipe",
-    icon: UserIcon,
+    icon: BriefcaseIcon,
     needs: "member:read",
-    pages: [{ label: "Membres", short: "Équipe", href: "/equipe", icon: UserIcon }],
+    pages: [{ label: "Équipe", short: "Équipe", href: "/equipe", icon: UsersIcon }],
   },
 ];
 
@@ -63,6 +64,11 @@ export function Shell({ children }: { children: ReactNode }) {
     if (s.status === "unauthenticated") router.replace("/login");
     if (s.status === "ready" && s.me.memberships.length === 0) router.replace("/onboarding");
   }, [s, router]);
+
+  // mobile : la barre du bas défile ; la page courante doit y rester visible
+  useEffect(() => {
+    document.querySelector('nav.fixed a[aria-current="page"]')?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [path, s.status]);
 
   const session = useMemo<Session | null>(() => {
     if (s.status !== "ready" || s.me.memberships.length === 0) return null;
@@ -162,13 +168,13 @@ export function Shell({ children }: { children: ReactNode }) {
       </div>
 
       {/* Navigation basse sur mobile : le gérant est en tournée */}
-      <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 justify-around bg-accent md:hidden">
+      <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 overflow-x-auto bg-accent md:hidden">
         {mobilePages.map((p) => (
           <Link
             key={p.href}
             href={p.href}
             aria-current={p.href === path ? "page" : undefined}
-            className={`flex min-w-24 flex-col items-center justify-center gap-1 text-small ${
+            className={`flex min-w-[76px] flex-1 shrink-0 flex-col items-center justify-center gap-1 text-small ${
               p.href === path ? "bg-white font-medium text-accent-press" : "text-[#d6e8fb]"
             }`}
           >

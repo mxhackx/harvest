@@ -50,6 +50,11 @@ export const DOCS: DocPage[] = [
     description: "Créez des tâches avec échéance, confiez-les à un collègue, repérez les retards et suivez les notifications de la cloche.",
   },
   {
+    href: "/docs/rapports",
+    title: "Rapports",
+    description: "Lisez vos chiffres : pipeline en valeur, conversion par étape, motifs de perte et activité de chaque personne sur la période choisie.",
+  },
+  {
     href: "/docs/equipe",
     title: "Équipe, rôles et invitations",
     description: "Invitez des collaborateurs par lien, gérez rôles et équipes, réattribuez des leads et passez d'une entreprise à l'autre.",
