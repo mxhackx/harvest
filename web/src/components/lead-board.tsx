@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { LEAD_STATUSES, STATUS_LABEL, formatDay, formatValue, type Lead, type LeadStatus } from "@/lib/api";
+import { formatDay, formatValue, type Lead } from "@/lib/api";
+import { useStages } from "@/lib/stages-store";
 import { BriefcaseIcon, CoinIcon, PencilIcon, PinIcon, UserIcon } from "./icons";
 import { LeadLinks } from "./lead-links";
 import { StatusTag } from "./status-tag";
@@ -13,7 +14,7 @@ type Props = {
   onToggle: (id: string) => void;
   onOpen: (lead: Lead) => void;
   /** Déplace ces leads vers une étape. */
-  onMove: (ids: string[], status: LeadStatus) => void;
+  onMove: (ids: string[], status: string) => void;
 };
 
 const Line = ({ icon, children, mono }: { icon: React.ReactNode; children: React.ReactNode; mono?: boolean }) => (
@@ -80,6 +81,7 @@ function Card({
             {formatValue(lead.estimatedValue)}
           </Line>
         )}
+        {lead.lostReason && <Line icon={<span aria-hidden>✕</span>}>Motif : {lead.lostReason}</Line>}
       </div>
       <LeadLinks lead={lead} className="pl-6" />
       {(lead.visitedAt || !located) && (
@@ -101,17 +103,19 @@ function Card({
 }
 
 export function LeadBoard({ leads, selected, canMove, onToggle, onOpen, onMove }: Props) {
-  const [over, setOver] = useState<LeadStatus | null>(null);
+  const { stages } = useStages();
+  const [over, setOver] = useState<string | null>(null);
 
   return (
     <div className="flex gap-3 overflow-x-auto pb-2">
-      {LEAD_STATUSES.map((status) => {
+      {stages.map((stage) => {
+        const status = stage.key;
         const col = leads.filter((l) => l.status === status);
         const total = col.reduce((sum, l) => sum + (l.estimatedValue ?? 0), 0);
         return (
           <section
             key={status}
-            aria-label={STATUS_LABEL[status]}
+            aria-label={stage.name}
             onDragOver={(e) => {
               if (!canMove) return;
               e.preventDefault();

@@ -59,6 +59,9 @@ export const ERROR_MESSAGES: Record<string, string> = {
   email_taken: "Un compte existe déjà avec cet e-mail.",
   invalid_body: "Vérifiez les champs saisis.",
   forbidden: "Vous n'avez pas le droit de faire cela.",
+  stage_exists: "Une étape porte déjà ce nom.",
+  too_many_stages: "Vingt étapes au plus.",
+  last_open_stage: "Il faut garder au moins une étape ouverte.",
   not_found: "Introuvable ou hors de votre périmètre.",
   provider_not_configured: "Cette connexion n'est pas encore activée.",
   oauth_state: "La connexion a expiré, réessayez.",
@@ -69,16 +72,6 @@ export const ERROR_MESSAGES: Record<string, string> = {
 };
 export const errorMessage = (code?: string | null) =>
   (code && ERROR_MESSAGES[code]) || "Une erreur est survenue, réessayez.";
-
-export const LEAD_STATUSES = ["to_visit", "interested", "mockup_sent", "deposit_paid"] as const;
-export type LeadStatus = (typeof LEAD_STATUSES)[number];
-
-export const STATUS_LABEL: Record<LeadStatus, string> = {
-  to_visit: "À visiter",
-  interested: "Intéressé",
-  mockup_sent: "Maquette envoyée",
-  deposit_paid: "Acompte payé",
-};
 
 export type Lead = {
   id: string;
@@ -97,7 +90,10 @@ export type Lead = {
   locationSource: string;
   contactName: string;
   phone: string;
-  status: LeadStatus;
+  /** clé d'une étape du pipeline de l'entreprise (voir lib/stages.ts) */
+  status: string;
+  lostReason: string;
+  closedAt: string | null;
   lat: number | null;
   lng: number | null;
   estimatedValue: number | null;
@@ -108,14 +104,6 @@ export type Lead = {
 /** Nombre à la française, chiffres tabulaires gérés par la police. Aucune devise supposée. */
 export const formatValue = (n: number) => n.toLocaleString("fr-FR");
 export const formatDay = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
-
-/** Couleurs des points de la carte et des puces de statut : une seule définition pour tout l'écran. */
-export const STATUS_COLOR: Record<LeadStatus, string> = {
-  to_visit: "#e5484d", // rouge
-  interested: "#0868c9", // bleu
-  mockup_sent: "rgba(34, 170, 94, 0.6)", // vert légèrement transparent
-  deposit_paid: "#12c457", // vert vif
-};
 
 /** N'affiche jamais un lien qui ne soit pas http(s) : un `javascript:` enregistré ne doit pas devenir cliquable. */
 export function safeHttpUrl(raw: string): string | null {
@@ -243,7 +231,7 @@ export type ImportReport = {
   errors: { line: number; field?: string; message: string }[];
   errorsTruncated: boolean;
   ignoredColumns: string[];
-  preview: { line: number; name: string; status: LeadStatus; address: string; hasPosition: boolean; toLocate: boolean }[];
+  preview: { line: number; name: string; status: string; address: string; hasPosition: boolean; toLocate: boolean }[];
   imported: number;
   locating: number;
 };

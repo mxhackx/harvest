@@ -7,8 +7,8 @@ export const metadata = docMetadata("/docs/export");
 const COLUMNS: [string, string][] = [
   ["id", "Identifiant interne du lead."],
   ["name", "Nom de l’entreprise."],
-  ["status", "Étape sous forme de code : to_visit, interested, mockup_sent, deposit_paid."],
-  ["statusLabel", "Étape en français : À visiter, Intéressé, Maquette envoyée, Acompte payé."],
+  ["status", "Clé de l'étape du pipeline : to_visit, interested, mockup_sent, deposit_paid, won, lost, ou celle d'une étape que vous avez ajoutée."],
+  ["statusLabel", "Nom de l'étape tel qu'il apparaît dans votre pipeline (À visiter, Intéressé, Gagné…)."],
   ["sector", "Secteur d’activité."],
   ["contactName", "Personne à contacter."],
   ["phone", "Téléphone."],
@@ -25,6 +25,8 @@ const COLUMNS: [string, string][] = [
   ["estimatedValue", "Valeur estimée, entier."],
   ["visited", "true ou false."],
   ["visitedAt", "Date de la visite, au format ISO 8601, vide si pas encore visité."],
+  ["lostReason", "Motif de perte, pour un lead dans une étape « perdu »."],
+  ["closedAt", "Date d'entrée dans une étape « gagné » ou « perdu », ISO 8601."],
   ["owner", "Nom de la personne qui a créé le lead."],
   ["createdAt", "Date de création, ISO 8601."],
   ["updatedAt", "Date de dernière modification, ISO 8601."],
@@ -87,7 +89,7 @@ export default function Page() {
       <p>
         Un fichier exporté se réimporte sans modification avec <Link href="/docs/import">l’import</Link>. Les colonnes
         calculées par Harvest (<code>id</code>, <code>statusLabel</code>, <code>locationSource</code>,{" "}
-        <code>owner</code>, <code>createdAt</code>, <code>updatedAt</code>) sont ignorées. Réimporter dans la même
+        <code>lostReason</code>, <code>closedAt</code>, <code>owner</code>, <code>createdAt</code>, <code>updatedAt</code>) sont ignorées. Réimporter dans la même
         entreprise ne crée rien : tous les leads sont des doublons.
       </p>
 

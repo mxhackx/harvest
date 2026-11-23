@@ -4,7 +4,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import type { GeoJSONSource, Map as MLMap } from "maplibre-gl";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LEAD_STATUSES, STATUS_COLOR, STATUS_LABEL, api, describeError, type Lead, type LeadStatus } from "@/lib/api";
+import { api, describeError, type Lead } from "@/lib/api";
+import { stageOf } from "@/lib/stages";
+import { useStages } from "@/lib/stages-store";
 import { routeLine } from "@/lib/route";
 import { leadsOfTheDay } from "@/lib/today";
 import { useSession } from "@/lib/session";
@@ -12,7 +14,8 @@ import { ExpandIcon, ShrinkIcon } from "./icons";
 import { LeadSummary } from "./lead-summary";
 import { Notice } from "./ui";
 
-type Filter = "all" | LeadStatus;
+/** « all » ou la clé d'une étape */
+type Filter = string;
 type Located = Lead & { lat: number; lng: number };
 
 const ROUTE_COLOR = "#e5484d"; // rouge, trait plein
@@ -22,19 +25,6 @@ const isLocated = (l: Lead): l is Located => l.lat !== null && l.lng !== null;
 const isVisited = (l: Lead) => l.visitedAt !== null;
 
 const empty = { type: "FeatureCollection", features: [] } as const;
-
-// Couleur du point selon l'étape : rouge, bleu, vert translucide, vert vif.
-const circleColor = [
-  "match",
-  ["get", "status"],
-  "to_visit",
-  STATUS_COLOR.to_visit,
-  "interested",
-  STATUS_COLOR.interested,
-  "mockup_sent",
-  STATUS_COLOR.mockup_sent,
-  STATUS_COLOR.deposit_paid,
-] as never;
 
 type Scope = "today" | "all";
 
@@ -67,17 +57,25 @@ export function LeadMap({
   const [info, setInfo] = useState<string | null>(null);
   const toggleButton = useRef<HTMLButtonElement>(null);
 
+  const { stages } = useStages();
   const todayLeads = useMemo(() => leadsOfTheDay(leads, todayIds), [leads, todayIds]);
   const scoped = scope === "today" ? todayLeads : leads;
   const located = useMemo(() => scoped.filter(isLocated), [scoped]);
   const locatedToday = useMemo(() => todayLeads.filter(isLocated).length, [todayLeads]);
   const locatedAll = useMemo(() => leads.filter(isLocated).length, [leads]);
+  // « Toutes étapes » laisse de côté les leads perdus : on ne va pas les visiter. Le filtre « Perdu » les montre.
   const counts = useMemo(() => {
-    const c: Record<Filter, number> = { all: located.length, to_visit: 0, interested: 0, mockup_sent: 0, deposit_paid: 0 };
-    for (const l of located) c[l.status]++;
+    const c: Record<string, number> = { all: 0 };
+    for (const l of located) {
+      c[l.status] = (c[l.status] ?? 0) + 1;
+      if (stageOf(stages, l.status).kind !== "lost") c.all++;
+    }
     return c;
-  }, [located]);
-  const visible = useMemo(() => located.filter((l) => filter === "all" || l.status === filter), [located, filter]);
+  }, [located, stages]);
+  const visible = useMemo(
+    () => located.filter((l) => (filter === "all" ? stageOf(stages, l.status).kind !== "lost" : l.status === filter)),
+    [located, filter, stages],
+  );
   const selected = visible.find((l) => l.id === selectedId) ?? null;
 
   // --- création de la carte, une seule fois ---
@@ -141,7 +139,8 @@ export function LeadMap({
           id: "leads-circle",
           type: "circle",
           source: "leads",
-          paint: { "circle-radius": 6, "circle-color": circleColor, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.5 },
+          paint: { "circle-radius": 6, // la couleur vient de l'étape du lead (propriété `color` de chaque point)
+            "circle-color": ["to-color", ["get", "color"]] as never, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.5 },
         });
         m.on("mouseenter", "leads-circle", () => (m.getCanvas().style.cursor = "pointer"));
         m.on("mouseleave", "leads-circle", () => (m.getCanvas().style.cursor = ""));
@@ -175,7 +174,7 @@ export function LeadMap({
       features: visible.map((l) => ({
         type: "Feature",
         geometry: { type: "Point", coordinates: [l.lng, l.lat] },
-        properties: { id: l.id, status: l.status, name: l.name },
+        properties: { id: l.id, status: l.status, name: l.name, color: stageOf(stages, l.status).color },
       })),
     });
     // la ligne relie tous les points affichés (elle suit donc le filtre d'étape choisi)
@@ -184,7 +183,7 @@ export function LeadMap({
       type: "FeatureCollection",
       features: line.length > 1 ? [{ type: "Feature", geometry: { type: "LineString", coordinates: line }, properties: {} }] : [],
     });
-  }, [ready, visible, showRoute]);
+  }, [ready, visible, showRoute, stages]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -328,7 +327,7 @@ export function LeadMap({
           ))}
         </div>
         <div className="flex flex-wrap gap-2">
-          {(["all", ...LEAD_STATUSES] as Filter[]).map((key) => (
+          {(["all", ...stages.map((st) => st.key)] as Filter[]).map((key) => (
             <button
               key={key}
               type="button"
@@ -339,10 +338,10 @@ export function LeadMap({
               }`}
             >
               {key !== "all" && (
-                <span aria-hidden className="size-2.5 rounded-full border border-white/80 ring-1 ring-black/10" style={{ background: STATUS_COLOR[key] }} />
+                <span aria-hidden className="size-2.5 rounded-full border border-white/80 ring-1 ring-black/10" style={{ background: stageOf(stages, key).color }} />
               )}
-              {key === "all" ? "Toutes étapes" : STATUS_LABEL[key]}
-              <span className="font-mono">{counts[key]}</span>
+              {key === "all" ? "Toutes étapes" : stageOf(stages, key).name}
+              <span className="font-mono">{counts[key] ?? 0}</span>
             </button>
           ))}
           <button

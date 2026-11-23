@@ -1,14 +1,9 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import {
-  LEAD_STATUSES,
-  LOCATION_SOURCE_NOTE,
-  STATUS_LABEL,
-  api,
-  describeError,
-  type Lead,
-} from "@/lib/api";
+import { LOCATION_SOURCE_NOTE, api, describeError, type Lead } from "@/lib/api";
+import { LOST_REASONS, stageOf } from "@/lib/stages";
+import { useStages } from "@/lib/stages-store";
 import { useSession } from "@/lib/session";
 import { LeadLinks } from "./lead-links";
 import { LocationPicker, type Coords } from "./location-picker";
@@ -41,6 +36,10 @@ export function LeadModal({
   onDeleted?: (lead: Lead) => void;
 }) {
   const { me, companyId } = useSession();
+  const { stages } = useStages();
+  // étape choisie : elle décide si l'on demande un motif de perte
+  const [stageKey, setStageKey] = useState(lead?.status ?? stages.find((st) => st.kind === "open")?.key ?? "to_visit");
+  const isLost = stageOf(stages, stageKey).kind === "lost";
   const perms = me.memberships[0].permissions.map((p) => p.permission);
   // création : le bouton n'est proposé qu'à ceux qui ont le droit ; modification : droit de modifier requis
   const readOnly = !!lead && !perms.includes("lead:update");
@@ -151,7 +150,8 @@ export function LeadModal({
         address: text("address"),
         city: text("city"),
         landmark: text("landmark"),
-        status: text("status"),
+        status: stageKey,
+        ...(isLost ? { lostReason: text("lostReason") } : {}),
         visited: f.get("visited") === "on",
         estimatedValue,
         ...positionPart,
@@ -244,8 +244,9 @@ export function LeadModal({
             <Select
               label="Étape"
               name="status"
-              defaultValue={lead?.status ?? "to_visit"}
-              options={LEAD_STATUSES.map((s) => ({ value: s, label: STATUS_LABEL[s] }))}
+              value={stageKey}
+              onChange={(e) => setStageKey(e.target.value)}
+              options={stages.map((st) => ({ value: st.key, label: st.name }))}
             />
             <Field
               label="Valeur estimée"
@@ -254,6 +255,16 @@ export function LeadModal({
               defaultValue={lead?.estimatedValue ?? ""}
               className="font-mono"
             />
+            {isLost && (
+              <div className="sm:col-span-2">
+                <Field label="Motif de perte" name="lostReason" list="lost-reasons" maxLength={200} defaultValue={lead?.lostReason} placeholder="Pourquoi a-t-on perdu ce lead ?" />
+                <datalist id="lost-reasons">
+                  {LOST_REASONS.map((r) => (
+                    <option key={r} value={r} />
+                  ))}
+                </datalist>
+              </div>
+            )}
             <label className="flex min-h-10 items-center gap-2 text-body sm:col-span-2">
               <input type="checkbox" name="visited" defaultChecked={!!lead?.visitedAt} className="size-4 accent-accent" />
               Déjà visité

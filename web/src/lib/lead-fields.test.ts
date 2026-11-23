@@ -16,7 +16,7 @@ import {
 
 function importAll(content: string) {
   const parsed = parseImport(content);
-  const results = parsed.records.map(cleanRow);
+  const results = parsed.records.map((r) => cleanRow(r));
   return { parsed, results, issues: results.flatMap((r) => r.issues), rows: results.flatMap((r) => (r.row ? [r.row] : [])) };
 }
 
@@ -40,7 +40,7 @@ describe("description des champs (documentation)", () => {
     }
   });
   it("les colonnes d'export ignorées existent bien dans l'export", () => {
-    expect(IGNORED_EXPORT_COLUMNS).toEqual(["id", "statusLabel", "locationSource", "owner", "createdAt", "updatedAt"]);
+    expect(IGNORED_EXPORT_COLUMNS).toEqual(["id", "statusLabel", "locationSource", "lostReason", "closedAt", "owner", "createdAt", "updatedAt"]);
   });
 });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ApiError, LEAD_STATUSES, STATUS_COLOR, STATUS_LABEL, describeError, errorMessage, formatDay, formatValue, leadLinks, oauthStartUrl, safeHttpUrl, savedMessage } from "./api";
+import { ApiError, describeError, errorMessage, formatDay, formatValue, leadLinks, oauthStartUrl, safeHttpUrl, savedMessage } from "./api";
 
 describe("safeHttpUrl", () => {
   it("accepte http et https", () => {
@@ -70,19 +70,6 @@ describe("formats", () => {
   });
   it("jour et mois", () => {
     expect(formatDay("2026-11-23T10:00:00.000Z")).toBe("23/11");
-  });
-});
-
-describe("étapes", () => {
-  it("chaque étape a un libellé et une couleur distincte", () => {
-    expect(Object.keys(STATUS_LABEL).sort()).toEqual([...LEAD_STATUSES].sort());
-    expect(new Set(LEAD_STATUSES.map((s) => STATUS_COLOR[s])).size).toBe(4);
-  });
-  it("les couleurs de la carte : rouge, bleu, vert translucide, vert vif", () => {
-    expect(STATUS_COLOR.to_visit).toBe("#e5484d");
-    expect(STATUS_COLOR.interested).toBe("#0868c9");
-    expect(STATUS_COLOR.mockup_sent).toMatch(/^rgba\(34, 170, 94, 0\.\d+\)$/); // transparent
-    expect(STATUS_COLOR.deposit_paid).toBe("#12c457");
   });
 });
 

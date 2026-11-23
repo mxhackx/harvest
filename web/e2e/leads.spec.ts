@@ -291,7 +291,7 @@ test.describe("import", () => {
     "name,address,phone,status",
     "Nouvelle Pharmacie,Haie Vive,,À visiter",
     "Existant,Rue 1,+229 11 22 33 44,À visiter", // doublon d'un lead déjà présent
-    "Mauvaise étape,,,gagné", // ligne 4 : étape inconnue
+    "Mauvaise étape,,,en pause", // ligne 4 : étape inconnue
     "Salon Awa,Akpakpa,,Intéressé",
   ].join("\n");
 
@@ -314,7 +314,7 @@ test.describe("import", () => {
     await expect(stat("doublons ignorés")).toHaveText(/^1/);
     await expect(stat("invalides ignorées")).toHaveText(/^1/);
     await expect(dialog(page).getByText("ligne 4")).toBeVisible();
-    await expect(dialog(page).getByText(/étape inconnue « gagné »/)).toBeVisible();
+    await expect(dialog(page).getByText(/étape inconnue « en pause »/)).toBeVisible();
     await expect(dialog(page).getByText("Nouvelle Pharmacie")).toBeVisible(); // aperçu
     expect((await call<unknown[]>(request, user, "get", "/leads")).length).toBe(1); // l'analyse n'a rien créé
 

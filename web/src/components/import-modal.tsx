@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { STATUS_LABEL, describeError, importLeads, type ImportReport } from "@/lib/api";
+import { describeError, importLeads, type ImportReport } from "@/lib/api";
+import { stageOf } from "@/lib/stages";
+import { useStages } from "@/lib/stages-store";
 import { useSession } from "@/lib/session";
 import { UploadIcon } from "./icons";
 import { Button, Modal, Notice, TextArea } from "./ui";
@@ -23,6 +25,7 @@ function Stat({ label, value, tone }: { label: string; value: number; tone?: "ok
 
 export function ImportModal({ onClose, onImported }: { onClose: () => void; onImported: (r: ImportReport) => void }) {
   const { companyId } = useSession();
+  const { stages } = useStages();
   const fileInput = useRef<HTMLInputElement>(null);
   const [content, setContent] = useState("");
   const [format, setFormat] = useState<"csv" | "json" | undefined>();
@@ -175,7 +178,7 @@ export function ImportModal({ onClose, onImported }: { onClose: () => void; onIm
                   {report.preview.map((p, i) => (
                     <li key={p.line} className={`flex flex-wrap items-baseline gap-x-3 px-3 py-1.5 text-small ${i > 0 ? "border-t border-rule" : ""}`}>
                       <span className="font-medium">{p.name}</span>
-                      <span className="text-muted">{STATUS_LABEL[p.status]}</span>
+                      <span className="text-muted">{stageOf(stages, p.status).name}</span>
                       {p.address && <span className="text-muted">{p.address}</span>}
                       <span className="ml-auto text-muted">{p.hasPosition ? "Position fournie" : p.toLocate ? "À localiser" : "Sans position"}</span>
                     </li>

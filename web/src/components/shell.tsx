@@ -5,10 +5,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, type ComponentType, type ReactNode } from "react";
 import { LeadsProvider } from "@/lib/leads";
+import { StagesProvider } from "@/lib/stages-store";
 import { SessionProvider, type Session } from "@/lib/session";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { CalendarIcon, HomeIcon, UsersIcon } from "./icons";
+import { BoardIcon, CalendarIcon, HomeIcon, UsersIcon } from "./icons";
 import { Notice } from "./ui";
 
 type Icon = ComponentType<{ size?: number }>;
@@ -32,11 +33,14 @@ const MODULES: Module[] = [
     label: "CRM",
     href: "/leads",
     icon: UsersIcon,
-    pages: [{ label: "Leads", short: "Leads", href: "/leads", icon: UsersIcon }],
+    pages: [
+      { label: "Leads", short: "Leads", href: "/leads", icon: UsersIcon },
+      { label: "Pipeline", short: "Pipeline", href: "/pipeline", icon: BoardIcon },
+    ],
   },
 ];
 
-const moduleFor = (path: string) => (path.startsWith("/leads") ? MODULES[1] : MODULES[0]);
+const moduleFor = (path: string) => (path.startsWith("/leads") || path.startsWith("/pipeline") ? MODULES[1] : MODULES[0]);
 // Navigation basse sur mobile : toutes les pages à plat, le gérant est en tournée.
 const MOBILE_PAGES = MODULES.flatMap((m) => m.pages);
 
@@ -71,6 +75,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <SessionProvider value={session}>
+      <StagesProvider>
       <LeadsProvider>
       <div className="flex min-h-dvh">
         {/* Rail de modules, 80 px */}
@@ -155,6 +160,7 @@ export function Shell({ children }: { children: ReactNode }) {
         ))}
       </nav>
       </LeadsProvider>
+      </StagesProvider>
     </SessionProvider>
   );
 }

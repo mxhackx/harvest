@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ApiError, LEAD_STATUSES, STATUS_LABEL, api, describeError, downloadLeads, errorMessage, savedMessage, type Lead, type LeadStatus } from "@/lib/api";
+import { ApiError, api, describeError, downloadLeads, errorMessage, formatValue, savedMessage, type Lead } from "@/lib/api";
+import { pipelineSummary, stageOf } from "@/lib/stages";
+import { useStages } from "@/lib/stages-store";
 import { useLeads } from "@/lib/leads";
 import { useSession } from "@/lib/session";
 import { BoardIcon, CheckIcon, ChevronIcon, DownloadIcon, FilterIcon, PlusIcon, SearchIcon, SortIcon, TableIcon, TrashIcon, UploadIcon, XIcon } from "./icons";
@@ -9,6 +11,7 @@ import { LeadBoard } from "./lead-board";
 import { AddLeadChooser } from "./add-lead-chooser";
 import { ImportModal } from "./import-modal";
 import { LeadModal } from "./lead-modal";
+import { LostReasonModal } from "./lost-reason-modal";
 import { LeadTable } from "./lead-table";
 import { Button, Menu, MenuItem, Modal, Notice, Select } from "./ui";
 
@@ -31,6 +34,9 @@ const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : 
 
 export function LeadsPage() {
   const { me, companyId } = useSession();
+  const { stages } = useStages();
+  // déplacement vers une étape « perdu » en attente du motif
+  const [lostAsk, setLostAsk] = useState<{ ids: string[]; status: string } | null>(null);
   const perms = me.memberships[0].permissions.map((p) => p.permission);
   const canRead = perms.includes("lead:read");
   const canCreate = perms.includes("lead:create");
@@ -99,7 +105,7 @@ export function LeadsPage() {
     `${plural(r.affected, "lead", "leads")} ${done}` +
     (r.skipped > 0 ? ` · ${r.skipped} ignoré${r.skipped > 1 ? "s" : ""} (hors de vos droits)` : "");
 
-  async function bulkUpdate(ids: string[], patch: { status?: LeadStatus; visited?: boolean }) {
+  async function bulkUpdate(ids: string[], patch: { status?: string; lostReason?: string; visited?: boolean }) {
     setBusy(true);
     try {
       const r = await api<{ affected: number; skipped: number }>("/leads/bulk-update", { companyId, body: { ids, ...patch } });
@@ -113,10 +119,16 @@ export function LeadsPage() {
     }
   }
 
-  function move(ids: string[], status: LeadStatus) {
+  function move(ids: string[], status: string, lostReason?: string) {
     // Affichage immédiat ; le rechargement qui suit corrige si le serveur a refusé.
-    setLeads((prev) => prev && prev.map((l) => (ids.includes(l.id) ? { ...l, status } : l)));
-    bulkUpdate(ids, { status });
+    setLeads((prev) => prev && prev.map((l) => (ids.includes(l.id) ? { ...l, status, ...(lostReason !== undefined ? { lostReason } : {}) } : l)));
+    bulkUpdate(ids, { status, ...(lostReason !== undefined ? { lostReason } : {}) });
+  }
+
+  /** Vers une étape « perdu » on demande d'abord le motif ; sinon le déplacement est immédiat. */
+  function requestMove(ids: string[], status: string) {
+    if (stageOf(stages, status).kind === "lost") setLostAsk({ ids, status });
+    else move(ids, status);
   }
 
   async function bulkDelete() {
@@ -201,6 +213,8 @@ export function LeadsPage() {
         </button>
       </div>
 
+      {canRead && leads && leads.length > 0 && <PipelineBar leads={shown} />}
+
       {(notice || loadError) && <Notice onClose={() => (notice ? setNotice(null) : clearError())}>{notice ?? loadError}</Notice>}
 
       {sel.size > 0 ? (
@@ -219,15 +233,16 @@ export function LeadsPage() {
                 )}
               >
                 {(close) =>
-                  LEAD_STATUSES.map((s) => (
+                  stages.map((st) => (
                     <MenuItem
-                      key={s}
+                      key={st.key}
                       onClick={() => {
                         close();
-                        bulkUpdate([...sel], { status: s });
+                        requestMove([...sel], st.key);
                       }}
                     >
-                      {STATUS_LABEL[s]}
+                      <span aria-hidden className="size-2.5 rounded-full border border-black/15" style={{ background: st.color }} />
+                      {st.name}
                     </MenuItem>
                   ))
                 }
@@ -408,7 +423,7 @@ export function LeadsPage() {
       ) : leads === null ? (
         <p className="text-small text-muted">Chargement…</p>
       ) : view === "board" ? (
-        <LeadBoard leads={shown} selected={sel} canMove={canUpdate && !busy} onToggle={toggle} onOpen={setEditing} onMove={move} />
+        <LeadBoard leads={shown} selected={sel} canMove={canUpdate && !busy} onToggle={toggle} onOpen={setEditing} onMove={requestMove} />
       ) : (
         <LeadTable leads={shown} selected={sel} onToggle={toggle} onToggleAll={toggleAll} onOpen={setEditing} />
       )}
@@ -440,6 +455,18 @@ export function LeadsPage() {
             setEditing(null);
             setNotice(`« ${gone.name} » supprimé.`);
             load();
+          }}
+        />
+      )}
+
+      {lostAsk && (
+        <LostReasonModal
+          count={lostAsk.ids.length}
+          stageName={stageOf(stages, lostAsk.status).name}
+          onClose={() => setLostAsk(null)}
+          onConfirm={(reason) => {
+            move(lostAsk.ids, lostAsk.status, reason);
+            setLostAsk(null);
           }}
         />
       )}
@@ -484,5 +511,26 @@ export function LeadsPage() {
         </Modal>
       )}
     </section>
+  );
+}
+
+/** Valeur du pipeline en un coup d'œil : ce qui est en cours (et pondéré par la chance de conclure), gagné, perdu. */
+function PipelineBar({ leads }: { leads: Lead[] }) {
+  const { stages } = useStages();
+  const s = pipelineSummary(leads, stages);
+  const tile = (label: string, value: number, sub: string) => (
+    <div className="rounded-control bg-field px-3 py-2">
+      <dt className="text-small text-muted">{label}</dt>
+      <dd className="font-mono text-title font-semibold">{formatValue(value)}</dd>
+      <dd className="text-small text-muted">{sub}</dd>
+    </div>
+  );
+  return (
+    <dl aria-label="Valeur du pipeline" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {tile("En cours", s.open.value, plural(s.open.count, "lead", "leads"))}
+      {tile("Pondéré", s.open.weighted, "selon l'étape")}
+      {tile("Gagné", s.won.value, plural(s.won.count, "lead", "leads"))}
+      {tile("Perdu", s.lost.value, plural(s.lost.count, "lead", "leads"))}
+    </dl>
   );
 }

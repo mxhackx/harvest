@@ -29,12 +29,12 @@ export const FIELD_DOCS: FieldDoc[] = [
   { key: "lat", label: "Latitude", type: "nombre", description: "Latitude en degrés décimaux. À fournir avec la longitude.", accepted: "−90 à 90. Le point ou la virgule sont acceptés comme séparateur décimal.", aliases: ["latitude"], example: "6.3611" },
   { key: "lng", label: "Longitude", type: "nombre", description: "Longitude en degrés décimaux. À fournir avec la latitude.", accepted: "−180 à 180.", aliases: ["lon", "long", "longitude"], example: "2.4098" },
   { key: "estimatedValue", label: "Valeur estimée", type: "entier", description: "Valeur du contrat espéré, sans devise.", accepted: "Entier positif. Les espaces sont ignorés (« 150 000 »). Pas de décimales.", aliases: ["valeur", "valeur estimée", "montant"], example: "150000" },
-  { key: "status", label: "Étape", type: "liste", description: "Étape du pipeline. « À visiter » si le champ est absent.", accepted: "to_visit · interested · mockup_sent · deposit_paid, ou en français : À visiter · Intéressé · Maquette envoyée · Acompte payé.", aliases: ["statut", "étape"], example: "Intéressé" },
+  { key: "status", label: "Étape", type: "liste", description: "Étape du pipeline. La première étape en cours si le champ est absent.", accepted: "Le nom ou la clé d'une étape de votre pipeline. Par défaut : À visiter, Intéressé, Maquette envoyée, Acompte payé, Gagné, Perdu (ou to_visit, interested, mockup_sent, deposit_paid, won, lost). Les étapes que vous ajoutez dans CRM › Pipeline sont acceptées aussi.", aliases: ["statut", "étape"], example: "Intéressé" },
   { key: "visited", label: "Déjà visité", type: "oui / non", description: "Marque le lead comme déjà visité (date du jour si « visitedAt » est absent).", accepted: "oui · non · true · false · 1 · 0.", aliases: ["visite", "visité", "déjà visité"], example: "oui" },
   { key: "visitedAt", label: "Date de visite", type: "date", description: "Date de la visite effectuée.", accepted: "AAAA-MM-JJ, ou date-heure ISO 8601 (2026-11-20T09:30:00Z).", aliases: ["date visite", "date de visite"], example: "2026-11-20" },
 ];
 
-export const IGNORED_EXPORT_COLUMNS = ["id", "statusLabel", "locationSource", "owner", "createdAt", "updatedAt"];
+export const IGNORED_EXPORT_COLUMNS = ["id", "statusLabel", "locationSource", "lostReason", "closedAt", "owner", "createdAt", "updatedAt"];
 
 export const SAMPLE_ROWS = [
   { name: "Boulangerie Soleil", sector: "Commerce", contactName: "Mme Adjovi", phone: "+229 97 00 11 22", whatsapp: "+22997001122", facebook: "@boulangerie.soleil", website: "boulangerie-soleil.bj", googleMapsUrl: "", address: "Rue 12.052, Cadjehoun", city: "Cotonou", landmark: "En face de la pharmacie", lat: "6.3654", lng: "2.3912", estimatedValue: "150000", status: "À visiter", visited: "non", visitedAt: "" },
