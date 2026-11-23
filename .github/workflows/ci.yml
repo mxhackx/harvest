@@ -1,0 +1,79 @@
+# Intégration continue : types, tests du web, tests de l'API (avec une vraie base Postgres) et build.
+# Pour bloquer les fusions : Settings > Branches > règle sur « main » > exiger le statut « CI ».
+name: CI
+
+on:
+  push:
+    branches: [main, "feat/**", "test/**", "fix/**", "chore/**", "docs/**"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (types + tests)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: harvest
+          POSTGRES_PASSWORD: harvest
+          POSTGRES_DB: harvest_test
+        # vitest.config.ts de l'API vise localhost:54329
+        ports: ["54329:5432"]
+        options: >-
+          --health-cmd "pg_isready -U harvest"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+        working-directory: api
+      - run: npm run typecheck
+        working-directory: api
+      - run: npm run build
+        working-directory: api
+      - run: npm test
+        working-directory: api
+
+  web:
+    name: Web (types + lint + tests + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npm run typecheck
+        working-directory: web
+      - run: npx eslint src --max-warnings=0
+        working-directory: web
+      - run: npm test
+        working-directory: web
+      - run: npm run build
+        working-directory: web
+        env:
+          NEXT_PUBLIC_API_URL: /api
+          NEXT_PUBLIC_SITE_URL: https://example.com
+
+  ci:
+    name: CI
+    if: always()
+    needs: [api, web]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          [ "${{ needs.api.result }}" = "success" ] && [ "${{ needs.web.result }}" = "success" ] || { echo "Un job a échoué"; exit 1; }
