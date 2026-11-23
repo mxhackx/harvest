@@ -1,0 +1,15 @@
+{
+  "name": "harvest",
+  "private": true,
+  "description": "Racine du dépôt : hooks Git (Husky) et commandes communes à api/ et web/.",
+  "scripts": {
+    "prepare": "husky",
+    "typecheck": "npm --prefix api run typecheck && npm --prefix web run typecheck",
+    "lint": "npm --prefix web run lint",
+    "test:unit": "npm --prefix web test"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.2"
+  }
+}
