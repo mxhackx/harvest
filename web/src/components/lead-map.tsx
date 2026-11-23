@@ -4,68 +4,80 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import type { GeoJSONSource, Map as MLMap } from "maplibre-gl";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ApiError, api, errorMessage, type Lead } from "@/lib/api";
+import { LEAD_STATUSES, STATUS_COLOR, STATUS_LABEL, api, describeError, type Lead, type LeadStatus } from "@/lib/api";
+import { routeLine } from "@/lib/route";
+import { leadsOfTheDay } from "@/lib/today";
 import { useSession } from "@/lib/session";
-import { StatusTag } from "./status-tag";
-import { Button, Notice } from "./ui";
+import { ExpandIcon, ShrinkIcon } from "./icons";
+import { LeadSummary } from "./lead-summary";
+import { Notice } from "./ui";
 
-type Filter = "all" | "to_visit" | "visited";
+type Filter = "all" | LeadStatus;
 type Located = Lead & { lat: number; lng: number };
 
-const COLOR_TO_VISIT = "#0868c9";
-const COLOR_VISITED = "#07625a";
+const ROUTE_COLOR = "#e5484d"; // rouge, trait plein
 const DEFAULT_CENTER: [number, number] = [2.42, 6.37];
 
 const isLocated = (l: Lead): l is Located => l.lat !== null && l.lng !== null;
 const isVisited = (l: Lead) => l.visitedAt !== null;
 
-/** Ordre de tournée : on enchaîne toujours le lieu non visité le plus proche. */
-function routeOrder(points: Located[]): [number, number][] {
-  const rest = points.slice();
-  if (!rest.length) return [];
-  const out = [rest.shift()!];
-  while (rest.length) {
-    const last = out[out.length - 1];
-    let best = 0;
-    let bestD = Infinity;
-    rest.forEach((p, i) => {
-      const d = (p.lat - last.lat) ** 2 + (p.lng - last.lng) ** 2;
-      if (d < bestD) {
-        bestD = d;
-        best = i;
-      }
-    });
-    out.push(rest.splice(best, 1)[0]);
-  }
-  return out.map((p) => [p.lng, p.lat]);
-}
-
 const empty = { type: "FeatureCollection", features: [] } as const;
 
-export function LeadMap({ leads, onChanged }: { leads: Lead[]; onChanged: () => void }) {
+// Couleur du point selon l'étape : rouge, bleu, vert translucide, vert vif.
+const circleColor = [
+  "match",
+  ["get", "status"],
+  "to_visit",
+  STATUS_COLOR.to_visit,
+  "interested",
+  STATUS_COLOR.interested,
+  "mockup_sent",
+  STATUS_COLOR.mockup_sent,
+  STATUS_COLOR.deposit_paid,
+] as never;
+
+type Scope = "today" | "all";
+
+export function LeadMap({
+  leads,
+  todayIds,
+  onChanged,
+  onOpen,
+}: {
+  leads: Lead[];
+  /** Leads qui ont un rendez-vous aujourd'hui. */
+  todayIds: ReadonlySet<string>;
+  onChanged: () => void;
+  onOpen?: (lead: Lead) => void;
+}) {
   const { companyId } = useSession();
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
   const fitted = useRef(false);
   const [ready, setReady] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
+  // Par défaut la carte montre la tournée du jour ; « Tous les leads » les affiche tous.
+  const [scope, setScope] = useState<Scope>("today");
   const [showRoute, setShowRoute] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [info, setInfo] = useState<string | null>(null);
+  const toggleButton = useRef<HTMLButtonElement>(null);
 
-  const located = useMemo(() => leads.filter(isLocated), [leads]);
-  const counts = {
-    all: located.length,
-    to_visit: located.filter((l) => !isVisited(l)).length,
-    visited: located.filter(isVisited).length,
-  };
-  const visible = useMemo(
-    () =>
-      located.filter((l) => (filter === "all" ? true : filter === "visited" ? isVisited(l) : !isVisited(l))),
-    [located, filter],
-  );
+  const todayLeads = useMemo(() => leadsOfTheDay(leads, todayIds), [leads, todayIds]);
+  const scoped = scope === "today" ? todayLeads : leads;
+  const located = useMemo(() => scoped.filter(isLocated), [scoped]);
+  const locatedToday = useMemo(() => todayLeads.filter(isLocated).length, [todayLeads]);
+  const locatedAll = useMemo(() => leads.filter(isLocated).length, [leads]);
+  const counts = useMemo(() => {
+    const c: Record<Filter, number> = { all: located.length, to_visit: 0, interested: 0, mockup_sent: 0, deposit_paid: 0 };
+    for (const l of located) c[l.status]++;
+    return c;
+  }, [located]);
+  const visible = useMemo(() => located.filter((l) => filter === "all" || l.status === filter), [located, filter]);
   const selected = visible.find((l) => l.id === selectedId) ?? null;
 
   // --- création de la carte, une seule fois ---
@@ -101,28 +113,45 @@ export function LeadMap({ leads, onChanged }: { leads: Lead[]; onChanged: () => 
       m.on("load", () => {
         m.addSource("route", { type: "geojson", data: empty as never });
         m.addSource("leads", { type: "geojson", data: empty as never });
+        // liseré blanc sous la ligne : elle reste lisible sur les rues orange et jaunes du fond de carte
+        m.addLayer({
+          id: "route-casing",
+          type: "line",
+          source: "route",
+          layout: { "line-cap": "round", "line-join": "round" },
+          paint: { "line-color": "#ffffff", "line-width": 6, "line-opacity": 0.85 },
+        });
         m.addLayer({
           id: "route-line",
           type: "line",
           source: "route",
           layout: { "line-cap": "round", "line-join": "round" },
-          paint: { "line-color": COLOR_TO_VISIT, "line-width": 3, "line-dasharray": [2, 2], "line-opacity": 0.8 },
+          paint: { "line-color": ROUTE_COLOR, "line-width": 3, "line-opacity": 1 },
         });
+        // anneau autour du lead sélectionné
+        m.addLayer({
+          id: "leads-selected",
+          type: "circle",
+          source: "leads",
+          filter: ["==", ["get", "id"], ""],
+          paint: { "circle-radius": 11, "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": "#14222e", "circle-stroke-width": 1.5 },
+        });
+        // petits points : un par lead, dès sa création
         m.addLayer({
           id: "leads-circle",
           type: "circle",
           source: "leads",
-          paint: {
-            "circle-radius": 9,
-            "circle-color": ["case", ["get", "visited"], COLOR_VISITED, COLOR_TO_VISIT],
-            "circle-stroke-color": "#ffffff",
-            "circle-stroke-width": 2.5,
-          },
+          paint: { "circle-radius": 6, "circle-color": circleColor, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.5 },
         });
         m.on("mouseenter", "leads-circle", () => (m.getCanvas().style.cursor = "pointer"));
         m.on("mouseleave", "leads-circle", () => (m.getCanvas().style.cursor = ""));
         m.on("click", (e) => {
-          const hit = m.queryRenderedFeatures(e.point, { layers: ["leads-circle"] })[0];
+          // marge de 6 px autour du point : cible confortable malgré sa petite taille
+          const box: [[number, number], [number, number]] = [
+            [e.point.x - 6, e.point.y - 6],
+            [e.point.x + 6, e.point.y + 6],
+          ];
+          const hit = m.queryRenderedFeatures(box, { layers: ["leads-circle"] })[0];
           setSelectedId(hit ? String(hit.properties?.id) : null);
         });
         mapRef.current = m;
@@ -137,7 +166,7 @@ export function LeadMap({ leads, onChanged }: { leads: Lead[]; onChanged: () => 
     };
   }, []);
 
-  // --- données de la carte ---
+  // --- données de la carte : suit les leads en temps réel ---
   useEffect(() => {
     const map = mapRef.current;
     if (!ready || !map) return;
@@ -146,15 +175,21 @@ export function LeadMap({ leads, onChanged }: { leads: Lead[]; onChanged: () => 
       features: visible.map((l) => ({
         type: "Feature",
         geometry: { type: "Point", coordinates: [l.lng, l.lat] },
-        properties: { id: l.id, visited: isVisited(l), name: l.name },
+        properties: { id: l.id, status: l.status, name: l.name },
       })),
     });
-    const line = showRoute && filter !== "visited" ? routeOrder(visible.filter((l) => !isVisited(l))) : [];
+    // la ligne relie tous les points affichés (elle suit donc le filtre d'étape choisi)
+    const line = showRoute ? routeLine(visible) : [];
     (map.getSource("route") as GeoJSONSource).setData({
       type: "FeatureCollection",
       features: line.length > 1 ? [{ type: "Feature", geometry: { type: "LineString", coordinates: line }, properties: {} }] : [],
     });
-  }, [ready, visible, showRoute, filter]);
+  }, [ready, visible, showRoute]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (ready && map) map.setFilter("leads-selected", ["==", ["get", "id"], selected?.id ?? ""]);
+  }, [ready, selected]);
 
   // --- cadrage : à la première arrivée de points, puis au changement de filtre ---
   useEffect(() => {
@@ -196,6 +231,52 @@ export function LeadMap({ leads, onChanged }: { leads: Lead[]; onChanged: () => 
     };
   }, [ready, selected]);
 
+  // La carte change de taille : MapLibre doit recalculer son canevas.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    const frame = requestAnimationFrame(() => map.resize());
+    return () => cancelAnimationFrame(frame);
+  }, [expanded, ready]);
+
+  // Plein écran : Échap referme, la page derrière ne défile plus, le focus revient sur le bouton.
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setExpanded(false);
+    document.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const button = toggleButton.current;
+    button?.focus();
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+      button?.focus();
+    };
+  }, [expanded]);
+
+  async function placeMissing() {
+    setBusy(true);
+    setError(null);
+    try {
+      const r = await api<{ queued: number; geocoding: boolean }>("/leads/locate-missing", { method: "POST", body: {}, companyId });
+      setInfo(
+        r.queued === 0
+          ? "Ces leads n'ont ni adresse ni lien Google Maps : ouvrez leur fiche pour les placer."
+          : r.geocoding
+            ? `Recherche de position lancée pour ${r.queued} ${r.queued > 1 ? "leads" : "lead"} : ils apparaissent sur la carte dans quelques instants.`
+            : "La recherche d'adresse est désactivée : collez un lien Google Maps ou placez les leads depuis leur fiche.",
+      );
+      // la recherche se fait en arrière-plan, un lead à la fois : on revient voir le résultat
+      setTimeout(onChanged, 6000);
+      setTimeout(onChanged, 20000);
+    } catch (e) {
+      setError(describeError(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function toggleVisited(lead: Lead) {
     setBusy(true);
     setError(null);
@@ -203,80 +284,136 @@ export function LeadMap({ leads, onChanged }: { leads: Lead[]; onChanged: () => 
       await api(`/leads/${lead.id}`, { method: "PATCH", body: { visited: !isVisited(lead) }, companyId });
       onChanged();
     } catch (e) {
-      setError(errorMessage(e instanceof ApiError ? e.code : null));
+      setError(describeError(e));
     } finally {
       setBusy(false);
     }
   }
 
   const flip = anchor !== null && anchor.y < 280; // vraiment pas de place au-dessus : la bulle passe dessous
+  const unplaced = scoped.length - located.length;
 
   return (
-    <div className="relative h-[460px] overflow-hidden md:h-[560px]">
+    // le cadre extérieur garde sa hauteur : la page ne saute pas quand la carte passe en plein écran
+    <div className="relative h-[460px] md:h-[560px]">
+    <div
+      className={expanded ? "fixed inset-0 z-40 bg-card" : "absolute inset-0 overflow-hidden"}
+      {...(expanded ? { role: "dialog", "aria-modal": true, "aria-label": "Carte de tournée en grand" } : {})}
+    >
       {/* MapLibre impose position:relative à son conteneur : on lui donne donc une taille explicite dans un cadre absolu */}
       <div className="absolute inset-0">
         <div ref={container} className="h-full w-full" />
       </div>
 
-      {/* filtres et bascule, en haut à gauche */}
-      <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2">
-        {(
-          [
-            ["all", "Tous"],
-            ["to_visit", "À visiter"],
-            ["visited", "Visités"],
-          ] as const
-        ).map(([key, label]) => (
+      {/* en haut à gauche : le périmètre (jour / tous), puis les filtres d'étape qui servent aussi de légende */}
+      <div className="absolute left-3 top-3 z-10 flex flex-col items-start gap-2 pr-28">
+        <div role="radiogroup" aria-label="Leads affichés sur la carte" className="inline-flex rounded-full border border-frame bg-card p-0.5">
+          {(
+            [
+              ["today", "Aujourd’hui", locatedToday],
+              ["all", "Tous les leads", locatedAll],
+            ] as const
+          ).map(([key, label, n]) => (
+            <button
+              key={key}
+              type="button"
+              role="radio"
+              aria-checked={scope === key}
+              onClick={() => setScope(key)}
+              className={`flex h-8 items-center gap-2 rounded-full px-3 text-small font-medium ${scope === key ? "bg-accent text-white" : "text-ink hover:bg-field"}`}
+            >
+              {label}
+              <span className="font-mono">{n}</span>
+            </button>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(["all", ...LEAD_STATUSES] as Filter[]).map((key) => (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={filter === key}
+              onClick={() => setFilter(key)}
+              className={`flex h-9 items-center gap-2 rounded-full border px-3 text-small font-medium ${
+                filter === key ? "border-accent-press bg-accent text-white" : "border-frame bg-card text-ink hover:bg-field"
+              }`}
+            >
+              {key !== "all" && (
+                <span aria-hidden className="size-2.5 rounded-full border border-white/80 ring-1 ring-black/10" style={{ background: STATUS_COLOR[key] }} />
+              )}
+              {key === "all" ? "Toutes étapes" : STATUS_LABEL[key]}
+              <span className="font-mono">{counts[key]}</span>
+            </button>
+          ))}
           <button
-            key={key}
             type="button"
-            aria-pressed={filter === key}
-            onClick={() => setFilter(key)}
-            className={`flex h-9 items-center gap-2 rounded-full border px-3 text-small font-medium ${
-              filter === key ? "border-accent-press bg-accent text-white" : "border-frame bg-card text-ink hover:bg-field"
+            aria-pressed={showRoute}
+            onClick={() => setShowRoute((v) => !v)}
+            className={`flex h-9 items-center rounded-full border px-3 text-small font-medium ${
+              showRoute ? "border-accent-press bg-accent text-white" : "border-frame bg-card text-ink hover:bg-field"
             }`}
           >
-            {key !== "all" && (
-              <span
-                aria-hidden
-                className="size-2.5 rounded-full border border-white"
-                style={{ background: key === "visited" ? COLOR_VISITED : COLOR_TO_VISIT }}
-              />
-            )}
-            {label}
-            <span className="font-mono">{counts[key]}</span>
+            Parcours affiché
           </button>
-        ))}
-        <button
-          type="button"
-          aria-pressed={showRoute}
-          onClick={() => setShowRoute((v) => !v)}
-          className={`flex h-9 items-center rounded-full border px-3 text-small font-medium ${
-            showRoute ? "border-accent-press bg-accent text-white" : "border-frame bg-card text-ink hover:bg-field"
-          }`}
-        >
-          Parcours affiché
-        </button>
+        </div>
       </div>
 
-      {error && (
-        <div className="absolute inset-x-3 top-16 z-20 mx-auto max-w-md">
-          <Notice onClose={() => setError(null)}>{error}</Notice>
+      <button
+        ref={toggleButton}
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        aria-pressed={expanded}
+        aria-label={expanded ? "Réduire la carte" : "Agrandir la carte"}
+        className="absolute right-3 top-3 z-10 flex h-9 items-center gap-2 rounded-full border border-frame bg-card px-3 text-small font-medium hover:bg-field"
+      >
+        {expanded ? <ShrinkIcon size={16} /> : <ExpandIcon size={16} />}
+        {expanded ? "Réduire" : "Agrandir"}
+      </button>
+
+      {(error || info) && (
+        <div className="absolute inset-x-3 top-32 z-20 mx-auto max-w-md">
+          <Notice onClose={() => (error ? setError(null) : setInfo(null))}>{error ?? info}</Notice>
         </div>
       )}
 
       {located.length === 0 && (
         <div className="absolute inset-0 z-10 grid place-items-center p-6">
           <div className="max-w-sm rounded-card border border-frame bg-card p-4 text-center">
-            <p className="text-body font-semibold">Aucun lead sur la carte</p>
-            <p className="mt-1 text-small text-muted">
-              Les leads apparaissent ici dès qu&apos;ils ont une position. Ajoutez-en un depuis la page Leads.
-            </p>
-            <Link href="/leads" className="mt-3 inline-block text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
-              Ajouter un lead
-            </Link>
+            {scope === "today" && locatedAll > 0 ? (
+              <>
+                <p className="text-body font-semibold">Aucun lead pour aujourd’hui</p>
+                <p className="mt-1 text-small text-muted">Les leads créés, visités ou planifiés aujourd’hui apparaissent ici.</p>
+                <button
+                  type="button"
+                  onClick={() => setScope("all")}
+                  className="mt-3 text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4"
+                >
+                  Afficher tous les leads
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-body font-semibold">Aucun lead sur la carte</p>
+                <p className="mt-1 text-small text-muted">Chaque lead apparaît ici dès qu&apos;il a une position : saisie, adresse ou lien Google Maps.</p>
+                <Link href="/leads" className="mt-3 inline-block text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
+                  Ajouter un lead
+                </Link>
+              </>
+            )}
           </div>
         </div>
+      )}
+
+      {/* leads sans position : on le dit plutôt que de les laisser disparaître */}
+      {unplaced > 0 && located.length > 0 && (
+        <button
+          type="button"
+          onClick={placeMissing}
+          disabled={busy}
+          className="absolute bottom-9 left-3 z-10 rounded-full border border-frame bg-card px-3 py-1.5 text-small hover:bg-field disabled:opacity-60"
+        >
+          {unplaced} {unplaced > 1 ? "leads sans position" : "lead sans position"} · <span className="font-medium text-link">les placer</span>
+        </button>
       )}
 
       {/* bulle ancrée au repère, avec pointe */}
@@ -303,39 +440,10 @@ export function LeadMap({ leads, onChanged }: { leads: Lead[]; onChanged: () => 
           >
             ×
           </button>
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-2 pr-7">
-              <div>
-                <StatusTag status={selected.status} />
-              </div>
-              <p className="text-title font-semibold leading-snug">{selected.name}</p>
-            </div>
-            <dl className="grid grid-cols-[84px_1fr] gap-x-3 gap-y-2 text-small">
-              <dt className="text-muted">Secteur</dt>
-              <dd>{selected.sector || "—"}</dd>
-              <dt className="text-muted">Contact</dt>
-              <dd>{selected.contactName || "—"}</dd>
-              <dt className="text-muted">Téléphone</dt>
-              <dd className="font-mono">{selected.phone || "—"}</dd>
-              <dt className="text-muted">Visite</dt>
-              <dd>{selected.visitedAt ? new Date(selected.visitedAt).toLocaleDateString("fr-FR") : "Pas encore visité"}</dd>
-            </dl>
-            <div className="flex gap-2">
-              <Button className="h-9 flex-1" loading={busy} onClick={() => toggleVisited(selected)}>
-                {isVisited(selected) ? "Remettre à visiter" : "Marquer visité"}
-              </Button>
-              <a
-                href={`https://www.openstreetmap.org/directions?route=%3B${selected.lat}%2C${selected.lng}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-9 items-center justify-center rounded-control border border-frame bg-card px-3 text-small font-medium hover:bg-field"
-              >
-                Itinéraire
-              </a>
-            </div>
-          </div>
+          <LeadSummary lead={selected} busy={busy} onToggleVisited={() => toggleVisited(selected)} onEdit={onOpen ? () => onOpen(selected) : undefined} />
         </div>
       )}
+    </div>
     </div>
   );
 }

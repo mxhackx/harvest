@@ -1,10 +1,31 @@
 import { Suspense } from "react";
 import { AuthCard } from "@/components/auth-card";
+import { SITE, jsonLd, pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Connexion",
+  description: "Connectez-vous à Harvest avec Google, GitHub ou votre e-mail, ou créez votre compte pour suivre vos leads sur le terrain.",
+  path: "/login",
+});
+
+const structured = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: SITE.name,
+  description: SITE.description,
+  url: SITE.url,
+  inLanguage: "fr",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+};
 
 export default function LoginPage() {
   return (
-    <Suspense>
-      <AuthCard />
-    </Suspense>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structured) }} />
+      <Suspense>
+        <AuthCard />
+      </Suspense>
+    </>
   );
 }

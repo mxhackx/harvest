@@ -9,7 +9,10 @@
     "lint": "eslint",
     "postinstall": "node scripts/copy-maplibre.mjs",
     "predev": "node scripts/copy-maplibre.mjs",
-    "prebuild": "node scripts/copy-maplibre.mjs"
+    "prebuild": "node scripts/copy-maplibre.mjs",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "maplibre-gl": "^6.19.0",
@@ -18,13 +21,17 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
+    "@types/pngjs": "^6.0.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "pngjs": "^7.0.0",
     "tailwindcss": "4.3.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }

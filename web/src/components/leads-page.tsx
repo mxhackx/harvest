@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ApiError, LEAD_STATUSES, STATUS_LABEL, api, errorMessage, type LeadStatus } from "@/lib/api";
+import { ApiError, LEAD_STATUSES, STATUS_LABEL, api, describeError, downloadLeads, errorMessage, savedMessage, type Lead, type LeadStatus } from "@/lib/api";
 import { useLeads } from "@/lib/leads";
 import { useSession } from "@/lib/session";
-import { BoardIcon, CheckIcon, ChevronIcon, FilterIcon, PlusIcon, SearchIcon, SortIcon, TableIcon, TrashIcon, XIcon } from "./icons";
+import { BoardIcon, CheckIcon, ChevronIcon, DownloadIcon, FilterIcon, PlusIcon, SearchIcon, SortIcon, TableIcon, TrashIcon, UploadIcon, XIcon } from "./icons";
 import { LeadBoard } from "./lead-board";
-import { LeadFormModal } from "./lead-form-modal";
+import { AddLeadChooser } from "./add-lead-chooser";
+import { ImportModal } from "./import-modal";
+import { LeadModal } from "./lead-modal";
 import { LeadTable } from "./lead-table";
 import { Button, Menu, MenuItem, Modal, Notice, Select } from "./ui";
 
@@ -34,6 +36,7 @@ export function LeadsPage() {
   const canCreate = perms.includes("lead:create");
   const canUpdate = perms.includes("lead:update");
   const canDelete = perms.includes("lead:delete");
+  const canExport = perms.includes("lead:export");
 
   const { leads, setLeads, reload: load, error: loadError, clearError } = useLeads();
   const [notice, setNotice] = useState<string | null>(null);
@@ -43,7 +46,10 @@ export function LeadsPage() {
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [sort, setSort] = useState<SortKey>("recent");
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [formOpen, setFormOpen] = useState(false);
+  // fiche ouverte : un lead à modifier, "new" pour une création, null si fermée
+  const [editing, setEditing] = useState<Lead | "new" | null>(null);
+  const [chooser, setChooser] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -131,6 +137,46 @@ export function LeadsPage() {
     }
   }
 
+
+  async function exportLeads(format: "csv" | "json", delimiter: "," | ";", ids: string[]) {
+    setBusy(true);
+    try {
+      await downloadLeads({ format, delimiter, ids, companyId });
+      setNotice(`Export ${format.toUpperCase()} téléchargé (${plural(ids.length, "lead", "leads")}).`);
+    } catch (e) {
+      setNotice(describeError(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const exportMenu = (ids: string[], label: string, align: "left" | "right", trigger: (t: { toggle: () => void; open: boolean }) => React.ReactNode) => (
+    <Menu align={align} trigger={trigger}>
+      {(close) => (
+        <>
+          <p className="px-3 py-2 text-small text-muted">{label}</p>
+          {(
+            [
+              ["CSV", "csv", ","],
+              ["CSV pour Excel français (;)", "csv", ";"],
+              ["JSON", "json", ","],
+            ] as const
+          ).map(([text, format, delimiter]) => (
+            <MenuItem
+              key={text}
+              onClick={() => {
+                close();
+                exportLeads(format, delimiter, ids);
+              }}
+            >
+              {text}
+            </MenuItem>
+          ))}
+        </>
+      )}
+    </Menu>
+  );
+
   const tabClass = (active: boolean) =>
     `-mb-px h-10 border-b-2 px-1 text-body ${active ? "border-accent font-semibold" : "border-transparent text-muted hover:text-ink"}`;
 
@@ -139,7 +185,7 @@ export function LeadsPage() {
       <header className="flex items-center justify-between gap-4">
         <h1 className="font-serif text-title font-semibold">Leads</h1>
         {canCreate && (
-          <Button onClick={() => setFormOpen(true)} className="h-9 w-auto">
+          <Button onClick={() => setChooser(true)} className="h-9 w-auto">
             <PlusIcon size={16} />
             Ajouter un lead
           </Button>
@@ -186,14 +232,28 @@ export function LeadsPage() {
                   ))
                 }
               </Menu>
-              <button type="button" disabled={busy} className={ghost} onClick={() => bulkUpdate([...sel], { visited: true })}>
-                Marquer visités
-              </button>
-              <button type="button" disabled={busy} className={ghost} onClick={() => bulkUpdate([...sel], { visited: false })}>
-                Remettre à visiter
-              </button>
+              <Menu
+                trigger={({ toggle }) => (
+                  <button type="button" onClick={toggle} disabled={busy} className={ghost}>
+                    Visite <ChevronIcon size={14} />
+                  </button>
+                )}
+              >
+                {(close) => (
+                  <>
+                    <MenuItem onClick={() => { close(); bulkUpdate([...sel], { visited: true }); }}>Marquer visités</MenuItem>
+                    <MenuItem onClick={() => { close(); bulkUpdate([...sel], { visited: false }); }}>Remettre à visiter</MenuItem>
+                  </>
+                )}
+              </Menu>
             </>
           )}
+          {canExport &&
+            exportMenu([...sel], `${plural(sel.size, "lead sélectionné", "leads sélectionnés")}`, "left", ({ toggle }) => (
+              <button type="button" onClick={toggle} disabled={busy} className={ghost}>
+                <DownloadIcon size={16} /> Exporter <ChevronIcon size={14} />
+              </button>
+            ))}
           {canDelete && (
             <>
               {/* l'action destructive reste à l'écart des actions fréquentes */}
@@ -306,7 +366,19 @@ export function LeadsPage() {
             }
           </Menu>
 
-          <div className="ml-auto flex gap-1">
+          <div className="ml-auto flex items-center gap-2">
+            {canCreate && (
+              <button type="button" onClick={() => setImporting(true)} className={`${pill} border-frame hover:bg-field`}>
+                <UploadIcon size={16} /> Importer
+              </button>
+            )}
+            {canExport &&
+              exportMenu(shown.map((l) => l.id), `${plural(shown.length, "lead affiché", "leads affichés")}`, "right", ({ toggle, open }) => (
+                <button type="button" onClick={toggle} aria-expanded={open} disabled={busy || shown.length === 0} className={`${pill} border-frame hover:bg-field disabled:opacity-50`}>
+                  <DownloadIcon size={16} /> Exporter
+                </button>
+              ))}
+            <div className="flex gap-1">
             {(
               [
                 ["board", "Vue board", BoardIcon],
@@ -326,6 +398,7 @@ export function LeadsPage() {
                 <Icon size={18} />
               </button>
             ))}
+            </div>
           </div>
         </div>
       )}
@@ -335,18 +408,59 @@ export function LeadsPage() {
       ) : leads === null ? (
         <p className="text-small text-muted">Chargement…</p>
       ) : view === "board" ? (
-        <LeadBoard leads={shown} selected={sel} canMove={canUpdate && !busy} onToggle={toggle} onMove={move} />
+        <LeadBoard leads={shown} selected={sel} canMove={canUpdate && !busy} onToggle={toggle} onOpen={setEditing} onMove={move} />
       ) : (
-        <LeadTable leads={shown} selected={sel} onToggle={toggle} onToggleAll={toggleAll} />
+        <LeadTable leads={shown} selected={sel} onToggle={toggle} onToggleAll={toggleAll} onOpen={setEditing} />
       )}
 
-      {formOpen && (
-        <LeadFormModal
-          onClose={() => setFormOpen(false)}
-          onCreated={() => {
-            setFormOpen(false);
-            setNotice("Lead ajouté.");
+      {chooser && (
+        <AddLeadChooser
+          onClose={() => setChooser(false)}
+          onManual={() => {
+            setChooser(false);
+            setEditing("new");
+          }}
+          onFile={() => {
+            setChooser(false);
+            setImporting(true);
+          }}
+        />
+      )}
+
+      {editing && (
+        <LeadModal
+          lead={editing === "new" ? undefined : editing}
+          onClose={() => setEditing(null)}
+          onSaved={(saved, mode) => {
+            setEditing(null);
+            setNotice(savedMessage(saved, mode));
             load();
+          }}
+          onDeleted={(gone) => {
+            setEditing(null);
+            setNotice(`« ${gone.name} » supprimé.`);
+            load();
+          }}
+        />
+      )}
+
+      {importing && (
+        <ImportModal
+          onClose={() => setImporting(false)}
+          onImported={(r) => {
+            setImporting(false);
+            setNotice(
+              `${plural(r.imported, "lead importé", "leads importés")}` +
+                (r.duplicates ? ` · ${plural(r.duplicates, "doublon ignoré", "doublons ignorés")}` : "") +
+                (r.invalid ? ` · ${plural(r.invalid, "ligne invalide ignorée", "lignes invalides ignorées")}` : "") +
+                (r.locating ? ` · recherche de position en cours pour ${r.locating} : ils apparaîtront sur la carte dans quelques instants.` : "."),
+            );
+            load();
+            // la localisation des adresses se fait en arrière-plan : on revient voir le résultat
+            if (r.locating) {
+              setTimeout(load, 8000);
+              setTimeout(load, 25000);
+            }
           }}
         />
       )}

@@ -157,3 +157,83 @@ export function TrashIcon({ size = 20 }: { size?: number }) {
     </svg>
   );
 }
+
+export function DownloadIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14" />
+    </svg>
+  );
+}
+
+export function PencilIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M4 20h4L19 9l-4-4L4 16v4z" /><path d="m13.5 6.5 4 4" />
+    </svg>
+  );
+}
+
+export function CalendarIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" />
+    </svg>
+  );
+}
+
+export function ExpandIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+    </svg>
+  );
+}
+
+export function ShrinkIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+    </svg>
+  );
+}
+
+export function UploadIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M12 16V5m0 0-4 4m4-4 4 4M5 20h14" />
+    </svg>
+  );
+}
+
+export function BookIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z" /><path d="M5 17a3 3 0 0 1 3-3h11" />
+    </svg>
+  );
+}
+
+export function MapIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="m9 4-6 2v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14" />
+    </svg>
+  );
+}
+
+export function FormIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <rect x="4" y="3" width="12" height="18" rx="2" /><path d="M8 8h4M8 12h4" /><path d="m14.5 17.5 5.5-5.5 2 2-5.5 5.5-2.5.5z" />
+    </svg>
+  );
+}
+
+export function FileUpIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5" /><path d="M12 17v-6m0 0-2.5 2.5M12 11l2.5 2.5" />
+    </svg>
+  );
+}

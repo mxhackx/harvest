@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
+import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { XIcon } from "./icons";
 
 const base =
@@ -247,7 +247,7 @@ export function Modal({
   }, [onClose]);
   return (
     <div
-      className="fixed inset-0 z-40 grid place-items-center overflow-y-auto bg-ink/40 p-4"
+      className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-ink/40 p-4"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div role="dialog" aria-modal="true" aria-label={title} className={`w-full ${width} rounded-card border border-frame bg-card`}>
@@ -267,6 +267,23 @@ export function Modal({
         </header>
         <div className="px-[18px] py-4">{children}</div>
       </div>
+    </div>
+  );
+}
+
+export function TextArea({ label, className = "", ...rest }: TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
+  const id = useId();
+  return (
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="text-small font-semibold">
+        {label}
+      </label>
+      <textarea
+        id={id}
+        rows={3}
+        {...rest}
+        className={`w-full min-w-0 resize-y rounded-control border border-border bg-field px-3 py-2 text-body text-ink placeholder:text-muted focus:border-ink ${className}`}
+      />
     </div>
   );
 }

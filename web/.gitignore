@@ -42,3 +42,6 @@ next-env.d.ts
 
 # copié depuis node_modules par scripts/copy-maplibre.mjs
 /public/maplibre/
+/.next-e2e/
+/test-results/
+/playwright-report/

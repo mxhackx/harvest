@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
+import { BookIcon } from "./icons";
 
 const initials = (name: string) =>
   name
@@ -38,6 +40,7 @@ export function Avatar({ name, image, size = 36 }: { name: string; image: string
 export function AvatarMenu() {
   const router = useRouter();
   const { me } = useSession();
+  const membership = me.memberships[0];
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
 
@@ -73,7 +76,7 @@ export function AvatarMenu() {
         <Avatar name={me.user.name} image={me.user.image} />
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 top-12 z-30 w-64 rounded-card border border-frame bg-card p-2">
+        <div role="menu" className="absolute right-0 top-12 z-30 w-80 rounded-card border border-frame bg-card p-2">
           <div className="flex items-center gap-3 px-2 py-2">
             <Avatar name={me.user.name} image={me.user.image} size={40} />
             <div className="min-w-0">
@@ -82,6 +85,38 @@ export function AvatarMenu() {
             </div>
           </div>
           <hr className="my-2 border-rule" />
+          <dl className="grid grid-cols-[112px_1fr] gap-x-3 gap-y-2 px-2 py-1 text-small">
+            <dt className="text-muted">Entreprise</dt>
+            <dd className="min-w-0">
+              <p className="truncate font-medium">{membership.company.name}</p>
+              <p className="truncate text-muted">{[membership.company.sector, membership.company.region].filter(Boolean).join(" · ")}</p>
+            </dd>
+            <dt className="text-muted">Rôle</dt>
+            <dd className="flex flex-wrap gap-1">
+              {membership.roles.length === 0 ? (
+                "—"
+              ) : (
+                membership.roles.map((r) => (
+                  <span key={r.id} className="inline-flex h-[22px] items-center rounded-md bg-forest-soft px-[9px] font-bold text-forest">
+                    {r.name}
+                  </span>
+                ))
+              )}
+            </dd>
+            <dt className="text-muted">Équipe</dt>
+            <dd>{membership.team?.name ?? "—"}</dd>
+            <dt className="text-muted">Membre depuis</dt>
+            <dd>{new Date(membership.joinedAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</dd>
+          </dl>
+          <hr className="my-2 border-rule" />
+          <Link
+            role="menuitem"
+            href="/docs"
+            onClick={() => setOpen(false)}
+            className="flex h-10 w-full items-center gap-2 rounded-control px-2 text-body hover:bg-field"
+          >
+            <BookIcon size={16} /> Documentation
+          </Link>
           <button
             role="menuitem"
             type="button"

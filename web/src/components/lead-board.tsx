@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { LEAD_STATUSES, STATUS_LABEL, formatDay, formatValue, type Lead, type LeadStatus } from "@/lib/api";
-import { BriefcaseIcon, CoinIcon, PinIcon, UserIcon } from "./icons";
+import { BriefcaseIcon, CoinIcon, PencilIcon, PinIcon, UserIcon } from "./icons";
+import { LeadLinks } from "./lead-links";
 import { StatusTag } from "./status-tag";
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
   selected: Set<string>;
   canMove: boolean;
   onToggle: (id: string) => void;
+  onOpen: (lead: Lead) => void;
   /** Déplace ces leads vers une étape. */
   onMove: (ids: string[], status: LeadStatus) => void;
 };
@@ -26,12 +28,14 @@ function Card({
   selected,
   draggable,
   onToggle,
+  onOpen,
   onDragStart,
 }: {
   lead: Lead;
   selected: boolean;
   draggable: boolean;
   onToggle: () => void;
+  onOpen: () => void;
   onDragStart: (e: React.DragEvent) => void;
 }) {
   const contact = [lead.contactName, lead.phone].filter(Boolean).join(" · ");
@@ -52,7 +56,20 @@ function Card({
           aria-label={`Sélectionner ${lead.name}`}
           className="mt-[3px] size-4 shrink-0 accent-accent"
         />
-        <h3 className="text-body font-semibold leading-snug">{lead.name}</h3>
+        <h3 className="text-body font-semibold leading-snug">
+          <button type="button" onClick={onOpen} className="text-left hover:underline">
+            {lead.name}
+          </button>
+        </h3>
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label={`Modifier ${lead.name}`}
+          title="Modifier"
+          className="-mr-1 -mt-1 ml-auto flex size-8 shrink-0 items-center justify-center rounded-full text-muted hover:bg-field hover:text-ink"
+        >
+          <PencilIcon size={16} />
+        </button>
       </div>
       <div className="flex flex-col gap-1 pl-6">
         {lead.sector && <Line icon={<BriefcaseIcon size={14} />}>{lead.sector}</Line>}
@@ -64,6 +81,7 @@ function Card({
           </Line>
         )}
       </div>
+      <LeadLinks lead={lead} className="pl-6" />
       {(lead.visitedAt || !located) && (
         <div className="flex flex-wrap gap-1 pl-6">
           {lead.visitedAt && (
@@ -82,7 +100,7 @@ function Card({
   );
 }
 
-export function LeadBoard({ leads, selected, canMove, onToggle, onMove }: Props) {
+export function LeadBoard({ leads, selected, canMove, onToggle, onOpen, onMove }: Props) {
   const [over, setOver] = useState<LeadStatus | null>(null);
 
   return (
@@ -126,6 +144,7 @@ export function LeadBoard({ leads, selected, canMove, onToggle, onMove }: Props)
                   selected={selected.has(l.id)}
                   draggable={canMove}
                   onToggle={() => onToggle(l.id)}
+                  onOpen={() => onOpen(l)}
                   onDragStart={(e) => {
                     // Un lead qui fait partie d'une sélection multiple entraîne toute la sélection.
                     const ids = selected.has(l.id) && selected.size > 1 ? [...selected] : [l.id];

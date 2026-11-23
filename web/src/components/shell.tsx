@@ -8,24 +8,37 @@ import { LeadsProvider } from "@/lib/leads";
 import { SessionProvider, type Session } from "@/lib/session";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { HomeIcon, UsersIcon } from "./icons";
+import { CalendarIcon, HomeIcon, UsersIcon } from "./icons";
 import { Notice } from "./ui";
 
-type Module = {
-  key: string;
-  label: string;
-  href: string;
-  icon: ComponentType<{ size?: number }>;
-  pages: { label: string; href: string }[];
-};
+type Icon = ComponentType<{ size?: number }>;
+type Page = { label: string; short: string; href: string; icon: Icon };
+type Module = { key: string; label: string; href: string; icon: Icon; pages: Page[] };
 
-// Seuls les modules réellement construits apparaissent dans le rail.
+// Seuls les modules et pages réellement construits apparaissent.
 const MODULES: Module[] = [
-  { key: "home", label: "Accueil", href: "/", icon: HomeIcon, pages: [{ label: "Tableau de bord", href: "/" }] },
-  { key: "leads", label: "Leads", href: "/leads", icon: UsersIcon, pages: [{ label: "Tous les leads", href: "/leads" }] },
+  {
+    key: "home",
+    label: "Accueil",
+    href: "/",
+    icon: HomeIcon,
+    pages: [
+      { label: "Tableau de bord", short: "Accueil", href: "/", icon: HomeIcon },
+      { label: "Calendrier", short: "Calendrier", href: "/calendrier", icon: CalendarIcon },
+    ],
+  },
+  {
+    key: "crm",
+    label: "CRM",
+    href: "/leads",
+    icon: UsersIcon,
+    pages: [{ label: "Leads", short: "Leads", href: "/leads", icon: UsersIcon }],
+  },
 ];
 
 const moduleFor = (path: string) => (path.startsWith("/leads") ? MODULES[1] : MODULES[0]);
+// Navigation basse sur mobile : toutes les pages à plat, le gérant est en tournée.
+const MOBILE_PAGES = MODULES.flatMap((m) => m.pages);
 
 export function Shell({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -54,6 +67,7 @@ export function Shell({ children }: { children: ReactNode }) {
   if (!session) return <main className="min-h-dvh" aria-busy />;
 
   const active = moduleFor(path);
+  const page = active.pages.find((p) => p.href === path) ?? active.pages[0];
 
   return (
     <SessionProvider value={session}>
@@ -80,7 +94,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Colonne du module, 232 px */}
-        <aside className="sticky top-0 hidden h-dvh w-[232px] shrink-0 flex-col gap-4 border-r border-rule bg-card p-3 lg:flex">
+        <aside className="sticky top-0 hidden h-dvh w-[232px] shrink-0 flex-col gap-4 border-r border-rule bg-card p-3 md:flex">
           <div className="rounded-control border border-frame px-3 py-2">
             <p className="font-serif text-brand font-semibold leading-tight">Harvest</p>
             <p className="truncate text-small text-muted">{session.company.name}</p>
@@ -96,7 +110,7 @@ export function Shell({ children }: { children: ReactNode }) {
                     p.href === path ? "border-accent/25 bg-accent-soft font-medium" : "border-transparent hover:bg-field"
                   }`}
                 >
-                  <active.icon size={18} />
+                  <p.icon size={18} />
                   {p.label}
                 </Link>
               </li>
@@ -115,7 +129,7 @@ export function Shell({ children }: { children: ReactNode }) {
                 <span aria-hidden className="hidden text-muted sm:inline">›</span>
                 <span className="text-muted">{active.label}</span>
                 <span aria-hidden className="text-muted">›</span>
-                <span className="font-medium text-ink">{active.pages[0].label}</span>
+                <span className="font-medium text-ink">{page.label}</span>
               </nav>
             </div>
             <AvatarMenu />
@@ -126,17 +140,17 @@ export function Shell({ children }: { children: ReactNode }) {
 
       {/* Navigation basse sur mobile : le gérant est en tournée */}
       <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 justify-around bg-accent md:hidden">
-        {MODULES.map((m) => (
+        {MOBILE_PAGES.map((p) => (
           <Link
-            key={m.key}
-            href={m.href}
-            aria-current={m.key === active.key ? "page" : undefined}
+            key={p.href}
+            href={p.href}
+            aria-current={p.href === path ? "page" : undefined}
             className={`flex min-w-24 flex-col items-center justify-center gap-1 text-small ${
-              m.key === active.key ? "bg-white font-medium text-accent-press" : "text-[#d6e8fb]"
+              p.href === path ? "bg-white font-medium text-accent-press" : "text-[#d6e8fb]"
             }`}
           >
-            <m.icon />
-            {m.label}
+            <p.icon />
+            {p.short}
           </Link>
         ))}
       </nav>

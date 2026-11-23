@@ -1,9 +1,12 @@
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/$/, "");
 
+export type ApiIssue = { message: string; path: (string | number)[] };
+
 export class ApiError extends Error {
   constructor(
     public status: number,
     public code: string,
+    public issues: ApiIssue[] = [],
   ) {
     super(code);
   }
@@ -21,7 +24,7 @@ export async function api<T = unknown>(path: string, init: { method?: string; bo
   });
   if (res.status === 204) return undefined as T;
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new ApiError(res.status, (data as { error?: string }).error ?? "unknown");
+  if (!res.ok) throw new ApiError(res.status, (data as { error?: string }).error ?? "unknown", (data as { issues?: ApiIssue[] }).issues ?? []);
   return data as T;
 }
 
@@ -30,7 +33,10 @@ export type Me = {
   memberships: {
     company: { id: string; name: string; sector: string; region: string };
     teamId: string | null;
+    team: { id: string; name: string } | null;
     roleIds: string[];
+    roles: { id: string; key: string; name: string }[];
+    joinedAt: string;
     permissions: { permission: string; scope: "own" | "team" | "company" }[];
   }[];
 };
@@ -69,6 +75,14 @@ export type Lead = {
   name: string;
   sector: string;
   address: string;
+  city: string;
+  landmark: string;
+  whatsapp: string;
+  facebook: string;
+  website: string;
+  googleMapsUrl: string;
+  /** "", "manual", "address" (approximative) ou "google_maps" */
+  locationSource: string;
   contactName: string;
   phone: string;
   status: LeadStatus;
@@ -82,3 +96,159 @@ export type Lead = {
 /** Nombre à la française, chiffres tabulaires gérés par la police. Aucune devise supposée. */
 export const formatValue = (n: number) => n.toLocaleString("fr-FR");
 export const formatDay = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+
+/** Couleurs des points de la carte et des puces de statut : une seule définition pour tout l'écran. */
+export const STATUS_COLOR: Record<LeadStatus, string> = {
+  to_visit: "#e5484d", // rouge
+  interested: "#0868c9", // bleu
+  mockup_sent: "rgba(34, 170, 94, 0.6)", // vert légèrement transparent
+  deposit_paid: "#12c457", // vert vif
+};
+
+/** N'affiche jamais un lien qui ne soit pas http(s) : un `javascript:` enregistré ne doit pas devenir cliquable. */
+export function safeHttpUrl(raw: string): string | null {
+  try {
+    const u = new URL(raw);
+    return u.protocol === "https:" || u.protocol === "http:" ? u.href : null;
+  } catch {
+    return null;
+  }
+}
+
+export type LeadLink = { key: "whatsapp" | "facebook" | "website" | "maps"; label: string; href: string };
+
+/** Les canaux renseignés d'un lead, prêts à être affichés. */
+export function leadLinks(l: Pick<Lead, "whatsapp" | "facebook" | "website" | "googleMapsUrl">): LeadLink[] {
+  const out: LeadLink[] = [];
+  const digits = l.whatsapp.replace(/\D/g, "");
+  if (digits.length >= 6) out.push({ key: "whatsapp", label: "WhatsApp", href: `https://wa.me/${digits}` });
+  const fb = safeHttpUrl(l.facebook);
+  if (fb) out.push({ key: "facebook", label: "Facebook", href: fb });
+  const web = safeHttpUrl(l.website);
+  if (web) out.push({ key: "website", label: "Site web", href: web });
+  const maps = safeHttpUrl(l.googleMapsUrl);
+  if (maps) out.push({ key: "maps", label: "Google Maps", href: maps });
+  return out;
+}
+
+export const LOCATION_SOURCE_NOTE: Record<string, string> = {
+  address: "Position approximative, déduite de l'adresse.",
+  google_maps: "Position déduite du lien Google Maps.",
+};
+
+const FIELD_LABEL: Record<string, string> = {
+  name: "Nom",
+  sector: "Secteur",
+  contactName: "Contact",
+  phone: "Téléphone",
+  whatsapp: "WhatsApp",
+  facebook: "Facebook",
+  website: "Site web",
+  googleMapsUrl: "Lien Google Maps",
+  address: "Adresse",
+  city: "Ville",
+  landmark: "Repère",
+  lat: "Position",
+  estimatedValue: "Valeur estimée",
+};
+
+/** Premier champ refusé par l'API, en français ; sinon le message générique du code d'erreur. */
+export function describeError(e: unknown): string {
+  // fichier d'import inutilisable : l'API fournit déjà une phrase précise
+  if (e instanceof ApiError && e.code.startsWith("import_") && e.message !== e.code) return e.message;
+  if (e instanceof ApiError && e.issues.length) {
+    const i = e.issues[0];
+    const field = FIELD_LABEL[String(i.path[0])];
+    return field ? `${field} : ${i.message}` : errorMessage(e.code);
+  }
+  return errorMessage(e instanceof ApiError ? e.code : null);
+}
+
+/** Télécharge l'export des leads (CSV ou JSON) avec la session en cours. */
+export async function downloadLeads(opts: {
+  format: "csv" | "json";
+  delimiter?: "," | ";";
+  ids?: string[];
+  companyId: string;
+}): Promise<void> {
+  const res = await fetch(`${API_URL}/leads/export`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "content-type": "application/json", "x-company-id": opts.companyId },
+    body: JSON.stringify({ format: opts.format, delimiter: opts.delimiter ?? ",", ids: opts.ids }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, (data as { error?: string }).error ?? "unknown");
+  }
+  const name = /filename="([^"]+)"/.exec(res.headers.get("content-disposition") ?? "")?.[1] ?? `leads.${opts.format}`;
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/** Message affiché après la création ou la modification d'un lead : dit clairement s'il est sur la carte. */
+export function savedMessage(l: Pick<Lead, "lat" | "lng" | "locationSource">, mode: "created" | "updated"): string {
+  const located = l.lat !== null && l.lng !== null;
+  if (mode === "updated") return located ? "Lead mis à jour." : "Lead mis à jour. Il n'a toujours pas de position sur la carte.";
+  if (!located) return "Lead ajouté, mais sans position : il n'apparaît pas encore sur la carte. Précisez l'adresse ou placez-le sur la carte.";
+  if (l.locationSource === "address") return "Lead ajouté et placé sur la carte depuis son adresse (position approximative).";
+  if (l.locationSource === "google_maps") return "Lead ajouté et placé sur la carte depuis son lien Google Maps.";
+  return "Lead ajouté et placé sur la carte.";
+}
+
+// ---------- Calendrier ----------
+export const EVENT_KINDS = ["visit", "call", "followup", "other"] as const;
+export type EventKind = (typeof EVENT_KINDS)[number];
+export const EVENT_KIND_LABEL: Record<EventKind, string> = { visit: "Visite", call: "Appel", followup: "Relance", other: "Autre" };
+
+export type CalEvent = {
+  id: string;
+  title: string;
+  kind: EventKind;
+  startsAt: string;
+  notes: string;
+  done: boolean;
+  leadId: string | null;
+  leadName: string | null;
+  ownerId: string;
+};
+
+// ---------- Import ----------
+export type ImportReport = {
+  dryRun: boolean;
+  format: "csv" | "json";
+  total: number;
+  valid: number;
+  invalid: number;
+  duplicates: number;
+  duplicateLines: { line: number; name: string }[];
+  errors: { line: number; field?: string; message: string }[];
+  errorsTruncated: boolean;
+  ignoredColumns: string[];
+  preview: { line: number; name: string; status: LeadStatus; address: string; hasPosition: boolean; toLocate: boolean }[];
+  imported: number;
+  locating: number;
+};
+
+/** Erreur d'import lisible : l'API renvoie un `message` en français pour un fichier inutilisable. */
+export async function importLeads(opts: { content: string; format?: "csv" | "json"; dryRun: boolean; companyId: string }): Promise<ImportReport> {
+  const res = await fetch(`${API_URL}/leads/import`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "content-type": "application/json", "x-company-id": opts.companyId },
+    body: JSON.stringify({ content: opts.content, format: opts.format, dryRun: opts.dryRun }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new ApiError(res.status, (data as { error?: string }).error ?? "unknown", (data as { issues?: ApiIssue[] }).issues ?? []);
+    if (typeof (data as { message?: string }).message === "string") err.message = (data as { message: string }).message;
+    throw err;
+  }
+  return data as ImportReport;
+}

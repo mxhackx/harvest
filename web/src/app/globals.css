@@ -56,3 +56,76 @@ body {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+/* Contenu de la documentation : titres, listes, liens et code, avec les trois tailles du cahier. */
+.doc h2 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 8px;
+}
+.doc h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 4px;
+}
+.doc p,
+.doc li {
+  line-height: 1.65;
+}
+.doc p {
+  margin-block: 8px;
+}
+.doc ul,
+.doc ol {
+  margin-block: 8px;
+  padding-left: 22px;
+}
+.doc ul {
+  list-style: disc;
+}
+.doc ol {
+  list-style: decimal;
+}
+.doc li {
+  margin-block: 4px;
+}
+.doc a {
+  color: var(--color-link);
+  font-weight: 500;
+  text-decoration: underline dotted 2px;
+  text-underline-offset: 4px;
+}
+.doc code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--color-field);
+  border-radius: var(--radius-micro);
+  padding: 1px 6px;
+}
+.doc pre code {
+  background: none;
+  padding: 0;
+}
+.doc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.doc th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-muted);
+  border-bottom: 1px solid var(--color-rule);
+  padding: 8px 12px 8px 0;
+}
+.doc td {
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-rule);
+  padding: 8px 12px 8px 0;
+}
+.doc tr:last-child td {
+  border-bottom: 0;
+}
