@@ -9,6 +9,7 @@ import { companyRoutes } from "./routes/companies.js";
 import { roleRoutes } from "./routes/roles.js";
 import { memberRoutes } from "./routes/members.js";
 import { leadRoutes } from "./routes/leads.js";
+import { eventRoutes } from "./routes/events.js";
 
 export async function buildApp(opts: { logger?: boolean } = {}) {
   const app = Fastify({ logger: opts.logger ?? true, trustProxy: config.isProd });
@@ -17,6 +18,8 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
     origin: config.appUrls,
     credentials: true,
     allowedHeaders: ["content-type", "x-company-id"],
+    // sans cela le navigateur cache le nom de fichier proposé par l'export
+    exposedHeaders: ["content-disposition"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   });
   await app.register(cookie);
@@ -32,5 +35,6 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(roleRoutes);
   await app.register(memberRoutes);
   await app.register(leadRoutes);
+  await app.register(eventRoutes);
   return app;
 }

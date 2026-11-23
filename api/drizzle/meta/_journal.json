@@ -22,6 +22,34 @@
       "when": 1795449198192,
       "tag": "0002_vengeful_midnight",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795451484863,
+      "tag": "0003_young_domino",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795451485900,
+      "tag": "0004_lead_export_permission",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795452364567,
+      "tag": "0005_pink_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795452365761,
+      "tag": "0006_event_permissions",
+      "breakpoints": true
     }
   ]
 }

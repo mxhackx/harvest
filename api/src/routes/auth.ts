@@ -1,9 +1,9 @@
 import type { FastifyInstance, FastifyReply } from "fastify";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { config } from "../config.js";
 import { db } from "../db/index.js";
-import { companies, memberships, users } from "../db/schema.js";
+import { companies, memberships, roles, teams, users } from "../db/schema.js";
 import { DUMMY_HASH, hashPassword, verifyPassword } from "../auth/password.js";
 import { SESSION_COOKIE, createSession, destroySession } from "../auth/session.js";
 import {
@@ -96,10 +96,23 @@ export async function authRoutes(app: FastifyInstance) {
     const list = await Promise.all(
       rows.map(async (c) => {
         const ctx = await loadMembership(user.id, c.id);
+        const [{ joinedAt }] = await db
+          .select({ joinedAt: memberships.createdAt })
+          .from(memberships)
+          .where(eq(memberships.id, ctx!.membershipId));
+        const memberRoles = ctx!.roleIds.length
+          ? await db.select({ id: roles.id, key: roles.key, name: roles.name }).from(roles).where(inArray(roles.id, ctx!.roleIds))
+          : [];
+        const [team] = ctx!.subject.teamId
+          ? await db.select({ id: teams.id, name: teams.name }).from(teams).where(eq(teams.id, ctx!.subject.teamId))
+          : [];
         return {
           company: c,
           teamId: ctx!.subject.teamId,
+          team: team ?? null,
           roleIds: ctx!.roleIds,
+          roles: memberRoles,
+          joinedAt,
           permissions: [...ctx!.subject.grants].map(([permission, scope]) => ({ permission, scope })),
         };
       }),

@@ -139,6 +139,15 @@ export const leads = pgTable("leads", {
   name: text("name").notNull(),
   sector: text("sector").notNull().default(""),
   address: text("address").notNull().default(""),
+  city: text("city").notNull().default(""),
+  // repère : « à côté de la pharmacie, 2e étage » — essentiel là où les adresses sont approximatives
+  landmark: text("landmark").notNull().default(""),
+  whatsapp: text("whatsapp").notNull().default(""),
+  facebook: text("facebook").notNull().default(""),
+  website: text("website").notNull().default(""),
+  googleMapsUrl: text("google_maps_url").notNull().default(""),
+  // d'où vient la position : "" (aucune) | manual | address | google_maps
+  locationSource: text("location_source").notNull().default(""),
   contactName: text("contact_name").notNull().default(""),
   phone: text("phone").notNull().default(""),
   status: leadStatusEnum("status").notNull().default("to_visit"),
@@ -147,6 +156,30 @@ export const leads = pgTable("leads", {
   estimatedValue: integer("estimated_value"),
   // null = pas encore visité (pastille « à visiter » sur la carte)
   visitedAt: timestamp("visited_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const eventKindEnum = pgEnum("event_kind", ["visit", "call", "followup", "other"]);
+
+/** Rendez-vous du calendrier : visites, appels, relances. Rattaché ou non à un lead. */
+export const events = pgTable("events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  companyId: uuid("company_id")
+    .notNull()
+    .references(() => companies.id, { onDelete: "cascade" }),
+  // équipe du créateur à la création : sert à la portée « team » du RBAC
+  teamId: uuid("team_id").references(() => teams.id, { onDelete: "set null" }),
+  ownerId: uuid("owner_id")
+    .notNull()
+    .references(() => users.id),
+  // un rendez-vous pour un lead supprimé n'a plus de sens
+  leadId: uuid("lead_id").references(() => leads.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  kind: eventKindEnum("kind").notNull().default("visit"),
+  startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+  notes: text("notes").notNull().default(""),
+  done: boolean("done").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

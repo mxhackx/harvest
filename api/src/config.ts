@@ -12,6 +12,14 @@ export const config = {
   appUrls,
   apiUrl: (process.env.API_URL ?? "http://localhost:4000").replace(/\/$/, ""),
   databaseUrl: process.env.DATABASE_URL!,
+  /**
+   * Géocodage des adresses (Nominatim par défaut). Désactivable : GEOCODING=off.
+   * Les adresses saisies sont alors envoyées à ce service tiers.
+   */
+  geocodingEnabled: (process.env.GEOCODING ?? "on") !== "off" && process.env.NODE_ENV !== "test",
+  geocoderUrl: (process.env.GEOCODER_URL ?? "https://nominatim.openstreetmap.org").replace(/\/$/, ""),
+  /** Appels de localisation par minute et par IP (ils déclenchent des requêtes sortantes). */
+  locateRateLimit: process.env.NODE_ENV === "test" ? 10_000 : 30,
   /** Tentatives par minute et par IP sur les routes d'auth (large en test). */
   authRateLimit: process.env.NODE_ENV === "test" ? 10_000 : 10,
   google: {

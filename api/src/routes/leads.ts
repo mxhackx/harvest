@@ -1,49 +1,24 @@
 import type { FastifyInstance } from "fastify";
-import { and, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { leads } from "../db/schema.js";
-import { can, listFilter, type Subject } from "../rbac/policy.js";
-import { requirePermission } from "../plugins/auth.js";
+import { companies, leads, users } from "../db/schema.js";
+import { config } from "../config.js";
+import { toCsv, toExportRow } from "../leads/export.js";
+import { googleMapsField } from "../leads/fields.js";
+import { locateInBackground } from "../leads/background.js";
+import { allNames, pickUniqueName, takenNames } from "../leads/names.js";
+import { cleanRow, duplicateKey, ImportError, MAX_IMPORT_ROWS, parseImport, type CleanRow, type RowIssue } from "../leads/import.js";
+import { locate, parseGoogleMapsCoords, type Located } from "../leads/locate.js";
+import { can, type Subject } from "../rbac/policy.js";
+import { scopeCondition } from "../rbac/sql.js";
+import { requireMember, requirePermission } from "../plugins/auth.js";
 
-const STATUSES = ["to_visit", "interested", "mockup_sent", "deposit_paid"] as const;
-
-const base = z.object({
-  name: z.string().trim().min(1).max(120),
-  sector: z.string().trim().max(100),
-  address: z.string().trim().max(200),
-  contactName: z.string().trim().max(100),
-  phone: z.string().trim().max(40),
-  status: z.enum(STATUSES),
-  lat: z.number().min(-90).max(90).nullable(),
-  lng: z.number().min(-180).max(180).nullable(),
-  estimatedValue: z.number().int().min(0).max(2_000_000_000).nullable(),
-  visited: z.boolean(),
-});
-const coordsTogether = (v: { lat?: number | null; lng?: number | null }) =>
-  (v.lat === undefined) === (v.lng === undefined) && (v.lat === null) === (v.lng === null);
-const coordsMsg = { message: "lat et lng vont ensemble", path: ["lat"] };
-
-const createBody = base
-  .partial()
-  .required({ name: true })
-  .refine(coordsTogether, coordsMsg);
-const patchBody = base.partial().refine(coordsTogether, coordsMsg);
+import { STATUSES, createBody, patchBody } from "../leads/schema.js";
 
 const uuid = z.string().uuid();
 
-/** Restriction SQL selon la portée du droit (own / team / company). */
-function scopeWhere(subject: Subject, permission: string): SQL | null {
-  const f = listFilter(subject, permission);
-  const company = eq(leads.companyId, subject.companyId);
-  if (f.kind === "none") return null;
-  if (f.kind === "company") return company;
-  if (f.kind === "own") return and(company, eq(leads.ownerId, f.userId))!;
-  return and(
-    company,
-    f.teamId ? or(eq(leads.ownerId, f.userId), eq(leads.teamId, f.teamId)) : eq(leads.ownerId, f.userId),
-  )!;
-}
+const scopeWhere = (subject: Subject, permission: string) => scopeCondition(leads, subject, permission);
 
 const attrs = (l: typeof leads.$inferSelect) => ({ companyId: l.companyId, ownerId: l.ownerId, teamId: l.teamId });
 
@@ -58,6 +33,32 @@ async function findLead(subject: Subject, id: string) {
   return lead && can(subject, "lead:read", attrs(lead)) ? lead : null;
 }
 
+
+const hasCoords = (v: { lat?: number | null; lng?: number | null }) => typeof v.lat === "number" && typeof v.lng === "number";
+
+async function companyRegion(companyId: string) {
+  const [c] = await db.select({ region: companies.region }).from(companies).where(eq(companies.id, companyId));
+  return c?.region ?? "";
+}
+
+const locateBody = z.object({
+  googleMapsUrl: googleMapsField.optional(),
+  address: z.string().trim().max(200).optional(),
+  city: z.string().trim().max(100).optional(),
+});
+
+const exportBody = z.object({
+  format: z.enum(["csv", "json"]),
+  delimiter: z.enum([",", ";"]).default(","),
+  ids: z.array(uuid).max(5000).optional(),
+});
+
+const importBody = z.object({
+  content: z.string().max(2_000_000),
+  format: z.enum(["csv", "json"]).optional(),
+  // par défaut on analyse sans rien écrire : l'utilisateur voit le rapport avant de confirmer
+  dryRun: z.boolean().default(true),
+});
 
 const bulkIds = z.array(z.string().uuid()).min(1).max(200);
 const bulkUpdateBody = z
@@ -85,10 +86,29 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
     const { subject } = req.member!;
     const { visited, ...data } = body.data;
+    // Deux leads ne portent jamais exactement le même nom : le suivant devient « Nom (1) », « Nom (2)»…
+    data.name = pickUniqueName(data.name, await takenNames(subject.companyId, data.name));
+    // Position : celle fournie par l'utilisateur, sinon déduite du lien Google Maps puis de l'adresse,
+    // pour que le lead apparaisse sur la carte dès sa création.
+    let position: { lat: number | null; lng: number | null; locationSource: string } = {
+      lat: data.lat ?? null,
+      lng: data.lng ?? null,
+      locationSource: hasCoords(data) ? "manual" : "",
+    };
+    if (!hasCoords(data) && (data.googleMapsUrl || data.address)) {
+      const found = await locate({
+        googleMapsUrl: data.googleMapsUrl,
+        address: data.address,
+        city: data.city,
+        region: await companyRegion(subject.companyId),
+      });
+      if (found) position = { lat: found.lat, lng: found.lng, locationSource: found.source };
+    }
     const [lead] = await db
       .insert(leads)
       .values({
         ...data,
+        ...position,
         companyId: subject.companyId,
         teamId: subject.teamId,
         ownerId: subject.userId,
@@ -96,6 +116,175 @@ export async function leadRoutes(app: FastifyInstance) {
       })
       .returning();
     return reply.code(201).send(lead);
+  });
+
+  // Aide à la saisie : trouve des coordonnées depuis un lien Google Maps ou une adresse.
+  app.post(
+    "/locate",
+    { preHandler: requireMember, config: { rateLimit: { max: config.locateRateLimit, timeWindow: "1 minute" } } },
+    async (req, reply) => {
+      const { subject } = req.member!;
+      if (!can(subject, "lead:create") && !can(subject, "lead:update")) return reply.code(403).send({ error: "forbidden" });
+      const body = locateBody.safeParse(req.body);
+      if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
+      if (!body.data.googleMapsUrl && !body.data.address) return reply.code(400).send({ error: "invalid_body" });
+      const found = await locate({ ...body.data, region: await companyRegion(subject.companyId) });
+      if (!found) {
+        const reason = !config.geocodingEnabled && body.data.address && !body.data.googleMapsUrl ? "geocoding_disabled" : "not_found";
+        return { found: false, reason };
+      }
+      return { found: true, lat: found.lat, lng: found.lng, source: found.source, label: found.label ?? "" };
+    },
+  );
+
+  // Export : ce que l'utilisateur peut lire ET exporter, éventuellement limité à une liste d'ids.
+  app.post("/leads/export", { preHandler: requirePermission("lead:export") }, async (req, reply) => {
+    const body = exportBody.safeParse(req.body);
+    if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
+    const { subject } = req.member!;
+    const readScope = scopeWhere(subject, "lead:read");
+    const exportScope = scopeWhere(subject, "lead:export");
+    if (!readScope || !exportScope) return reply.code(403).send({ error: "forbidden" });
+    const rows = await db
+      .select({ lead: leads, owner: users.name })
+      .from(leads)
+      .innerJoin(users, eq(users.id, leads.ownerId))
+      .where(and(readScope, exportScope, body.data.ids ? inArray(leads.id, body.data.ids) : undefined))
+      .orderBy(desc(leads.createdAt))
+      .limit(10_000);
+    const data = rows.map((r) => toExportRow(r.lead, r.owner));
+    const day = new Date().toISOString().slice(0, 10);
+    reply.header("content-disposition", `attachment; filename="leads-${day}.${body.data.format}"`);
+    reply.header("cache-control", "no-store");
+    if (body.data.format === "json") return reply.type("application/json; charset=utf-8").send(JSON.stringify(data, null, 2));
+    return reply.type("text/csv; charset=utf-8").send(toCsv(data, body.data.delimiter));
+  });
+
+  // Import CSV / JSON : analyse à blanc (dryRun) puis création. Jamais de demi-import silencieux :
+  // les lignes invalides et les doublons sont écartés et listés dans le rapport.
+  app.post(
+    "/leads/import",
+    {
+      preHandler: requirePermission("lead:create"),
+      bodyLimit: 3 * 1024 * 1024,
+      config: { rateLimit: { max: config.locateRateLimit, timeWindow: "1 minute" } },
+    },
+    async (req, reply) => {
+      const body = importBody.safeParse(req.body);
+      if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
+      const { subject } = req.member!;
+
+      let parsed;
+      try {
+        parsed = parseImport(body.data.content, body.data.format);
+      } catch (e) {
+        if (e instanceof ImportError) return reply.code(400).send({ error: `import_${e.code}`, message: e.message, max: MAX_IMPORT_ROWS });
+        throw e;
+      }
+
+      const issues: RowIssue[] = [];
+      const rows: CleanRow[] = [];
+      for (const rec of parsed.records) {
+        const r = cleanRow(rec);
+        if (r.row) rows.push(r.row);
+        else issues.push(...r.issues);
+      }
+
+      // doublons : contre les leads que l'utilisateur peut voir, et à l'intérieur du fichier
+      const known = new Set(
+        (await db.select({ name: leads.name, phone: leads.phone, address: leads.address }).from(leads).where(scopeWhere(subject, "lead:read")!)).map(duplicateKey),
+      );
+      const duplicates: { line: number; name: string }[] = [];
+      const fresh: CleanRow[] = [];
+      for (const r of rows) {
+        const key = duplicateKey(r.data);
+        if (known.has(key)) duplicates.push({ line: r.line, name: r.data.name });
+        else {
+          known.add(key);
+          fresh.push(r);
+        }
+      }
+
+      // Même nom, autre adresse ou autre téléphone : ce n'est pas un doublon, mais le lead est numéroté.
+      const taken = new Set(await allNames(subject.companyId));
+      let renamed = 0;
+      for (const r of fresh) {
+        const unique = pickUniqueName(r.data.name, taken);
+        if (unique !== r.data.name.trim()) renamed++;
+        r.data.name = unique;
+        taken.add(unique);
+      }
+
+      const invalidLines = new Set(issues.map((i) => i.line));
+      const report = {
+        dryRun: body.data.dryRun,
+        format: parsed.format,
+        total: parsed.records.length,
+        valid: fresh.length,
+        invalid: invalidLines.size,
+        duplicates: duplicates.length,
+        renamed,
+        duplicateLines: duplicates.slice(0, 20),
+        errors: issues.slice(0, 100),
+        errorsTruncated: issues.length > 100,
+        ignoredColumns: parsed.ignoredColumns,
+        preview: fresh.slice(0, 5).map((r) => ({
+          line: r.line,
+          name: r.data.name,
+          status: r.data.status ?? "to_visit",
+          address: [r.data.address, r.data.city].filter(Boolean).join(", "),
+          hasPosition: typeof r.data.lat === "number" || !!(r.data.googleMapsUrl && parseGoogleMapsCoords(r.data.googleMapsUrl)),
+          toLocate: typeof r.data.lat !== "number" && !!(r.data.address || r.data.googleMapsUrl),
+        })),
+        imported: 0,
+        locating: 0,
+      };
+      if (body.data.dryRun || fresh.length === 0) return report;
+
+      const values = fresh.map((r) => {
+        const { visited, ...data } = r.data;
+        let position: { lat: number | null; lng: number | null; locationSource: string } = { lat: data.lat ?? null, lng: data.lng ?? null, locationSource: typeof data.lat === "number" ? "manual" : "" };
+        if (position.lat === null && data.googleMapsUrl) {
+          const c = parseGoogleMapsCoords(data.googleMapsUrl); // lecture du lien, sans réseau
+          if (c) position = { lat: c.lat, lng: c.lng, locationSource: "google_maps" };
+        }
+        return {
+          ...data,
+          ...position,
+          companyId: subject.companyId,
+          teamId: subject.teamId,
+          ownerId: subject.userId,
+          visitedAt: r.visitedAt ?? (visited ? new Date() : null),
+        };
+      });
+      const created = await db.transaction(async (tx) => {
+        const out: (typeof leads.$inferSelect)[] = [];
+        for (let i = 0; i < values.length; i += 200) out.push(...(await tx.insert(leads).values(values.slice(i, i + 200)).returning()));
+        return out;
+      });
+      report.imported = created.length;
+
+      // adresses et liens courts : recherchés en arrière-plan, sans faire attendre l'utilisateur
+      const toLocate = created.filter((l) => l.lat === null && (l.address || l.googleMapsUrl)).map((l) => l.id);
+      if (toLocate.length) {
+        report.locating = toLocate.length;
+        void locateInBackground(toLocate, await companyRegion(subject.companyId), (e) => req.log.error({ err: e }, "background locate failed"));
+      }
+      return report;
+    },
+  );
+
+  // Relance la recherche de position des leads qui n'en ont pas (adresse ou lien disponible).
+  app.post("/leads/locate-missing", { preHandler: requirePermission("lead:update") }, async (req, reply) => {
+    const { subject } = req.member!;
+    const rows = await db
+      .select({ id: leads.id })
+      .from(leads)
+      .where(and(scopeWhere(subject, "lead:update")!, isNull(leads.lat), or(ne(leads.address, ""), ne(leads.googleMapsUrl, ""))))
+      .limit(300);
+    const ids = rows.map((r) => r.id);
+    if (ids.length) void locateInBackground(ids, await companyRegion(subject.companyId), (e) => req.log.error({ err: e }, "background locate failed"));
+    return reply.code(202).send({ queued: ids.length, geocoding: config.geocodingEnabled });
   });
 
   // Actions de masse : on applique à ce que les droits permettent, et on dit combien ont été ignorés.
@@ -136,10 +325,29 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!lead) return reply.code(404).send({ error: "not_found" });
     if (!can(subject, "lead:update", attrs(lead))) return reply.code(403).send({ error: "forbidden" });
     const { visited, ...data } = body.data;
+    // Renommer vers un nom déjà pris numérote le lead ; un simple changement de casse reste tel quel.
+    if (data.name !== undefined && data.name.trim().toLowerCase() !== lead.name.toLowerCase()) {
+      data.name = pickUniqueName(data.name, await takenNames(subject.companyId, data.name, lead.id));
+    }
+    // Source de la position : fournie à la main → "manual" ; retirée → vide ; sinon on conserve.
+    // Si le lead n'a toujours pas de position et qu'on lui donne une adresse ou un lien, on le localise.
+    let position: { lat?: number | null; lng?: number | null; locationSource?: string } = {};
+    if (hasCoords(data)) position = { locationSource: "manual" };
+    else if (data.lat === null && data.lng === null) position = { locationSource: "" };
+    else if (lead.lat === null && (data.address !== undefined || data.googleMapsUrl !== undefined || data.city !== undefined)) {
+      const found: Located | null = await locate({
+        googleMapsUrl: data.googleMapsUrl ?? lead.googleMapsUrl,
+        address: data.address ?? lead.address,
+        city: data.city ?? lead.city,
+        region: await companyRegion(subject.companyId),
+      });
+      if (found) position = { lat: found.lat, lng: found.lng, locationSource: found.source };
+    }
     const [updated] = await db
       .update(leads)
       .set({
         ...data,
+        ...position,
         ...(visited === undefined ? {} : { visitedAt: visited ? (lead.visitedAt ?? new Date()) : null }),
         updatedAt: new Date(),
       })
