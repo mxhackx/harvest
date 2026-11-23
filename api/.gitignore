@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+# tout fichier d'environnement, sauf le modèle ; sauvegardes d'éditeur
+.env.*
+!.env.example
+*~

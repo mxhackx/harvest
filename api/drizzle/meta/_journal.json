@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1795445336031,
+      "tag": "0000_neat_justice",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795448721802,
+      "tag": "0001_green_northstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795449198192,
+      "tag": "0002_vengeful_midnight",
+      "breakpoints": true
+    }
+  ]
+}
