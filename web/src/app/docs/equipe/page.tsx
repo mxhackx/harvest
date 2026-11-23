@@ -36,6 +36,14 @@ export default function Page() {
         équipe laisse ses membres sans équipe.
       </p>
 
+      <h2>Attribuer dès la création</h2>
+      <p>
+        Dans le formulaire « Nouveau lead », le bloc <strong>Responsable</strong> propose « Attribuer à » : choisissez la
+        personne qui suivra ce lead, elle est prévenue tout de suite. Sans choix, le lead vous revient. Le menu n’apparaît
+        que si vous avez le droit d’attribuer ; sinon le lead est toujours à votre nom. On ne peut attribuer qu’à une
+        personne que ses droits vous autorisent à servir : sinon la création est refusée et rien n’est créé.
+      </p>
+
       <h2>Réattribuer des leads</h2>
       <p>
         Avec le droit d’attribuer, sélectionnez des leads dans le tableau puis « Attribuer à… », ou utilisez le bouton de

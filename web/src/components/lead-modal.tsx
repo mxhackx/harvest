@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { LOCATION_SOURCE_NOTE, api, describeError, type Lead } from "@/lib/api";
 import { LOST_REASONS, stageOf } from "@/lib/stages";
 import { useStages } from "@/lib/stages-store";
@@ -44,6 +44,20 @@ export function LeadModal({
   // création : le bouton n'est proposé qu'à ceux qui ont le droit ; modification : droit de modifier requis
   const readOnly = !!lead && !perms.includes("lead:update");
   const canDelete = !!lead && perms.includes("lead:delete");
+  // création : celui qui peut attribuer choisit le responsable dès maintenant (par défaut, lui-même)
+  const canChooseOwner = !lead && perms.includes("lead:assign") && perms.includes("member:read");
+  const [members, setMembers] = useState<{ userId: string; name: string }[] | null>(null);
+  const [ownerId, setOwnerId] = useState(me.user.id);
+  useEffect(() => {
+    if (!canChooseOwner) return;
+    let live = true;
+    api<{ userId: string; name: string }[]>("/members", { companyId })
+      .then((m) => live && setMembers(m))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [canChooseOwner, companyId]);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const form = useRef<HTMLFormElement>(null);
@@ -155,6 +169,7 @@ export function LeadModal({
         visited: f.get("visited") === "on",
         estimatedValue,
         ...positionPart,
+        ...(!lead && canChooseOwner && ownerId !== me.user.id ? { ownerId } : {}),
       };
       const saved = lead
         ? await api<Lead>(`/leads/${lead.id}`, { method: "PATCH", body, companyId })
@@ -195,6 +210,24 @@ export function LeadModal({
 
         {/* un fieldset désactivé verrouille d'un coup tous les champs qu'il contient */}
         <fieldset disabled={readOnly} className="m-0 flex min-w-0 flex-col gap-6 border-0 p-0">
+
+        {!lead && (
+          <Group title="Responsable">
+            {canChooseOwner && members ? (
+              <>
+                <Select
+                  label="Attribuer à"
+                  value={ownerId}
+                  onChange={(e) => setOwnerId(e.target.value)}
+                  options={members.map((m) => ({ value: m.userId, label: m.userId === me.user.id ? `${m.name} (moi)` : m.name }))}
+                />
+                <p className="text-small text-muted">La personne choisie est prévenue et suit ce lead. Vous pourrez le réattribuer plus tard.</p>
+              </>
+            ) : (
+              <p className="text-small text-muted">Ce lead vous sera attribué.</p>
+            )}
+          </Group>
+        )}
 
         <Group title="Entreprise">
           <div className="grid gap-3 sm:grid-cols-2">
