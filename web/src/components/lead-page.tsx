@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LOCATION_SOURCE_NOTE, api, describeError, formatValue, type Lead } from "@/lib/api";
+import type { Contact } from "@/lib/activity";
+import type { Recipient } from "@/lib/messages";
 import { useLeads } from "@/lib/leads";
 import { useSession } from "@/lib/session";
 import { stageOf } from "@/lib/stages";
@@ -12,6 +14,7 @@ import { LeadActivity } from "./lead-activity";
 import { LeadContacts } from "./lead-contacts";
 import { LeadLinks } from "./lead-links";
 import { AssignModal } from "./assign-modal";
+import { SendMessageModal } from "./send-message-modal";
 import { TaskList } from "./task-list";
 import { LeadModal } from "./lead-modal";
 import { LostReasonModal } from "./lost-reason-modal";
@@ -19,6 +22,23 @@ import { PencilIcon } from "./icons";
 import { Button, Notice, Panel } from "./ui";
 
 type Tab = "activity" | "contacts" | "tasks";
+
+/** Charge les contacts du lead puis ouvre l'envoi de message : chaque contact, plus le numéro de l'entreprise. */
+function MessageLauncher({ lead, onClose, onSent }: { lead: Lead; onClose: () => void; onSent: () => void }) {
+  const { companyId } = useSession();
+  const [recipients, setRecipients] = useState<Recipient[] | null>(null);
+  useEffect(() => {
+    api<Contact[]>(`/leads/${lead.id}/contacts`, { companyId })
+      .then((cs) => {
+        const list: Recipient[] = cs.map((c) => ({ label: c.role ? `${c.name} (${c.role})` : c.name, name: c.name, whatsapp: c.whatsapp, phone: c.phone, email: c.email }));
+        if (lead.whatsapp || lead.phone) list.push({ label: `${lead.name} (numéro de l'entreprise)`, name: lead.contactName, whatsapp: lead.whatsapp, phone: lead.phone, email: "" });
+        setRecipients(list);
+      })
+      .catch(() => setRecipients([]));
+  }, [lead, companyId]);
+  if (!recipients) return null;
+  return <SendMessageModal lead={{ id: lead.id, name: lead.name }} recipients={recipients} onClose={onClose} onSent={onSent} />;
+}
 
 /** Page d'un lead : étape du pipeline, informations, fil d'activité et contacts. */
 export function LeadPage() {
@@ -34,6 +54,7 @@ export function LeadPage() {
   const [editing, setEditing] = useState(false);
   const [lostAsk, setLostAsk] = useState<string | null>(null);
   const [assigning, setAssigning] = useState(false);
+  const [messaging, setMessaging] = useState(false);
   const [owner, setOwner] = useState<string | null>(null);
 
   const perms = me.memberships[0].permissions.map((p) => p.permission);
@@ -142,6 +163,11 @@ export function LeadPage() {
           <div className="mt-3 flex flex-col gap-3">
             <LeadLinks lead={lead} />
             {LOCATION_SOURCE_NOTE[lead.locationSource] && <p className="text-small text-muted">{LOCATION_SOURCE_NOTE[lead.locationSource]}</p>}
+            {canUpdate && (
+              <Button variant="secondary" className="h-9" onClick={() => setMessaging(true)}>
+                Envoyer un message
+              </Button>
+            )}
             {canAssign && (
               <Button variant="secondary" className="h-9" onClick={() => setAssigning(true)}>
                 Attribuer à…
@@ -201,6 +227,13 @@ export function LeadPage() {
             await reload();
             router.push("/leads");
           }}
+        />
+      )}
+      {messaging && (
+        <MessageLauncher
+          lead={lead}
+          onClose={() => setMessaging(false)}
+          onSent={() => setVersion((v) => v + 1)}
         />
       )}
       {assigning && (

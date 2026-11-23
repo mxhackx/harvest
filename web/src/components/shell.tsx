@@ -8,9 +8,10 @@ import { LeadsProvider } from "@/lib/leads";
 import { StagesProvider } from "@/lib/stages-store";
 import { SessionProvider, type Session } from "@/lib/session";
 import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
+import { usePins } from "@/lib/pins";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, HomeIcon, UsersIcon } from "./icons";
+import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, PushPinIcon, UserIcon, UsersIcon } from "./icons";
 import { NotificationsBell } from "./notifications-bell";
 import { Notice } from "./ui";
 
@@ -37,7 +38,9 @@ const MODULES: Module[] = [
     icon: UsersIcon,
     pages: [
       { label: "Leads", short: "Leads", href: "/leads", icon: UsersIcon },
+      { label: "Contacts", short: "Contacts", href: "/contacts", icon: UserIcon },
       { label: "Tâches", short: "Tâches", href: "/taches", icon: CheckIcon },
+      { label: "Modèles", short: "Modèles", href: "/modeles", icon: FormIcon },
       { label: "Pipeline", short: "Pipeline", href: "/pipeline", icon: BoardIcon },
       { label: "Rapports", short: "Rapports", href: "/rapports", icon: CoinIcon },
     ],
@@ -59,6 +62,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const path = usePathname();
   const s = useMe();
+  const { pins, toggle: togglePinned } = usePins();
 
   useEffect(() => {
     if (s.status === "unauthenticated") router.replace("/login");
@@ -92,6 +96,30 @@ export function Shell({ children }: { children: ReactNode }) {
   const modules = MODULES.filter((m) => !m.needs || granted.includes(m.needs));
   const mobilePages = modules.flatMap((m) => m.pages);
   const active = moduleFor(path, modules);
+  const pinnedPages = pins.map((h) => mobilePages.find((p) => p.href === h)).filter((p): p is Page => !!p);
+  const row = (p: Page) => (
+    <li key={p.href} className="group relative">
+      <Link
+        href={p.href}
+        aria-current={p.href === path ? "page" : undefined}
+        className={`flex h-10 items-center gap-2 rounded-control border px-2 pr-9 text-body ${
+          p.href === path ? "border-accent/25 bg-accent-soft font-medium" : "border-transparent hover:bg-field"
+        }`}
+      >
+        <p.icon size={18} />
+        {p.label}
+      </Link>
+      <button
+        type="button"
+        onClick={() => togglePinned(p.href)}
+        aria-pressed={pins.includes(p.href)}
+        aria-label={pins.includes(p.href) ? `Désépingler ${p.label}` : `Épingler ${p.label}`}
+        className={`absolute right-1 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:bg-white hover:text-ink focus-visible:opacity-100 ${pins.includes(p.href) ? "text-accent-press" : "opacity-0 group-hover:opacity-100"}`}
+      >
+        <PushPinIcon size={15} />
+      </button>
+    </li>
+  );
   const page = active.pages.find((p) => p.href === path) ?? active.pages[0];
 
   return (
@@ -125,23 +153,15 @@ export function Shell({ children }: { children: ReactNode }) {
             <p className="font-serif text-brand font-semibold leading-tight">Harvest</p>
             <p className="truncate text-small text-muted">{session.company.name}</p>
           </div>
-          <p className="px-2 text-small uppercase tracking-wide text-muted">{active.label}</p>
-          <ul className="flex flex-col gap-1">
-            {active.pages.map((p) => (
-              <li key={p.href}>
-                <Link
-                  href={p.href}
-                  aria-current={p.href === path ? "page" : undefined}
-                  className={`flex h-10 items-center gap-2 rounded-control border px-2 text-body ${
-                    p.href === path ? "border-accent/25 bg-accent-soft font-medium" : "border-transparent hover:bg-field"
-                  }`}
-                >
-                  <p.icon size={18} />
-                  {p.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {pinnedPages.length > 0 && (
+            <>
+              <p className="px-2 text-small uppercase tracking-wide text-muted">Épinglées</p>
+              <ul className="flex flex-col gap-1">{pinnedPages.map((p) => row(p))}</ul>
+              <p className="px-2 text-small uppercase tracking-wide text-muted">{active.label}</p>
+            </>
+          )}
+          {pinnedPages.length === 0 && <p className="px-2 text-small uppercase tracking-wide text-muted">{active.label}</p>}
+          <ul className="flex flex-col gap-1">{active.pages.map((p) => row(p))}</ul>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">

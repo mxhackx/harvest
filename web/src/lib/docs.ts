@@ -45,6 +45,11 @@ export const DOCS: DocPage[] = [
     description: "Tout sur un lead au même endroit : étape, informations, fil d'activité, notes, appels, contacts multiples et attribution.",
   },
   {
+    href: "/docs/messages",
+    title: "Contacts, modèles et segments",
+    description: "Retrouvez toutes vos personnes à joindre, envoyez un message WhatsApp ou e-mail depuis un modèle, et enregistrez vos vues de leads.",
+  },
+  {
     href: "/docs/taches",
     title: "Tâches et rappels",
     description: "Créez des tâches avec échéance, confiez-les à un collègue, repérez les retards et suivez les notifications de la cloche.",

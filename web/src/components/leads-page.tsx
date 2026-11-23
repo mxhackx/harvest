@@ -11,6 +11,7 @@ import { LeadBoard } from "./lead-board";
 import { AddLeadChooser } from "./add-lead-chooser";
 import { ImportModal } from "./import-modal";
 import { AssignModal } from "./assign-modal";
+import { SegmentsMenu } from "./segments-menu";
 import { LeadModal } from "./lead-modal";
 import { LostReasonModal } from "./lost-reason-modal";
 import { LeadTable } from "./lead-table";
@@ -388,6 +389,17 @@ export function LeadsPage() {
               ))
             }
           </Menu>
+
+          <SegmentsMenu
+            current={{ tab, query, sort, filters }}
+            onError={setNotice}
+            onApply={(c) => {
+              setTab(c.tab);
+              setQuery(c.query);
+              setSort(c.sort);
+              setFilters(c.filters);
+            }}
+          />
 
           <div className="ml-auto flex items-center gap-2">
             {canCreate && (

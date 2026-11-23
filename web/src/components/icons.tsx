@@ -237,3 +237,13 @@ export function FileUpIcon({ size = 20 }: { size?: number }) {
     </svg>
   );
 }
+
+/** Punaise : épingler une page dans le menu (≠ PinIcon, le repère de carte). */
+export function PushPinIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M9 4h6l-1 5 3 3v2H7v-2l3-3-1-5Z" />
+      <path d="M12 14v6" />
+    </svg>
+  );
+}
