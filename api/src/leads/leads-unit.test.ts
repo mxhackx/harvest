@@ -101,7 +101,7 @@ describe("export CSV", () => {
   const lead = (over = {}) => ({
     id: "1", name: "Boulangerie", status: "to_visit", sector: "Commerce", contactName: "", phone: "+229 97 00 11 22",
     whatsapp: "+22997001122", facebook: "", website: "", googleMapsUrl: "", address: "Rue 12, Cadjehoun", city: "Cotonou",
-    landmark: "", lat: 6.36, lng: 2.39, locationSource: "manual", estimatedValue: 1000, visitedAt: null,
+    landmark: "", lat: 6.36, lng: 2.39, locationSource: "manual", estimatedValue: 1000, visitedAt: null, lostReason: "", closedAt: null,
     createdAt: new Date("2026-11-23T10:00:00Z"), updatedAt: new Date("2026-11-23T10:00:00Z"), ...over,
   });
   it("BOM, en-tête, échappement des séparateurs, guillemets et sauts de ligne", () => {

@@ -2,7 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db, type Db } from "../db/index.js";
-import { companies, membershipRoles, memberships, rolePermissions, roles, teams } from "../db/schema.js";
+import { companies, membershipRoles, memberships, pipelineStages, rolePermissions, roles, teams } from "../db/schema.js";
+import { DEFAULT_STAGES } from "../stages/defaults.js";
 import { SYSTEM_ROLES } from "../rbac/permissions.js";
 import { requirePermission, requireUser } from "../plugins/auth.js";
 
@@ -17,6 +18,7 @@ export async function createCompanyWithDefaults(
     .insert(companies)
     .values({ name: input.name, sector: input.sector, region: input.region, createdBy: input.userId })
     .returning();
+  await tx.insert(pipelineStages).values(DEFAULT_STAGES.map((s, i) => ({ companyId: company.id, ...s, position: i })));
   const [team] = await tx.insert(teams).values({ companyId: company.id, name: input.teamName }).returning();
 
   const createdRoles = await tx

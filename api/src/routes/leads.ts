@@ -8,13 +8,14 @@ import { toCsv, toExportRow } from "../leads/export.js";
 import { googleMapsField } from "../leads/fields.js";
 import { locateInBackground } from "../leads/background.js";
 import { allNames, pickUniqueName, takenNames } from "../leads/names.js";
-import { cleanRow, duplicateKey, ImportError, MAX_IMPORT_ROWS, parseImport, type CleanRow, type RowIssue } from "../leads/import.js";
+import { cleanRow, duplicateKey, ImportError, makeStatusResolver, MAX_IMPORT_ROWS, parseImport, type CleanRow, type RowIssue } from "../leads/import.js";
 import { locate, parseGoogleMapsCoords, type Located } from "../leads/locate.js";
 import { can, type Subject } from "../rbac/policy.js";
 import { scopeCondition } from "../rbac/sql.js";
 import { requireMember, requirePermission } from "../plugins/auth.js";
 
-import { STATUSES, createBody, patchBody } from "../leads/schema.js";
+import { createBody, patchBody } from "../leads/schema.js";
+import { closingFields, defaultStage, listStages } from "../stages/store.js";
 
 const uuid = z.string().uuid();
 
@@ -33,6 +34,8 @@ async function findLead(subject: Subject, id: string) {
   return lead && can(subject, "lead:read", attrs(lead)) ? lead : null;
 }
 
+
+const unknownStage = { error: "invalid_body", issues: [{ message: "étape inconnue", path: ["status"] }] };
 
 const hasCoords = (v: { lat?: number | null; lng?: number | null }) => typeof v.lat === "number" && typeof v.lng === "number";
 
@@ -62,7 +65,7 @@ const importBody = z.object({
 
 const bulkIds = z.array(z.string().uuid()).min(1).max(200);
 const bulkUpdateBody = z
-  .object({ ids: bulkIds, status: z.enum(STATUSES).optional(), visited: z.boolean().optional() })
+  .object({ ids: bulkIds, status: z.string().trim().min(1).max(60).optional(), lostReason: z.string().trim().max(200).optional(), visited: z.boolean().optional() })
   .refine((v) => v.status !== undefined || v.visited !== undefined, { message: "rien à modifier" });
 const bulkDeleteBody = z.object({ ids: bulkIds });
 
@@ -104,11 +107,17 @@ export async function leadRoutes(app: FastifyInstance) {
       });
       if (found) position = { lat: found.lat, lng: found.lng, locationSource: found.source };
     }
+    // Étape : celle demandée si elle existe dans l'entreprise, sinon la première étape ouverte.
+    const stages = await listStages(subject.companyId);
+    const stage = data.status ? stages.find((s) => s.key === data.status) : defaultStage(stages);
+    if (!stage) return reply.code(400).send(unknownStage);
     const [lead] = await db
       .insert(leads)
       .values({
         ...data,
         ...position,
+        status: stage.key,
+        ...closingFields(stage, { closedAt: null, lostReason: "" }, data.lostReason),
         companyId: subject.companyId,
         teamId: subject.teamId,
         ownerId: subject.userId,
@@ -152,7 +161,8 @@ export async function leadRoutes(app: FastifyInstance) {
       .where(and(readScope, exportScope, body.data.ids ? inArray(leads.id, body.data.ids) : undefined))
       .orderBy(desc(leads.createdAt))
       .limit(10_000);
-    const data = rows.map((r) => toExportRow(r.lead, r.owner));
+    const stageNames = new Map((await listStages(subject.companyId)).map((st) => [st.key, st.name]));
+    const data = rows.map((r) => toExportRow(r.lead, r.owner, stageNames.get(r.lead.status)));
     const day = new Date().toISOString().slice(0, 10);
     reply.header("content-disposition", `attachment; filename="leads-${day}.${body.data.format}"`);
     reply.header("cache-control", "no-store");
@@ -182,10 +192,12 @@ export async function leadRoutes(app: FastifyInstance) {
         throw e;
       }
 
+      const stages = await listStages(subject.companyId);
+      const statuses = makeStatusResolver(stages);
       const issues: RowIssue[] = [];
       const rows: CleanRow[] = [];
       for (const rec of parsed.records) {
-        const r = cleanRow(rec);
+        const r = cleanRow(rec, statuses);
         if (r.row) rows.push(r.row);
         else issues.push(...r.issues);
       }
@@ -231,7 +243,7 @@ export async function leadRoutes(app: FastifyInstance) {
         preview: fresh.slice(0, 5).map((r) => ({
           line: r.line,
           name: r.data.name,
-          status: r.data.status ?? "to_visit",
+          status: r.data.status ?? defaultStage(stages)?.key ?? "to_visit",
           address: [r.data.address, r.data.city].filter(Boolean).join(", "),
           hasPosition: typeof r.data.lat === "number" || !!(r.data.googleMapsUrl && parseGoogleMapsCoords(r.data.googleMapsUrl)),
           toLocate: typeof r.data.lat !== "number" && !!(r.data.address || r.data.googleMapsUrl),
@@ -248,9 +260,12 @@ export async function leadRoutes(app: FastifyInstance) {
           const c = parseGoogleMapsCoords(data.googleMapsUrl); // lecture du lien, sans réseau
           if (c) position = { lat: c.lat, lng: c.lng, locationSource: "google_maps" };
         }
+        const stage = stages.find((st) => st.key === data.status) ?? defaultStage(stages);
         return {
           ...data,
           ...position,
+          status: stage.key,
+          ...closingFields(stage, { closedAt: null, lostReason: "" }, data.lostReason),
           companyId: subject.companyId,
           teamId: subject.teamId,
           ownerId: subject.userId,
@@ -292,12 +307,21 @@ export async function leadRoutes(app: FastifyInstance) {
     const body = bulkUpdateBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
     const { subject } = req.member!;
+    const stage = body.data.status ? (await listStages(subject.companyId)).find((st) => st.key === body.data.status) : undefined;
+    if (body.data.status && !stage) return reply.code(400).send(unknownStage);
     const allowed = await loadAllowed(subject, body.data.ids, "lead:update");
     if (allowed.length) {
       await db
         .update(leads)
         .set({
-          ...(body.data.status ? { status: body.data.status } : {}),
+          ...(stage
+            ? {
+                status: stage.key,
+                // entrer dans « gagné » / « perdu » date la clôture ; en sortir l'efface (le motif de perte avec)
+                closedAt: stage.kind === "open" ? null : sql`coalesce(${leads.closedAt}, now())`,
+                lostReason: stage.kind === "lost" ? (body.data.lostReason ?? sql`${leads.lostReason}`) : "",
+              }
+            : {}),
           ...(body.data.visited === undefined
             ? {}
             : { visitedAt: body.data.visited ? sql`coalesce(${leads.visitedAt}, now())` : null }),
@@ -343,10 +367,19 @@ export async function leadRoutes(app: FastifyInstance) {
       });
       if (found) position = { lat: found.lat, lng: found.lng, locationSource: found.source };
     }
+    // Étape : valide, et la date de clôture et le motif de perte suivent le type de l'étape (ouverte, gagnée, perdue).
+    let stageFields: { status?: string; closedAt?: Date | null; lostReason?: string } = {};
+    if (data.status !== undefined || data.lostReason !== undefined) {
+      const stages = await listStages(subject.companyId);
+      const target = stages.find((st) => st.key === (data.status ?? lead.status));
+      if (!target) return reply.code(400).send(unknownStage);
+      stageFields = { status: target.key, ...closingFields(target, lead, data.lostReason) };
+    }
     const [updated] = await db
       .update(leads)
       .set({
         ...data,
+        ...stageFields,
         ...position,
         ...(visited === undefined ? {} : { visitedAt: visited ? (lead.visitedAt ?? new Date()) : null }),
         updatedAt: new Date(),

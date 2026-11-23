@@ -134,7 +134,7 @@ describe("import : lignes invalides et doublons", () => {
     "name,status,website,lat,lng",
     "Valide,À visiter,a.bj,6.3,2.4",
     ",À visiter,,,", // ligne 3 : nom manquant
-    "Mauvaise étape,gagné,,,", // ligne 4
+    "Mauvaise étape,en pause,,,", // ligne 4
     "Mauvais lien,À visiter,javascript:alert(1),,", // ligne 5
     "Lat seule,À visiter,,6.3,", // ligne 6
   ].join("\n");

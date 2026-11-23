@@ -116,7 +116,7 @@ describe("cleanRow", () => {
     expect(clean({ name: "A", visitedAt: "hier" }).issues[0]).toMatchObject({ field: "visitedAt" });
   });
   it("signale chaque problème avec son champ et sa ligne", () => {
-    expect(clean({ name: "A", status: "gagné" }).issues[0]).toMatchObject({ line: 2, field: "status" });
+    expect(clean({ name: "A", status: "en pause" }).issues[0]).toMatchObject({ line: 2, field: "status" });
     expect(clean({ name: "A", lat: "6.3" }).issues[0]).toMatchObject({ field: "lat" });
     expect(clean({ name: "A", lat: "abc", lng: "2" }).issues[0]).toMatchObject({ field: "lat" });
     expect(clean({ name: "A", lat: "99", lng: "2" }).issues[0]).toMatchObject({ field: "lat", message: "latitude hors limites (−90 à 90)" });

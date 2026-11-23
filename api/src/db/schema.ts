@@ -124,7 +124,28 @@ export const membershipRoles = pgTable(
   (t) => [primaryKey({ columns: [t.membershipId, t.roleId] })],
 );
 
-export const leadStatusEnum = pgEnum("lead_status", ["to_visit", "interested", "mockup_sent", "deposit_paid"]);
+export const stageKindEnum = pgEnum("stage_kind", ["open", "won", "lost"]);
+
+/** Étapes du pipeline, propres à chaque entreprise. Un lead référence l'une d'elles par sa `key`. */
+export const pipelineStages = pgTable(
+  "pipeline_stages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    key: text("key").notNull(),
+    name: text("name").notNull(),
+    // couleur CSS : « #e5484d » ou « rgba(34, 170, 94, 0.6) » (elle colore aussi le point sur la carte)
+    color: text("color").notNull(),
+    // chance de conclure à cette étape, en % : sert à pondérer la valeur du pipeline
+    probability: integer("probability").notNull().default(0),
+    kind: stageKindEnum("kind").notNull().default("open"),
+    position: integer("position").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("pipeline_stages_company_key").on(t.companyId, t.key)],
+);
 
 export const leads = pgTable("leads", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -150,7 +171,11 @@ export const leads = pgTable("leads", {
   locationSource: text("location_source").notNull().default(""),
   contactName: text("contact_name").notNull().default(""),
   phone: text("phone").notNull().default(""),
-  status: leadStatusEnum("status").notNull().default("to_visit"),
+  // clé d'une étape de pipeline_stages (validée par l'API)
+  status: text("status").notNull().default("to_visit"),
+  lostReason: text("lost_reason").notNull().default(""),
+  // date d'entrée dans une étape « gagné » ou « perdu »
+  closedAt: timestamp("closed_at"),
   lat: doublePrecision("lat"),
   lng: doublePrecision("lng"),
   estimatedValue: integer("estimated_value"),

@@ -8,6 +8,8 @@ export const CATALOG = {
   role: { actions: ["read", "create", "update", "delete"], scoped: false },
   lead: { actions: ["read", "create", "update", "delete", "assign", "export"], scoped: true },
   event: { actions: ["read", "create", "update", "delete"], scoped: true },
+  // tout membre lit les étapes de son entreprise ; seules la création, la modification et la suppression sont des droits
+  stage: { actions: ["create", "update", "delete"], scoped: false },
   task: { actions: ["read", "create", "update", "delete", "assign"], scoped: true },
   verification: { actions: ["read", "create", "update"], scoped: true },
   workflow: { actions: ["read", "create", "update", "delete"], scoped: true },

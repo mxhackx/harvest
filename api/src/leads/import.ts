@@ -1,4 +1,5 @@
 import { CsvError, parseCsv } from "./csv.js";
+import { DEFAULT_STAGES } from "../stages/defaults.js";
 import { createBody } from "./schema.js";
 
 export const MAX_IMPORT_ROWS = 1000;
@@ -36,7 +37,7 @@ export const IMPORT_FIELDS = {
 export type ImportField = keyof typeof IMPORT_FIELDS;
 
 /** Colonnes présentes dans un export Harvest : reconnues mais volontairement non réimportées. */
-export const EXPORT_ONLY = ["id", "statuslabel", "locationsource", "owner", "createdat", "updatedat"];
+export const EXPORT_ONLY = ["id", "statuslabel", "locationsource", "owner", "createdat", "updatedat", "lostreason", "closedat"];
 
 export const normalizeHeader = (h: string) =>
   h
@@ -48,7 +49,8 @@ export const normalizeHeader = (h: string) =>
 const HEADER_TO_FIELD = new Map<string, ImportField>();
 for (const [field, names] of Object.entries(IMPORT_FIELDS)) for (const n of names) HEADER_TO_FIELD.set(n, field as ImportField);
 
-const STATUS_BY_NAME: Record<string, string> = {
+/** Anciens noms et abréviations acceptés, valables si l'étape visée existe dans l'entreprise. */
+const LEGACY_STATUS: Record<string, string> = {
   tovisit: "to_visit",
   avisiter: "to_visit",
   interested: "interested",
@@ -60,6 +62,27 @@ const STATUS_BY_NAME: Record<string, string> = {
   acomptepaye: "deposit_paid",
   paye: "deposit_paid",
 };
+
+export type StatusResolver = { resolve: (raw: string) => string | undefined; names: string[] };
+
+/** Reconnaît une étape par sa clé ou son nom (accents et casse ignorés) parmi celles de l'entreprise. */
+export function makeStatusResolver(stages: { key: string; name: string }[]): StatusResolver {
+  const byName = new Map<string, string>();
+  for (const s of stages) {
+    byName.set(normalizeHeader(s.key), s.key);
+    byName.set(normalizeHeader(s.name), s.key);
+  }
+  const keys = new Set(stages.map((s) => s.key));
+  return {
+    names: stages.map((s) => s.name),
+    resolve: (raw) => {
+      const n = normalizeHeader(raw);
+      return byName.get(n) ?? (LEGACY_STATUS[n] && keys.has(LEGACY_STATUS[n]) ? LEGACY_STATUS[n] : undefined);
+    },
+  };
+}
+
+export const defaultStatusResolver = makeStatusResolver(DEFAULT_STAGES);
 
 export type RawRecord = { line: number; data: Record<string, unknown> };
 export type Parsed = { records: RawRecord[]; ignoredColumns: string[]; format: "csv" | "json" };
@@ -175,7 +198,7 @@ function frenchIssue(i: ZodIssueLike): string {
 }
 
 /** Convertit une ligne brute (texte) en lead valide, ou la liste de ses problèmes. */
-export function cleanRow(rec: RawRecord): { row?: CleanRow; issues: RowIssue[] } {
+export function cleanRow(rec: RawRecord, statuses: StatusResolver = defaultStatusResolver): { row?: CleanRow; issues: RowIssue[] } {
   const issues: RowIssue[] = [];
   const add = (field: string, message: string) => issues.push({ line: rec.line, field, message });
   if (rec.data.__invalid) return { issues: [{ line: rec.line, message: "cette entrée n'est pas un objet JSON" }] };
@@ -187,9 +210,9 @@ export function cleanRow(rec: RawRecord): { row?: CleanRow; issues: RowIssue[] }
   }
 
   if (!blank(d.status)) {
-    const s = STATUS_BY_NAME[normalizeHeader(String(d.status))];
-    if (s) candidate.status = s;
-    else add("status", `étape inconnue « ${text(d.status)} » (attendu : À visiter, Intéressé, Maquette envoyée ou Acompte payé)`);
+    const key = statuses.resolve(String(d.status));
+    if (key) candidate.status = key;
+    else add("status", `étape inconnue « ${text(d.status)} » (attendu : ${statuses.names.join(", ")})`);
   }
 
   const latBlank = blank(d.lat);

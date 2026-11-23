@@ -57,6 +57,20 @@
       "when": 1795459111816,
       "tag": "0007_enable_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795462049708,
+      "tag": "0008_pipeline_stages",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795462065815,
+      "tag": "0009_pipeline_stages_data",
+      "breakpoints": true
     }
   ]
 }

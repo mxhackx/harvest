@@ -26,6 +26,8 @@ export const EXPORT_COLUMNS = [
   "estimatedValue",
   "visited",
   "visitedAt",
+  "lostReason",
+  "closedAt",
   "owner",
   "createdAt",
   "updatedAt",
@@ -52,16 +54,19 @@ type LeadLike = {
   locationSource: string;
   estimatedValue: number | null;
   visitedAt: Date | null;
+  lostReason: string;
+  closedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export function toExportRow(l: LeadLike, owner: string): ExportRow {
+/** `stageName` : nom de l'étape dans l'entreprise ; à défaut, le libellé par défaut puis la clé. */
+export function toExportRow(l: LeadLike, owner: string, stageName?: string): ExportRow {
   return {
     id: l.id,
     name: l.name,
     status: l.status,
-    statusLabel: STATUS_LABEL[l.status] ?? l.status,
+    statusLabel: stageName ?? STATUS_LABEL[l.status] ?? l.status,
     sector: l.sector,
     contactName: l.contactName,
     phone: l.phone,
@@ -78,6 +83,8 @@ export function toExportRow(l: LeadLike, owner: string): ExportRow {
     estimatedValue: l.estimatedValue,
     visited: l.visitedAt !== null,
     visitedAt: l.visitedAt?.toISOString() ?? null,
+    lostReason: l.lostReason,
+    closedAt: l.closedAt?.toISOString() ?? null,
     owner,
     createdAt: l.createdAt.toISOString(),
     updatedAt: l.updatedAt.toISOString(),
