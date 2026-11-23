@@ -54,8 +54,16 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: web/package-lock.json
+          cache-dependency-path: |
+            web/package-lock.json
+            api/package-lock.json
       - run: npm ci
+        working-directory: web
+      # un test du web importe du code de l'API (api/src/leads/import.ts), qui a besoin de zod
+      - run: npm ci
+        working-directory: api
+      # génère les types globaux de Next (LayoutProps, PageProps…) absents d'un dépôt fraîchement cloné
+      - run: npx next typegen
         working-directory: web
       - run: npm run typecheck
         working-directory: web
