@@ -15,6 +15,7 @@ import { contactRoutes } from "./routes/contacts.js";
 import { activityRoutes } from "./routes/activities.js";
 import { invitationRoutes } from "./routes/invitations.js";
 import { leadAssignRoutes } from "./routes/lead-assign.js";
+import { reportRoutes } from "./routes/reports.js";
 import { taskRoutes } from "./routes/tasks.js";
 import { notificationRoutes } from "./routes/notifications.js";
 
@@ -47,6 +48,7 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(contactRoutes);
   await app.register(activityRoutes);
   await app.register(taskRoutes);
+  await app.register(reportRoutes);
   await app.register(invitationRoutes);
   await app.register(leadAssignRoutes);
   await app.register(notificationRoutes);

@@ -178,14 +178,14 @@ export const leads = pgTable("leads", {
   status: text("status").notNull().default("to_visit"),
   lostReason: text("lost_reason").notNull().default(""),
   // date d'entrée dans une étape « gagné » ou « perdu »
-  closedAt: timestamp("closed_at"),
+  closedAt: timestamp("closed_at", { withTimezone: true }),
   lat: doublePrecision("lat"),
   lng: doublePrecision("lng"),
   estimatedValue: integer("estimated_value"),
   // null = pas encore visité (pastille « à visiter » sur la carte)
-  visitedAt: timestamp("visited_at"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  visitedAt: timestamp("visited_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const eventKindEnum = pgEnum("event_kind", ["visit", "call", "followup", "other"]);
