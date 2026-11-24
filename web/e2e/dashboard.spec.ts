@@ -3,7 +3,7 @@ import { addLead, banner, call, newUser, signIn, type User } from "./helpers";
 
 async function open(page: Page, context: Parameters<typeof signIn>[0], user: User) {
   await signIn(context, user);
-  await page.goto("/");
+  await page.goto("/dashboard");
   await expect(page.getByRole("heading", { name: "Bonjour Aris" })).toBeVisible();
 }
 

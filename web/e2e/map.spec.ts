@@ -19,7 +19,7 @@ async function seed(request: APIRequestContext, user: User) {
 
 async function openDashboard(page: Page, context: Parameters<typeof signIn>[0], user: User) {
   await signIn(context, user);
-  await page.goto("/");
+  await page.goto("/dashboard");
   await expect(page.getByRole("heading", { name: /Bonjour/ })).toBeVisible();
   await mapReady(page);
 }
@@ -84,7 +84,7 @@ test.describe("carte : leads de la journée", () => {
   test("sans aucun lead, la carte invite à en ajouter un", async ({ page, context, request }) => {
     await openDashboard(page, context, await newUser(request));
     await expect(page.getByText("Aucun lead sur la carte")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Ajouter un lead" })).toHaveAttribute("href", "/leads");
+    await expect(page.getByRole("link", { name: "Ajouter un lead" })).toHaveAttribute("href", "/dashboard/leads");
   });
 });
 
