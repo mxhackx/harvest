@@ -3,7 +3,7 @@ import Link from "next/link";
 import { DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
 
-export const metadata = docMetadata("/docs/import/erreurs");
+export const metadata = docMetadata("/docs/import/errors");
 
 type Row = { message: string; cause: string; fix: string };
 
@@ -65,7 +65,7 @@ function Table({ rows }: { rows: Row[] }) {
 
 export default function Page() {
   return (
-    <DocArticle href="/docs/import/erreurs">
+    <DocArticle href="/docs/import/errors">
       <p>
         Le rapport d’analyse indique le numéro de la ligne concernée (ou, pour un JSON, le numéro de l’entrée) et le nom
         du champ. Corrigez le fichier et relancez l’analyse : tant que vous n’avez pas confirmé, rien n’est créé.

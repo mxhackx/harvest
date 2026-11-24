@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
 
-export const metadata = docMetadata("/docs/localisation");
+export const metadata = docMetadata("/docs/location");
 
 export default function Page() {
   return (
-    <DocArticle href="/docs/localisation">
+    <DocArticle href="/docs/location">
       <h2>Un point par lead</h2>
       <p>
         Chaque lead qui a une position apparaît sur la carte de l’accueil sous la forme d’un petit point, relié aux

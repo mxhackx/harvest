@@ -90,7 +90,7 @@ export function AuthCard() {
               <label className="flex min-h-9 items-center gap-2 text-small">
                 <input type="checkbox" name="remember" className="size-4 accent-forest" /> Rester connecté
               </label>
-              <Link href="/mot-de-passe-oublie" className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">Mot de passe oublié ?</Link>
+              <Link href="/forgot-password" className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">Mot de passe oublié ?</Link>
             </div>
           )}
           <Button type="submit" loading={loading}>

@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
 
-export const metadata = docMetadata("/docs/equipe");
+export const metadata = docMetadata("/docs/team");
 
 export default function Page() {
   return (
-    <DocArticle href="/docs/equipe">
+    <DocArticle href="/docs/team">
       <h2>Inviter un collaborateur</h2>
       <ol>
         <li>Ouvrez <strong>ERP › Équipe</strong>.</li>
@@ -56,7 +56,7 @@ export default function Page() {
       <h2>Réattribuer des leads</h2>
       <p>
         Avec le droit d’attribuer, sélectionnez des leads dans le tableau puis « Attribuer à… », ou utilisez le bouton de
-        la <Link href="/docs/fiche-lead">fiche lead</Link>. Le lead passe à la personne choisie et à son équipe, l’action
+        la <Link href="/docs/lead">fiche lead</Link>. Le lead passe à la personne choisie et à son équipe, l’action
         apparaît dans le fil d’activité et la personne est notifiée.
       </p>
       <Callout title="Quand quelqu’un part">

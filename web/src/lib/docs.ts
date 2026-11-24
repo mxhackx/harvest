@@ -24,12 +24,12 @@ export const DOCS: DocPage[] = [
         description: "Comment présenter un fichier JSON : structure attendue, types des valeurs et exemples prêts à copier.",
       },
       {
-        href: "/docs/import/champs",
+        href: "/docs/import/fields",
         title: "Champs acceptés",
         description: "Référence de tous les champs d'un lead : type, valeurs acceptées, noms de colonnes alternatifs et exemples.",
       },
       {
-        href: "/docs/import/erreurs",
+        href: "/docs/import/errors",
         title: "Messages d'erreur",
         description: "Les messages du rapport d'import : ce qu'ils signifient et comment corriger votre fichier.",
       },
@@ -41,7 +41,7 @@ export const DOCS: DocPage[] = [
     description: "Personnalisez les étapes de votre pipeline : noms, couleurs, probabilités, étapes gagnées et perdues, motif de perte et valeur pondérée.",
   },
   {
-    href: "/docs/fiche-lead",
+    href: "/docs/lead",
     title: "La fiche d'un lead",
     description: "Tout sur un lead au même endroit : étape, informations, fil d'activité, notes, appels, contacts multiples et attribution.",
   },
@@ -51,17 +51,17 @@ export const DOCS: DocPage[] = [
     description: "Retrouvez toutes vos personnes à joindre, envoyez un message WhatsApp ou e-mail depuis un modèle, et enregistrez vos vues de leads.",
   },
   {
-    href: "/docs/taches",
+    href: "/docs/tasks",
     title: "Tâches et rappels",
     description: "Créez des tâches avec échéance, confiez-les à un collègue, repérez les retards et suivez les notifications de la cloche.",
   },
   {
-    href: "/docs/rapports",
+    href: "/docs/reports",
     title: "Rapports",
     description: "Lisez vos chiffres : pipeline en valeur, conversion par étape, motifs de perte et activité de chaque personne sur la période choisie.",
   },
   {
-    href: "/docs/equipe",
+    href: "/docs/team",
     title: "Équipe, rôles et invitations",
     description: "Invitez des collaborateurs par lien, gérez rôles et équipes, réattribuez des leads et passez d'une entreprise à l'autre.",
   },
@@ -71,7 +71,7 @@ export const DOCS: DocPage[] = [
     description: "Exportez vos leads en CSV ou JSON : formats, colonnes, droits requis et réimport.",
   },
   {
-    href: "/docs/localisation",
+    href: "/docs/location",
     title: "Position sur la carte",
     description: "Comment un lead est placé sur la carte : coordonnées, lien Google Maps, adresse, et précision de la position.",
   },
