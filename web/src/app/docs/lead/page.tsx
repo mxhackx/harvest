@@ -51,6 +51,13 @@ export default function Page() {
         Les noms d’étape du fil sont ceux de l’époque : renommer une étape plus tard ne réécrit pas l’histoire.
       </p>
 
+      <h2>Mentionner un collègue</h2>
+      <p>
+        Dans une note du fil, tapez <strong>@</strong> puis les premières lettres d’un prénom ou d’un nom : choisissez le
+        collègue proposé. Il reçoit une <strong>notification</strong> (la cloche) qui mène au lead. On ne peut mentionner
+        que quelqu’un qui a le droit de lire ce lead : un collègue qui ne le voit pas n’est pas proposé.
+      </p>
+
       <h2>Plusieurs contacts par entreprise</h2>
       <p>
         L’onglet <strong>Contacts</strong> liste les personnes à joindre : nom, fonction, téléphone, WhatsApp, e-mail,
