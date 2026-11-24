@@ -11,6 +11,7 @@ import { LeadBoard } from "./lead-board";
 import { AddLeadChooser } from "./add-lead-chooser";
 import { ImportModal } from "./import-modal";
 import { AssignModal } from "./assign-modal";
+import { applyLeadView } from "@/lib/lead-filters";
 import { SegmentsMenu } from "./segments-menu";
 import { LeadModal } from "./lead-modal";
 import { LostReasonModal } from "./lost-reason-modal";
@@ -65,28 +66,7 @@ export function LeadsPage() {
 
   const sectors = useMemo(() => [...new Set((leads ?? []).map((l) => l.sector).filter(Boolean))].sort(), [leads]);
 
-  const shown = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const list = (leads ?? []).filter((l) => {
-      if (tab === "mine" && l.ownerId !== me.user.id) return false;
-      if (filters.mode !== "all" && l.visitMode !== filters.mode) return false;
-      if (filters.visit === "visited" && !l.visitedAt) return false;
-      if (filters.visit === "to_visit" && l.visitedAt) return false;
-      const located = l.lat !== null && l.lng !== null;
-      if (filters.position === "with" && !located) return false;
-      if (filters.position === "without" && located) return false;
-      if (filters.sector !== "all" && l.sector !== filters.sector) return false;
-      if (q && ![l.name, l.sector, l.address, l.contactName, l.phone].some((v) => v.toLowerCase().includes(q))) return false;
-      return true;
-    });
-    return list.sort((a, b) =>
-      sort === "name"
-        ? a.name.localeCompare(b.name, "fr")
-        : sort === "value"
-          ? (b.estimatedValue ?? -1) - (a.estimatedValue ?? -1)
-          : b.createdAt.localeCompare(a.createdAt),
-    );
-  }, [leads, tab, filters, query, sort, me.user.id]);
+  const shown = useMemo(() => applyLeadView(leads ?? [], { tab, query, sort, filters }, me.user.id), [leads, tab, filters, query, sort, me.user.id]);
 
   // La sélection ne garde que ce qui est visible : on n'agit jamais sur un lead qu'on ne voit pas.
   const sel = useMemo(() => {

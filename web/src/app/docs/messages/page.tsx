@@ -67,11 +67,14 @@ export default function Page() {
         tâches. Elle ne montre que ce que vous avez le droit de lire, jamais la corbeille.
       </p>
 
-      <h2>Segments : vos vues enregistrées</h2>
+      <h2>Segments : vos listes qui se mettent à jour</h2>
       <p>
-        Dans <strong>CRM › Leads</strong>, réglez la recherche, les filtres, l’onglet et le tri, puis{" "}
-        <strong>Segments › Enregistrer la vue actuelle</strong> et donnez un nom (« À visiter à Cotonou »). Un clic sur
-        le segment rétablit tout. Les segments sont personnels : personne d’autre ne les voit. Trente au plus.
+        Sur la page <strong>Leads</strong>, réglez la recherche et les filtres (type de prospect, visite, position, secteur),
+        puis <strong>Segments › Enregistrer la vue actuelle</strong>. <strong>CRM › Segments</strong> liste vos segments avec
+        leur taille. La page d’un segment montre ses filtres (modifiables), sa taille, la part de votre base qu’il
+        représente, ses leads avec une recherche, et l’export en CSV ou JSON. L’onglet « Réglages » le renomme, le décrit ou
+        le supprime : cela ne touche jamais aux leads. Un segment est <strong>dynamique</strong> : il suit vos leads en
+        direct. Les segments sont personnels.
       </p>
 
       <h2>Épingler une page</h2>
