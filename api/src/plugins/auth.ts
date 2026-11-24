@@ -6,7 +6,7 @@ import { SESSION_COOKIE, resolveSession } from "../auth/session.js";
 import { can, mergeGrants, type Subject } from "../rbac/policy.js";
 import type { Scope } from "../rbac/permissions.js";
 
-export type AuthUser = { id: string; email: string; name: string; image: string | null };
+export type AuthUser = { id: string; email: string; name: string; image: string | null; emailReminders: boolean };
 export type MemberCtx = { membershipId: string; subject: Subject; roleIds: string[] };
 
 declare module "fastify" {

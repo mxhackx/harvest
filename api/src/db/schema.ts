@@ -27,6 +27,8 @@ export const users = pgTable("users", {
   emailVerified: boolean("email_verified").notNull().default(false),
   // photo de profil Google / GitHub ; null → l'interface affiche les initiales
   image: text("image"),
+  // reçoit un e-mail pour les tâches et rendez-vous qui arrivent (en plus de la notification dans l'application)
+  emailReminders: boolean("email_reminders").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -232,6 +234,7 @@ export const events = pgTable("events", {
   startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
   notes: text("notes").notNull().default(""),
   done: boolean("done").notNull().default(false),
+  remindedAt: timestamp("reminded_at", { withTimezone: true }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -316,6 +319,8 @@ export const tasks = pgTable(
     doneAt: timestamp("done_at", { withTimezone: true }),
     // low | normal | high
     priority: text("priority").notNull().default("normal"),
+    // rappel déjà envoyé pour cette échéance (remis à zéro quand l'échéance change)
+    remindedAt: timestamp("reminded_at", { withTimezone: true }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
