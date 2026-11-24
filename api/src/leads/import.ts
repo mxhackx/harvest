@@ -36,7 +36,7 @@ export const IMPORT_FIELDS = {
 
 export type ImportField = keyof typeof IMPORT_FIELDS;
 
-/** Colonnes présentes dans un export Harvest : reconnues mais volontairement non réimportées. */
+/** Colonnes présentes dans un export Hivation : reconnues mais volontairement non réimportées. */
 export const EXPORT_ONLY = ["id", "statuslabel", "locationsource", "owner", "createdat", "updatedat", "lostreason", "closedat"];
 
 export const normalizeHeader = (h: string) =>

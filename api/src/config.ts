@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { BRAND_NAME } from "./brand.js";
 
 const list = (v: string | undefined, fallback: string[]) =>
   v ? v.split(",").map((s) => s.trim().replace(/\/$/, "")).filter(Boolean) : fallback;
@@ -33,11 +34,11 @@ export const config = {
   /**
    * E-mails via Resend. Sans RESEND_API_KEY, rien n'est envoyé (l'application reste utilisable : les liens
    * s'affichent à l'écran). Tant qu'aucun domaine n'est vérifié chez Resend, l'expéditeur par défaut ne peut écrire
-   * qu'à l'adresse du compte Resend : définir MAIL_FROM, ex. « Harvest <noreply@mondomaine.com> ».
+   * qu'à l'adresse du compte Resend : définir MAIL_FROM, ex. « Hivation <noreply@mondomaine.com> ».
    */
   mail: {
     apiKey: process.env.RESEND_API_KEY ?? "",
-    from: process.env.MAIL_FROM ?? "Harvest <onboarding@resend.dev>",
+    from: process.env.MAIL_FROM ?? `${BRAND_NAME} <onboarding@resend.dev>`,
   },
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID ?? "",

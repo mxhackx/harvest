@@ -42,7 +42,7 @@ describe("parseImport : colonnes", () => {
     expect(p.records[0].data).toMatchObject({ name: "Pharmacie", phone: "+229 97", website: "a.bj", address: "Rue 1", city: "Cotonou", landmark: "près du marché", status: "Intéressé", estimatedValue: "5000" });
     expect(p.ignoredColumns).toEqual([]);
   });
-  it("liste les colonnes inconnues mais pas celles d'un export Harvest", () => {
+  it("liste les colonnes inconnues mais pas celles d'un export Hivation", () => {
     const p = parseImport("id,name,statusLabel,owner,createdAt,couleur_preferee\n1,A,À visiter,Aris,2026-01-01,bleu");
     expect(p.ignoredColumns).toEqual(["couleur_preferee"]);
   });

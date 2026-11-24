@@ -47,7 +47,7 @@ async function setup() {
 const mkLead = async (s: S, name: string, extra = {}) => (await http(s, "POST", "/leads", { name, ...extra })).json();
 
 const tpl = (s: S, body: object) => http(s, "POST", "/templates", body);
-const good = { name: "Premier contact", channel: "whatsapp", body: "Bonjour {{contact}}, ici {{moi}} de Harvest." };
+const good = { name: "Premier contact", channel: "whatsapp", body: "Bonjour {{contact}}, ici {{moi}} de Hivation." };
 const cfg = { tab: "all", query: "", sort: "recent", filters: { visit: "all", position: "all", sector: "" } };
 
 describe("modèles de messages", () => {

@@ -1,3 +1,4 @@
+import { BRAND_NAME } from "../brand.js";
 import type { Mail } from "./send.js";
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -6,7 +7,7 @@ function layout(title: string, intro: string, button: string, url: string, outro
   const html = `<!doctype html><html lang="fr"><body style="margin:0;background:#f4f5f7;font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#14181f">
 <div style="max-width:520px;margin:0 auto;padding:32px 20px">
 <div style="background:#fff;border:1px solid #e3e6ea;border-radius:12px;padding:28px">
-<p style="margin:0 0 4px;font-size:13px;font-weight:700;letter-spacing:.04em;color:#0868c9">HARVEST</p>
+<p style="margin:0 0 4px;font-size:13px;font-weight:700;letter-spacing:.04em;color:#0868c9">${esc(BRAND_NAME.toUpperCase())}</p>
 <h1 style="margin:0 0 16px;font-size:20px">${esc(title)}</h1>
 <p style="margin:0 0 20px;line-height:1.5">${intro}</p>
 <p style="margin:0 0 24px"><a href="${esc(url)}" style="display:inline-block;background:#0868c9;color:#fff;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:8px">${esc(button)}</a></p>
@@ -19,22 +20,22 @@ function layout(title: string, intro: string, button: string, url: string, outro
 
 export function invitationMail(to: string, d: { inviter: string; company: string; url: string; days: number }): Mail {
   const { html, text } = layout(
-    `${d.inviter} vous invite sur Harvest`,
+    `${d.inviter} vous invite sur ${BRAND_NAME}`,
     `<strong>${esc(d.inviter)}</strong> vous invite à rejoindre <strong>${esc(d.company)}</strong>. Créez votre compte ou connectez-vous avec cette adresse pour accepter.`,
     "Rejoindre l’équipe",
     d.url,
     `Ce lien est personnel et valable ${d.days} jours. Si vous ne connaissez pas ${esc(d.inviter)}, ignorez ce message.`,
   );
-  return { to, subject: `${d.inviter} vous invite à rejoindre ${d.company} sur Harvest`, html, text };
+  return { to, subject: `${d.inviter} vous invite à rejoindre ${d.company} sur ${BRAND_NAME}`, html, text };
 }
 
 export function resetMail(to: string, d: { url: string; minutes: number }): Mail {
   const { html, text } = layout(
     "Réinitialiser votre mot de passe",
-    "Vous avez demandé à choisir un nouveau mot de passe pour votre compte Harvest.",
+    `Vous avez demandé à choisir un nouveau mot de passe pour votre compte ${BRAND_NAME}.`,
     "Choisir un nouveau mot de passe",
     d.url,
     `Ce lien est valable ${d.minutes} minutes et ne sert qu’une fois. Si vous n’êtes pas à l’origine de cette demande, ignorez ce message : votre mot de passe reste inchangé.`,
   );
-  return { to, subject: "Réinitialisation de votre mot de passe Harvest", html, text };
+  return { to, subject: `Réinitialisation de votre mot de passe ${BRAND_NAME}`, html, text };
 }

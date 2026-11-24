@@ -1,4 +1,4 @@
-# Blueprint Render : l'API Harvest (Fastify).
+# Blueprint Render : l'API Hivation (Fastify).
 # Architecture : site sur Vercel, API ici, base Postgres sur Supabase.
 # Pas à pas : README.md, section « Déploiement ».
 #
@@ -53,6 +53,6 @@ services:
       # E-mails (invitations, mot de passe oublié) : clé API Resend. Facultatif : sans elle, les liens s'affichent à l'écran.
       - key: RESEND_API_KEY
         sync: false
-      # Expéditeur, ex. « Harvest <noreply@mondomaine.com> » (le domaine doit être vérifié chez Resend).
+      # Expéditeur, ex. « Hivation <noreply@mondomaine.com> » (le domaine doit être vérifié chez Resend).
       - key: MAIL_FROM
         sync: false
