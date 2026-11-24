@@ -1,5 +1,6 @@
 "use client";
 
+import { currentPath } from "./routes";
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 const KEY = "harvest.pins";
@@ -14,7 +15,7 @@ export function togglePin(pins: string[], href: string): string[] {
 export function parsePins(raw: string): string[] {
   try {
     const v: unknown = JSON.parse(raw);
-    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.startsWith("/")).slice(0, 20) : [];
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.startsWith("/")).map(currentPath).slice(0, 20) : [];
   } catch {
     return [];
   }
