@@ -63,6 +63,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   stage_exists: "Une étape porte déjà ce nom.",
   region_exists: "Une région porte déjà ce nom.",
   region_in_use: "Cette région a des vagues : elle garde leur historique et ne peut pas être supprimée.",
+  mail_failed: "L’e-mail n’a pas pu partir (service d’envoi indisponible). Vous pouvez l’ouvrir dans votre messagerie.",
+  email_limit: "Limite d’e-mails atteinte pour aujourd’hui (100 par personne et par jour).",
   wave_closed: "Cette vague est clôturée : elle ne peut plus être modifiée.",
   too_many_stages: "Vingt étapes au plus.",
   last_open_stage: "Il faut garder au moins une étape ouverte.",
