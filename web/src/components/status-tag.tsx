@@ -11,7 +11,7 @@ export function StatusTag({ status }: { status: string }) {
   return (
     <span className={`inline-flex h-[22px] items-center gap-1.5 rounded-md px-[9px] text-small font-bold ${look}`}>
       {/* même couleur que le point sur la carte : l'étiquette sert de légende */}
-      <span aria-hidden className="size-2 rounded-full border border-black/15" style={{ background: stage.color }} />
+      <span aria-hidden className="size-2 rounded-full border border-ink/15" style={{ background: stage.color }} />
       {stage.name}
     </span>
   );

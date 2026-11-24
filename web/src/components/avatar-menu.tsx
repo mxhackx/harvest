@@ -9,6 +9,7 @@ import { useSession } from "@/lib/session";
 import { setActiveCompanyId } from "@/lib/active-company";
 import { BookIcon } from "./icons";
 import { siteHref } from "@/lib/hosts";
+import { ThemeToggle } from "./theme-toggle";
 
 const initials = (name: string) =>
   name
@@ -133,6 +134,7 @@ export function AvatarMenu() {
             </>
           )}
           <hr className="my-2 border-rule" />
+          <div className="px-1 pb-1"><ThemeToggle /></div>
           <Link
             role="menuitem"
             href={siteHref("/docs")}

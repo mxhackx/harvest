@@ -47,7 +47,14 @@
   /* Cadre du formulaire et contour des boutons secondaires : bleu-gris */
   --color-frame: #b3c2d3;
   --color-on-dark-accent: #0969da;
-  --color-on-dark-soft: #d6e8fb; /* texte discret sur le bleu du menu */
+  --color-inverse: #14222e; /* bandeau sombre en mode clair (ex. appel à l'action de l'accueil) */
+  --color-on-inverse: #ffffff;
+  /* Globe de l'accueil : fond marine, traits bleu clair (identiques en mode sombre) */
+  --color-globe-bg: #071a33;
+  --color-globe-line: #4aa3ff;
+  --color-globe-glow: #1e60be;
+  --color-globe-marker: #ffffff;
+  --color-scrim: rgb(0 0 0 / 0.45); /* voile derrière une fenêtre modale */
   --color-neutral: #8a99a6; /* gris des éléments sans couleur propre (étape perdue, autre événement) */
   --color-route: #e5484d; /* trait de la tournée sur la carte */
 
@@ -58,7 +65,36 @@
   --shadow-*: initial; /* pas d'ombre portée */
 }
 
+/* Mode sombre : mêmes jetons, valeurs adaptées. lib/theme-mode.ts pose data-theme="dark" (choix de l'utilisateur ou réglage du système). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-page: #0d1520;
+  --color-card: #131d2a;
+  --color-border: #2c3d52;
+  --color-rule: #243346;
+  --color-field: #1a2636;
+  --color-ink: #e6edf5;
+  --color-muted: #98a9ba;
+  --color-link: #5fd4c4;
+  --color-accent: #1e74d8;
+  --color-accent-soft: #14304f;
+  --color-accent-press: #6db0ff;
+  --color-forest: #5fd4c4;
+  --color-forest-soft: #10302d;
+  --color-fail: #ff8d84;
+  --color-banner: rgb(56 139 253 / 0.2);
+  --color-banner-edge: rgb(56 139 253 / 0.6);
+  --color-banner-hover: rgb(56 139 253 / 0.3);
+  --color-banner-text: #e6edf5;
+  --color-frame: #3a4d63;
+  --color-on-dark-accent: #6db0ff;
+  --color-inverse: #1a2636;
+  --color-on-inverse: #e6edf5;
+  --color-neutral: #7d8fa0;
+}
+
 html {
+  color-scheme: light;
   background: var(--color-page);
   color: var(--color-ink);
 }

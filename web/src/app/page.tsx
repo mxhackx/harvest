@@ -73,7 +73,7 @@ export default function HomePage() {
         </section>
 
         <section aria-labelledby="carte" className="mx-auto w-full max-w-[1080px] px-6 pb-16">
-          <h2 id="carte" className="font-serif text-[28px] font-semibold">Du globe jusqu’à la rue</h2>
+          <h2 id="carte" className="font-display text-heading font-bold tracking-display">Du globe jusqu’à la rue</h2>
           <p className="mt-2 max-w-[620px] text-small text-muted">
             Faites tourner le globe, cliquez sur une région : la carte s’y rend. Chaque panneau peut prendre toute la hauteur.
           </p>
@@ -123,10 +123,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="bg-ink text-white">
+        <section className="bg-inverse text-on-inverse">
           <div className="mx-auto flex w-full max-w-[1080px] flex-col items-start gap-4 px-6 py-14">
             <h2 className="font-display text-heading font-bold tracking-display">Prêt pour votre prochaine vague ?</h2>
-            <Link href={appHref("/login")} className={`${button} bg-white text-ink hover:bg-field`}>Créer mon espace</Link>
+            <Link href={appHref("/login")} className={`${button} bg-on-inverse text-inverse hover:opacity-90`}>Créer mon espace</Link>
           </div>
         </section>
       </main>

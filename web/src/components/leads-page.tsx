@@ -245,7 +245,7 @@ export function LeadsPage() {
                         requestMove([...sel], st.key);
                       }}
                     >
-                      <span aria-hidden className="size-2.5 rounded-full border border-black/15" style={{ background: st.color }} />
+                      <span aria-hidden className="size-2.5 rounded-full border border-ink/15" style={{ background: st.color }} />
                       {st.name}
                     </MenuItem>
                   ))
