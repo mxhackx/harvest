@@ -1,0 +1,16 @@
+import type { FastifyBaseLogger } from "fastify";
+import { purgeExpiredTrash } from "./leads/trash.js";
+
+type Job = { name: string; everyMs: number; run: () => Promise<unknown> };
+
+/** Tâches de fond, lancées par le serveur (jamais pendant les tests). Une erreur est journalisée, jamais fatale. */
+const JOBS: Job[] = [{ name: "purge de la corbeille", everyMs: 6 * 3_600_000, run: purgeExpiredTrash }];
+
+export function startJobs(log: FastifyBaseLogger, jobs: Job[] = JOBS) {
+  const timers = jobs.map((job) => {
+    const tick = () => job.run().then((r) => log.info({ job: job.name, result: r }, "job done"), (err) => log.error({ err, job: job.name }, "job failed"));
+    void tick();
+    return setInterval(tick, job.everyMs);
+  });
+  return () => timers.forEach(clearInterval);
+}

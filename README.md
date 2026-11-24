@@ -21,6 +21,10 @@ cd web && npm run dev          # http://localhost:3000
 - Espace connecté : tout est sous `/dashboard`, non référencé par les moteurs de recherche. Chaque module a son préfixe : `/dashboard/crm/…` (`leads`, `contacts`, `tasks`, `templates`, `pipeline`, `reports`) et `/dashboard/erp/…` (`team`). Seuls l'accueil (`/dashboard`) et le calendrier (`/dashboard/calendar`) n'en ont pas. Taper `/dashboard/crm` ou `/dashboard/erp` seul mène à la première page du module. Toutes les adresses sont en anglais et écrites une seule fois dans [web/src/lib/routes.ts](web/src/lib/routes.ts).
 - Anciennes adresses (françaises, ou sans `/crm`, comme `/taches`, `/dashboard/leads`, `/reinitialiser`, `/docs/equipe`…) : elles redirigent vers les nouvelles, sous-pages et paramètres compris (les e-mails déjà envoyés restent valides), et les pages épinglées dans le navigateur sont réécrites à la lecture. La liste est dans [web/src/lib/legacy-routes.ts](web/src/lib/legacy-routes.ts).
 
+## Tâches de fond (API)
+
+Le serveur lance des tâches périodiques ([api/src/jobs.ts](api/src/jobs.ts)), jamais pendant les tests : pour l'instant, la **purge de la corbeille** toutes les 6 h (les leads supprimés depuis plus de 30 jours sont effacés pour de bon). Une erreur est journalisée sans arrêter l'API.
+
 ## Styles
 
 Polices, tailles et couleurs sont définies une seule fois, dans [web/src/app/globals.css](web/src/app/globals.css) (bloc `@theme`). Les composants utilisent les classes qui en découlent (`font-display`, `text-heading`, `bg-accent`…) ou `var(--…)` : aucune valeur de style écrite en dur. Exceptions : le code qui ne lit pas le CSS (cartes MapLibre via `cssVar()`, aperçu de partage et `themeColor` via `THEME`) passe par [web/src/lib/theme.ts](web/src/lib/theme.ts), et un test vérifie que ces copies suivent `globals.css`. Les couleurs d'étapes du pipeline et du logo Google sont des données, pas du style.

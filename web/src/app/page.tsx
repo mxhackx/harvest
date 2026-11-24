@@ -53,7 +53,7 @@ export default function HomePage() {
         <nav aria-label="Navigation principale" className="flex items-center gap-5 text-small font-medium">
           <Link href="/docs" className="hover:underline">Documentation</Link>
           <Link href={appHref("/login")} className="hover:underline">Se connecter</Link>
-          <Link href={appHref(ROUTES.home)} className={`${button} hidden h-10 bg-accent text-white hover:bg-accent-press sm:inline-flex`}>Ouvrir l’application</Link>
+          <Link href={appHref(ROUTES.home)} className={`${button} hidden h-10 bg-accent text-white hover:bg-accent-hover sm:inline-flex`}>Ouvrir l’application</Link>
         </nav>
       </header>
 
@@ -67,7 +67,7 @@ export default function HomePage() {
             {BRAND.name} réunit la carte de tournée, le pipeline, les relances et les rapports. Vous savez où aller, qui rappeler et ce qui rapporte.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link href={appHref("/login")} className={`${button} bg-accent text-white hover:bg-accent-press`}>Commencer</Link>
+            <Link href={appHref("/login")} className={`${button} bg-accent text-white hover:bg-accent-hover`}>Commencer</Link>
             <Link href="/docs" className={`${button} border border-frame bg-card hover:bg-field`}>Lire la documentation</Link>
           </div>
         </section>

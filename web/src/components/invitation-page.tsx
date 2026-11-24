@@ -59,7 +59,7 @@ export function InvitationPage() {
         </p>
         {me === "anonymous" ? (
           <div className="flex flex-col gap-2">
-            <Link href={`/login?next=${next}`} className="inline-flex h-10 items-center justify-center rounded-control border border-accent-press bg-accent px-4 text-body font-medium text-white hover:bg-accent-press">
+            <Link href={`/login?next=${next}`} className="inline-flex h-10 items-center justify-center rounded-control border border-accent-hover bg-accent px-4 text-body font-medium text-white hover:bg-accent-hover">
               Se connecter ou créer un compte
             </Link>
             <p className="text-center text-small text-muted">Utilisez l’adresse {preview.email}.</p>

@@ -1,6 +1,7 @@
 import { and, eq, ilike, ne } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { leads } from "../db/schema.js";
+import { alive } from "./access.js";
 
 export const MAX_NAME = 120;
 const SUFFIX = /\s*\((\d+)\)\s*$/;
@@ -32,11 +33,11 @@ export async function takenNames(companyId: string, requested: string, excludeId
   const rows = await db
     .select({ name: leads.name })
     .from(leads)
-    .where(and(eq(leads.companyId, companyId), ilike(leads.name, `${escapeLike(baseName(requested))}%`), excludeId ? ne(leads.id, excludeId) : undefined));
+    .where(and(eq(leads.companyId, companyId), alive, ilike(leads.name, `${escapeLike(baseName(requested))}%`), excludeId ? ne(leads.id, excludeId) : undefined));
   return rows.map((r) => r.name);
 }
 
 /** Tous les noms de l'entreprise : utile à un import qui en numérote beaucoup d'un coup. */
 export async function allNames(companyId: string): Promise<string[]> {
-  return (await db.select({ name: leads.name }).from(leads).where(eq(leads.companyId, companyId))).map((r) => r.name);
+  return (await db.select({ name: leads.name }).from(leads).where(and(eq(leads.companyId, companyId), alive))).map((r) => r.name);
 }

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { and, asc, eq, gte, lt } from "drizzle-orm";
+import { and, asc, eq, gte, isNull, lt, or } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
 import { events, leads } from "../db/schema.js";
@@ -65,7 +65,7 @@ export async function eventRoutes(app: FastifyInstance) {
       })
       .from(events)
       .leftJoin(leads, eq(leads.id, events.leadId))
-      .where(and(scope, gte(events.startsAt, q.data.from), lt(events.startsAt, q.data.to)))
+      .where(and(scope, or(isNull(events.leadId), isNull(leads.deletedAt)), gte(events.startsAt, q.data.from), lt(events.startsAt, q.data.to)))
       .orderBy(asc(events.startsAt))
       .limit(500);
     return rows.map(({ event, lead }) => ({

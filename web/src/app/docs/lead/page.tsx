@@ -66,6 +66,15 @@ export default function Page() {
         confie le lead à un collègue, qui reçoit une notification.
       </p>
 
+      <h2>Supprimer et restaurer</h2>
+      <p>
+        Supprimer un lead (depuis sa fiche ou une sélection) le met à la <strong>corbeille</strong> : il disparaît des
+        listes, de la carte, des rapports et des tâches, mais ses contacts, son historique et ses tâches sont conservés.
+        La page <strong>Corbeille</strong> (CRM) permet de le <strong>restaurer</strong> pendant 30 jours, ou de l’effacer
+        tout de suite. Passé ce délai, il est effacé définitivement. La corbeille est réservée à ceux qui ont le droit de
+        supprimer des leads.
+      </p>
+
       <Callout title="Qui voit quoi ?">
         Le fil, les contacts et les tâches d’un lead suivent les droits sur ce lead. Si vous ne pouvez pas lire un lead,
         sa fiche vous répond « introuvable » : on ne révèle pas son existence.

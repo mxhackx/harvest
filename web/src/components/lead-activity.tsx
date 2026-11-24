@@ -108,7 +108,7 @@ export function LeadActivity({ leadId, canWrite, version }: { leadId: string; ca
                 type="button"
                 aria-pressed={kind === k.value}
                 onClick={() => setKind(k.value)}
-                className={`h-8 rounded-full border px-3 text-small font-medium ${kind === k.value ? "border-accent-press bg-accent text-white" : "border-frame bg-card hover:bg-field"}`}
+                className={`h-8 rounded-full border px-3 text-small font-medium ${kind === k.value ? "border-accent-hover bg-accent text-white" : "border-frame bg-card hover:bg-field"}`}
               >
                 {k.label}
               </button>
