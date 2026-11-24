@@ -546,3 +546,26 @@ export const customFields = pgTable(
   },
   (t) => [index("custom_fields_company").on(t.companyId, t.position)],
 );
+
+/**
+ * Webhook : une adresse externe prévenue (POST signé) quand quelque chose change dans l'entreprise. Le secret sert à
+ * signer chaque envoi (HMAC SHA-256) ; il n'est montré qu'à la création. Après trop d'échecs de suite, le webhook s'éteint.
+ */
+export const webhooks = pgTable(
+  "webhooks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    secret: text("secret").notNull(),
+    events: jsonb("events").$type<string[]>().notNull(),
+    active: boolean("active").notNull().default(true),
+    failures: integer("failures").notNull().default(0),
+    lastStatus: integer("last_status"),
+    lastAt: timestamp("last_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("webhooks_company").on(t.companyId)],
+);

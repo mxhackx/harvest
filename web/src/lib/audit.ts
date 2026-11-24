@@ -13,6 +13,8 @@ const PHRASES: Record<string, string> = {
   "POST /custom-fields": "a créé le champ personnalisé",
   "PATCH /custom-fields/:id": "a modifié le champ personnalisé",
   "DELETE /custom-fields/:id": "a supprimé le champ personnalisé",
+  "POST /webhooks": "a créé un webhook vers",
+  "DELETE /webhooks/:id": "a supprimé le webhook vers",
   "PUT /objectives": "a fixé les objectifs de",
   "POST /leads/merge": "a fusionné des doublons dans",
   "POST /leads/:id/emails": "a envoyé un e-mail pour",

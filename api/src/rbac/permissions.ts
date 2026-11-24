@@ -18,6 +18,8 @@ export const CATALOG = {
   finance: { actions: ["read", "create", "update", "delete"], scoped: true },
   // tout membre lit les régions et les vagues ; les gérer est un droit
   wave: { actions: ["create", "update", "delete"], scoped: false },
+  // webhooks : réservés au CEO (ils envoient des données de l'entreprise à une adresse externe)
+  webhook: { actions: ["read", "create", "delete"], scoped: false },
   // tout membre lit les champs personnalisés ; les gérer est un droit
   field: { actions: ["create", "update", "delete"], scoped: false },
   // chacun voit ses propres objectifs ; fixer ceux de l'équipe est un droit
@@ -65,7 +67,7 @@ export const SYSTEM_ROLES: SystemRole[] = [
     description: "Pilote l'équipe et les données. Ne modifie pas l'entreprise ni les rôles.",
     grants: all().filter(
       (x) =>
-        !["company:update", "company:delete", "role:create", "role:update", "role:delete", "audit:read"].includes(
+        !["company:update", "company:delete", "role:create", "role:update", "role:delete", "audit:read", "webhook:read", "webhook:create", "webhook:delete"].includes(
           x.permission,
         ),
     ),
