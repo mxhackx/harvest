@@ -1,6 +1,6 @@
 # Hivation
 
-> **Changer le nom du produit** : une seule ligne par application. Site : `name` dans [web/src/lib/brand.ts](web/src/lib/brand.ts) (interface, titres, référencement, documentation). API : `BRAND_NAME` dans [api/src/brand.ts](api/src/brand.ts) (e-mails, expéditeur par défaut). Le logo se remplace à part : `web/public/logo.svg`, `logo-on-blue.svg`, `logo.png`, `icon-192.png`, `icon-512.png`, `web/src/app/icon.svg` et `apple-icon.png`. Les identifiants techniques (`harvest_session`, clés `harvest.*` du navigateur, noms de base) gardent leur nom : les changer déconnecterait les utilisateurs.
+> **Changer le nom du produit** : une seule ligne par application. Site : `name` dans [web/src/lib/brand.ts](web/src/lib/brand.ts) (interface, titres, référencement, documentation). API : `BRAND_NAME` dans [api/src/brand.ts](api/src/brand.ts) (e-mails, expéditeur par défaut). Le logo se remplace à part : `web/public/logo.svg`, `logo.png`, `icon-192.png`, `icon-512.png`, `web/src/app/favicon.ico`, `icon.png` et `apple-icon.png`. Les identifiants techniques (`harvest_session`, clés `harvest.*` du navigateur, noms de base) gardent leur nom : les changer déconnecterait les utilisateurs.
 
 Prospection et suivi de leads sur le terrain. Deux projets indépendants :
 
@@ -26,6 +26,8 @@ cd web && npm run dev          # http://localhost:3000
 Polices, tailles et couleurs sont définies une seule fois, dans [web/src/app/globals.css](web/src/app/globals.css) (bloc `@theme`). Les composants utilisent les classes qui en découlent (`font-display`, `text-heading`, `bg-accent`…) ou `var(--…)` : aucune valeur de style écrite en dur. Exceptions : le code qui ne lit pas le CSS (cartes MapLibre via `cssVar()`, aperçu de partage et `themeColor` via `THEME`) passe par [web/src/lib/theme.ts](web/src/lib/theme.ts), et un test vérifie que ces copies suivent `globals.css`. Les couleurs d'étapes du pipeline et du logo Google sont des données, pas du style.
 
 Police des titres : Plus Jakarta Sans (`font-display`), texte : Inter.
+
+**Mode sombre** : les mêmes jetons ont des valeurs sombres dans `:root[data-theme="dark"]` (même fichier). Le choix (clair, sombre, auto) se fait dans le menu du compte et est gardé dans le navigateur (`hivation.theme`) ; un petit script du layout l'applique avant l'affichage, pour éviter un éclair clair. Les fonds de carte OpenStreetMap restent clairs.
 
 ## Hooks Git (Husky)
 
