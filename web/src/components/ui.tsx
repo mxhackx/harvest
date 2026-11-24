@@ -16,7 +16,7 @@ export function Button({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary"; loading?: boolean }) {
   const look =
     variant === "primary"
-      ? "border border-accent-press bg-accent text-white hover:bg-accent-press"
+      ? "border border-accent-hover bg-accent text-white hover:bg-accent-hover"
       : "border border-frame bg-card text-ink hover:bg-field";
   return (
     <button

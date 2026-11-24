@@ -13,12 +13,12 @@ import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
 import { usePins } from "@/lib/pins";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, PushPinIcon, UserIcon, UsersIcon } from "./icons";
+import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
 import { NotificationsBell } from "./notifications-bell";
 import { Notice } from "./ui";
 
 type Icon = ComponentType<{ size?: number }>;
-type Page = { label: string; short: string; href: string; icon: Icon };
+type Page = { label: string; short: string; href: string; icon: Icon; /** droit requis pour voir la page */ needs?: string };
 type Module = { key: string; label: string; href: string; icon: Icon; pages: Page[]; /** droit requis pour voir le module */ needs?: string };
 
 // Seuls les modules et pages réellement construits apparaissent.
@@ -45,6 +45,7 @@ const MODULES: Module[] = [
       { label: "Modèles", short: "Modèles", href: ROUTES.templates, icon: FormIcon },
       { label: "Pipeline", short: "Pipeline", href: ROUTES.pipeline, icon: BoardIcon },
       { label: "Rapports", short: "Rapports", href: ROUTES.reports, icon: CoinIcon },
+      { label: "Corbeille", short: "Corbeille", href: ROUTES.trash, icon: TrashIcon, needs: "lead:delete" },
     ],
   },
   {
@@ -95,7 +96,7 @@ export function Shell({ children }: { children: ReactNode }) {
   if (!session) return <main className="min-h-dvh" aria-busy />;
 
   const granted = session.me.memberships[0].permissions.map((p) => p.permission);
-  const modules = MODULES.filter((m) => !m.needs || granted.includes(m.needs));
+  const modules = MODULES.filter((m) => !m.needs || granted.includes(m.needs)).map((m) => ({ ...m, pages: m.pages.filter((p) => !p.needs || granted.includes(p.needs)) }));
   const mobilePages = modules.flatMap((m) => m.pages);
   const active = moduleFor(path, modules);
   const pinnedPages = pins.map((h) => mobilePages.find((p) => p.href === h)).filter((p): p is Page => !!p);

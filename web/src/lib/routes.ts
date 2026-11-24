@@ -17,5 +17,6 @@ export const ROUTES = {
   templates: `${CRM}/templates`,
   pipeline: `${CRM}/pipeline`,
   reports: `${CRM}/reports`,
+  trash: `${CRM}/trash`,
   team: `${ERP}/team`,
 } as const;

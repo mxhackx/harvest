@@ -57,7 +57,7 @@ export function ReportsPage() {
               type="button"
               aria-pressed={days === p.days}
               onClick={() => setDays(p.days)}
-              className={`h-9 rounded-full border px-3 text-small font-medium ${days === p.days ? "border-accent-press bg-accent text-white" : "border-frame bg-card hover:bg-field"}`}
+              className={`h-9 rounded-full border px-3 text-small font-medium ${days === p.days ? "border-accent-hover bg-accent text-white" : "border-frame bg-card hover:bg-field"}`}
             >
               {p.label}
             </button>

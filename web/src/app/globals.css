@@ -36,6 +36,7 @@
   --color-accent: #0868c9; /* bleu du logo, assombri pour tenir 5,5:1 avec du texte blanc */
   --color-accent-soft: #e6f3f8;
   --color-accent-press: #0656a8;
+  --color-accent-hover: #0656a8; /* fond d'un bouton bleu au survol (texte blanc dessus) */
   --color-forest: #07625a;
   --color-forest-soft: #e6f4f2;
   --color-fail: #a8372f;
@@ -78,7 +79,8 @@
   --color-link: #5fd4c4;
   --color-accent: #1e74d8;
   --color-accent-soft: #14304f;
-  --color-accent-press: #6db0ff;
+  --color-accent-press: #6db0ff; /* en sombre : bleu clair, lisible comme texte */
+  --color-accent-hover: #1763bd;
   --color-forest: #5fd4c4;
   --color-forest-soft: #10302d;
   --color-fail: #ff8d84;
