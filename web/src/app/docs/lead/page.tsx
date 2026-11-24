@@ -75,6 +75,16 @@ export default function Page() {
         supprimer des leads.
       </p>
 
+      <h2>Données personnelles (RGPD)</h2>
+      <p>
+        Chaque contact de l’onglet <strong>Contacts</strong> a deux actions pour répondre à une demande d’une personne :
+        <strong> Exporter ses données</strong> télécharge un fichier JSON avec tout ce qui est gardé sur elle, et{" "}
+        <strong>Effacer</strong> la supprime définitivement (après confirmation) et retire son nom du lead. L’export
+        demande le droit d’exporter, l’effacement celui de supprimer des leads. Le journal d’audit garde la trace de
+        l’action, sans le nom de la personne. Les notes libres du fil ne sont pas analysées : relisez-les si elles
+        citent la personne.
+      </p>
+
       <Callout title="Qui voit quoi ?">
         Le fil, les contacts et les tâches d’un lead suivent les droits sur ce lead. Si vous ne pouvez pas lire un lead,
         sa fiche vous répond « introuvable » : on ne révèle pas son existence.
