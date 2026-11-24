@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { DOCS, findDoc, flattenDocs } from "@/lib/docs";
+import { SECTIONS, collectionOf, findDoc, flattenDocs, relatedTo } from "@/lib/docs";
 import { SITE, jsonLd } from "@/lib/seo";
 import { CopyButton } from "./copy-button";
+import { DocFeedback } from "./doc-feedback";
 
 /** Bloc de code sur surface creusée, avec bouton pour copier. */
 export function CodeBlock({ code, lang, label }: { code: string; lang: string; label?: string }) {
@@ -32,8 +33,14 @@ export function Callout({ title, children }: { title?: string; children: ReactNo
 /** Gabarit d'une page de documentation : fil d'Ariane, titre, introduction, précédent / suivant, données structurées. */
 export function DocArticle({ href, children }: { href: string; children: ReactNode }) {
   const page = findDoc(href)!;
-  const parent = DOCS.find((p) => p.children?.some((c) => c.href === href));
-  const trail = [{ title: "Documentation", href: "/docs" }, ...(parent ? [{ title: parent.title, href: parent.href }] : []), ...(href === "/docs" ? [] : [{ title: page.title, href }])];
+  const collection = collectionOf(href);
+  // Toutes les collections › Partie › Collection › Article
+  const trail = [
+    { title: "Toutes les collections", href: "/docs" },
+    ...(collection ? [{ title: SECTIONS[collection.section].title, href: `/docs#${collection.section}` }, { title: collection.title, href: `/docs#${collection.id}` }] : []),
+    ...(href === "/docs" ? [] : [{ title: page.title, href }]),
+  ];
+  const related = relatedTo(href);
   const all = flattenDocs();
   const i = all.findIndex((p) => p.href === href);
   const prev = all[i - 1];
@@ -80,6 +87,20 @@ export function DocArticle({ href, children }: { href: string; children: ReactNo
       <h1 className="font-display text-title font-semibold">{page.title}</h1>
       <p className="text-muted">{page.description}</p>
       {children}
+      {href !== "/docs" && <DocFeedback page={href} />}
+      {related.length > 0 && (
+        <section aria-label="Articles liés" className="mt-8">
+          <h2 className="!mt-0 text-small font-semibold uppercase tracking-wide text-muted">Articles liés</h2>
+          <ul className="!list-none !pl-0">
+            {related.map((r) => (
+              <li key={r.href} className="border-b border-rule py-2 last:border-b-0">
+                <Link href={r.href}>{r.title}</Link>
+                <span className="block text-small text-muted">{r.description}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <nav aria-label="Pages voisines" className="mt-10 flex flex-wrap justify-between gap-3 border-t border-rule pt-4 text-small">
         {prev ? (
           <Link href={prev.href} rel="prev">

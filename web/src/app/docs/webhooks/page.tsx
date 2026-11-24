@@ -1,5 +1,5 @@
 import { BRAND } from "@/lib/brand";
-import { Callout, DocArticle } from "@/components/docs/blocks";
+import { Callout, CodeBlock, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
 
 export const metadata = docMetadata("/docs/webhooks");
@@ -22,14 +22,12 @@ export default function Page() {
 
       <h2>Ce que reçoit votre serveur</h2>
       <p>Une requête POST au format JSON :</p>
-      <pre>
-        <code>{`{
+      <CodeBlock lang="json" label="Corps reçu (JSON)" code={`{
   "id": "…",                    // identifiant unique de l'envoi
   "event": "lead.created",
   "createdAt": "2026-11-24T10:00:00.000Z",
   "data": { "id": "…", "name": "Boulangerie Soleil" }
-}`}</code>
-      </pre>
+}`} />
       <p>
         Les en-têtes <code>X-Hivation-Event</code> et <code>X-Hivation-Signature</code> accompagnent chaque envoi. Répondez
         avec un code 2xx dans les 5 secondes.
@@ -40,14 +38,12 @@ export default function Page() {
         La signature est <code>sha256=</code> suivi du HMAC SHA-256 du <strong>corps brut</strong> avec votre secret.
         Recalculez-la et comparez ; refusez la requête si elle diffère.
       </p>
-      <pre>
-        <code>{`import { createHmac, timingSafeEqual } from "node:crypto";
+      <CodeBlock lang="javascript" label="Vérification (Node.js)" code={`import { createHmac, timingSafeEqual } from "node:crypto";
 
 function isValid(secret, rawBody, header) {
   const expected = "sha256=" + createHmac("sha256", secret).update(rawBody).digest("hex");
   return header.length === expected.length && timingSafeEqual(Buffer.from(header), Buffer.from(expected));
-}`}</code>
-      </pre>
+}`} />
 
       <Callout title="Sécurité et pannes">
         Les adresses internes (localhost, réseau privé) sont refusées, et les redirections ne sont pas suivies. Après 10
