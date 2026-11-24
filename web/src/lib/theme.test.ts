@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { THEME } from "./theme";
 
@@ -14,5 +15,14 @@ describe("THEME", () => {
 describe("globals.css", () => {
   it("n'utilise plus l'ancienne police serif", () => {
     expect(css).not.toMatch(/font-serif|fraunces/i);
+  });
+});
+
+describe("lisibilité en mode sombre", () => {
+  const files = (dir: string): string[] => readdirSync(dir).flatMap((f) => (statSync(path.join(dir, f)).isDirectory() ? files(path.join(dir, f)) : /\.tsx$/.test(f) ? [path.join(dir, f)] : []));
+  it("aucun fond « ink » avec du texte blanc : en sombre, ink est clair (utiliser bg-inverse et text-on-inverse)", () => {
+    for (const f of files("src")) {
+      readFileSync(f, "utf8").split("\n").forEach((line, i) => expect(/bg-ink\b(?!\/)/.test(line) && /text-white/.test(line), `${f}:${i + 1}`).toBe(false));
+    }
   });
 });
