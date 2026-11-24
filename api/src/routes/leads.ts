@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { and, desc, eq, getTableColumns, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { companies, contacts, leads, memberships, notifications, users } from "../db/schema.js";
+import { accounts, companies, contacts, leads, memberships, notifications, users } from "../db/schema.js";
 import { config } from "../config.js";
 import { toCsv, toExportRow } from "../leads/export.js";
 import { googleMapsField } from "../leads/fields.js";
@@ -32,6 +32,11 @@ const scopeWhere = (subject: Subject, permission: string) => {
   const scope = scopeCondition(leads, subject, permission);
   return scope && and(scope, alive);
 };
+
+async function accountExists(companyId: string, id: string) {
+  const [a] = await db.select({ id: accounts.id }).from(accounts).where(and(eq(accounts.id, id), eq(accounts.companyId, companyId)));
+  return !!a;
+}
 
 /** Nom(s) des leads touchés, pour le journal d'audit : les trois premiers, puis le total. */
 const labelOf = (rows: { name: string }[]) => (rows.length <= 3 ? rows.map((r) => r.name).join(", ") : `${rows.slice(0, 3).map((r) => r.name).join(", ")} et ${rows.length - 3} autres`);
@@ -99,6 +104,8 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
     const { subject } = req.member!;
     const { visited, custom: customInput, ...data } = body.data;
+    // le compte choisi doit exister dans l'entreprise
+    if (data.accountId && !(await accountExists(subject.companyId, data.accountId))) return reply.code(400).send({ error: "invalid_body", issues: [{ message: "compte introuvable", path: ["accountId"] }] });
     // champs personnalisés : chaque valeur est vérifiée selon le type de son champ
     let custom: Record<string, string | number> = {};
     if (customInput) {
@@ -424,6 +431,8 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!lead) return reply.code(404).send({ error: "not_found" });
     if (!can(subject, "lead:update", attrs(lead))) return reply.code(403).send({ error: "forbidden" });
     const { visited, custom: customInput, ...data } = body.data;
+    // le compte choisi doit exister dans l'entreprise
+    if (data.accountId && !(await accountExists(subject.companyId, data.accountId))) return reply.code(400).send({ error: "invalid_body", issues: [{ message: "compte introuvable", path: ["accountId"] }] });
     let customPatch: { custom?: Record<string, string | number> } = {};
     if (customInput) {
       const merged = mergeCustom(await listFields(subject.companyId), lead.custom, customInput);

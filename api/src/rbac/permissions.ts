@@ -20,6 +20,8 @@ export const CATALOG = {
   wave: { actions: ["create", "update", "delete"], scoped: false },
   // webhooks : réservés au CEO (ils envoient des données de l'entreprise à une adresse externe)
   webhook: { actions: ["read", "create", "delete"], scoped: false },
+  // tout membre lit les comptes (entreprises clientes) ; les gérer est un droit
+  account: { actions: ["create", "update", "delete"], scoped: false },
   // tout membre lit les champs personnalisés ; les gérer est un droit
   field: { actions: ["create", "update", "delete"], scoped: false },
   // chacun voit ses propres objectifs ; fixer ceux de l'équipe est un droit

@@ -67,8 +67,11 @@ export function LeadModal({
     lng: lead?.lng != null ? fmt(lead.lng) : "",
   });
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
+  const [accountList, setAccountList] = useState<{ id: string; name: string }[]>([]);
+  const [accountId, setAccountId] = useState(lead?.accountId ?? "");
   useEffect(() => {
     api<CustomField[]>("/custom-fields", { companyId }).then(setCustomFields).catch(() => {});
+    api<{ id: string; name: string }[]>("/accounts", { companyId }).then(setAccountList).catch(() => {});
   }, [companyId]);
   const [notice, setNotice] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -182,6 +185,7 @@ export function LeadModal({
         service: text("service"),
         probability,
         expectedCloseOn: text("expectedCloseOn") || null,
+        accountId: accountId || null,
         // champs personnalisés : une valeur vide efface
         custom: Object.fromEntries(customFields.map((cf) => [cf.id, parseCustomInput(cf.type, String(f.get(`custom:${cf.id}`) ?? ""))])),
         ...positionPart,
@@ -301,6 +305,27 @@ export function LeadModal({
             </div>
           </Group>
         )}
+
+        <Group title="Compte">
+          <Select label="Entreprise cliente (compte)" value={accountId} onChange={(e) => setAccountId(e.target.value)} options={[{ value: "", label: "Aucun compte" }, ...accountList.map((a) => ({ value: a.id, label: a.name }))]} />
+          {lead && !accountId && perms.includes("account:create") && (
+            <button
+              type="button"
+              className="mt-2 text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4"
+              onClick={async () => {
+                try {
+                  const a = await api<{ id: string; name: string }>(`/leads/${lead.id}/account`, { companyId, body: {} });
+                  setAccountList((cur) => [...cur, a]);
+                  setAccountId(a.id);
+                } catch (err) {
+                  setNotice(describeError(err));
+                }
+              }}
+            >
+              Créer un compte à partir de ce lead
+            </button>
+          )}
+        </Group>
 
         <Group title="Suivi">
           <div className="grid gap-3 sm:grid-cols-2">
