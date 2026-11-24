@@ -29,6 +29,9 @@ const scopeWhere = (subject: Subject, permission: string) => {
   return scope && and(scope, alive);
 };
 
+/** Nom(s) des leads touchés, pour le journal d'audit : les trois premiers, puis le total. */
+const labelOf = (rows: { name: string }[]) => (rows.length <= 3 ? rows.map((r) => r.name).join(", ") : `${rows.slice(0, 3).map((r) => r.name).join(", ")} et ${rows.length - 3} autres`);
+
 const attrs = leadAttrs;
 const findLead = findReadableLead;
 
@@ -143,6 +146,7 @@ export async function leadRoutes(app: FastifyInstance) {
         visitedAt: visited ? new Date() : null,
       })
       .returning();
+    req.auditLabel = lead.name;
     if (lead.contactName) await ensurePrimaryContact(lead.id, subject.companyId, lead.contactName);
     await logActivities([{ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "created", meta: { source: "manual", stage: stage.name } }], logError(req));
     if (owner.userId !== subject.userId) {
@@ -393,6 +397,7 @@ export async function leadRoutes(app: FastifyInstance) {
     const { subject } = req.member!;
     const allowed = await loadAllowed(subject, body.data.ids, "lead:delete");
     if (allowed.length) await trashLeads(allowed.map((l) => l.id), subject.userId);
+    req.auditLabel = labelOf(allowed);
     return { affected: allowed.length, skipped: new Set(body.data.ids).size - allowed.length };
   });
 
@@ -464,6 +469,7 @@ export async function leadRoutes(app: FastifyInstance) {
       events.push({ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "visited", meta: { visited: updated.visitedAt !== null } });
     }
     await logActivities(events, logError(req));
+    req.auditLabel = updated.name;
     return updated;
   });
 
@@ -473,6 +479,7 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!lead) return reply.code(404).send({ error: "not_found" });
     if (!can(subject, "lead:delete", attrs(lead))) return reply.code(403).send({ error: "forbidden" });
     await trashLeads([lead.id], subject.userId);
+    req.auditLabel = lead.name;
     return reply.code(204).send();
   });
 
@@ -495,6 +502,7 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
     const { subject } = req.member!;
     const allowed = await loadAllowed(subject, body.data.ids, "lead:delete", { trashed: true });
+    req.auditLabel = labelOf(allowed);
     for (const l of allowed) {
       // le nom a pu être repris depuis la suppression : on renumérote plutôt que de créer un doublon
       const name = pickUniqueName(l.name, await takenNames(subject.companyId, l.name, l.id));
@@ -510,6 +518,7 @@ export async function leadRoutes(app: FastifyInstance) {
     const { subject } = req.member!;
     const allowed = await loadAllowed(subject, body.data.ids, "lead:delete", { trashed: true });
     if (allowed.length) await db.delete(leads).where(inArray(leads.id, allowed.map((l) => l.id)));
+    req.auditLabel = labelOf(allowed);
     return { affected: allowed.length, skipped: new Set(body.data.ids).size - allowed.length };
   });
 }

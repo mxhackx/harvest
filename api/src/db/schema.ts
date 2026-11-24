@@ -410,3 +410,24 @@ export const segments = pgTable(
   },
   (t) => [uniqueIndex("segments_user_name").on(t.companyId, t.userId, sql`lower(${t.name})`)],
 );
+
+/**
+ * Journal d'audit : qui a fait quoi, quand. Une ligne par action qui modifie des données (jamais le contenu des requêtes :
+ * ni mots de passe, ni jetons). `entityLabel` garde le nom de l'objet (ex. le lead supprimé) même s'il n'existe plus.
+ */
+export const auditLog = pgTable(
+  "audit_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
+    // « DELETE /leads/:id » : la route appelée ; l'interface la traduit en phrase
+    action: text("action").notNull(),
+    entityId: uuid("entity_id"),
+    entityLabel: text("entity_label").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("audit_company_time").on(t.companyId, t.createdAt)],
+);
