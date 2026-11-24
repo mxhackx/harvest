@@ -614,3 +614,35 @@ export const docFeedback = pgTable(
   },
   (t) => [index("doc_feedback_page").on(t.page)],
 );
+
+/**
+ * Devis d'une opportunité (un lead). Numéro unique par entreprise (D-2026-0001). Les lignes et le taux de taxe sont
+ * figés dès l'envoi : un devis envoyé ne se modifie plus, il se refuse ou s'accepte.
+ */
+export const quotes = pgTable(
+  "quotes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    number: text("number").notNull(),
+    title: text("title").notNull(),
+    // draft | sent | accepted | declined
+    status: text("status").notNull().default("draft"),
+    lines: jsonb("lines").$type<{ label: string; quantity: number; unitPrice: number }[]>().notNull().default([]),
+    // pourcentage de taxe (TVA) appliqué au sous-total
+    taxRate: integer("tax_rate").notNull().default(0),
+    validUntil: date("valid_until", { mode: "string" }),
+    notes: text("notes").notNull().default(""),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("quotes_number").on(t.companyId, t.number), index("quotes_lead").on(t.leadId)],
+);

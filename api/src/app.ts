@@ -21,6 +21,7 @@ import { customFieldRoutes } from "./routes/custom-fields.js";
 import { webhookRoutes } from "./routes/webhooks.js";
 import { publicRoutes } from "./routes/public.js";
 import { accountRoutes } from "./routes/accounts.js";
+import { quoteRoutes } from "./routes/quotes.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -82,5 +83,6 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(webhookRoutes);
   await app.register(publicRoutes);
   await app.register(accountRoutes);
+  await app.register(quoteRoutes);
   return app;
 }

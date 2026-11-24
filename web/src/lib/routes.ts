@@ -22,6 +22,7 @@ export const ROUTES = {
   duplicates: `${CRM}/duplicates`,
   objectives: `${CRM}/objectives`,
   fields: `${CRM}/fields`,
+  quote: (id: string) => `${CRM}/quotes/${id}`,
   accounts: `${CRM}/accounts`,
   account: (id: string) => `${CRM}/accounts/${id}`,
   team: `${ERP}/team`,
