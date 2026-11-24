@@ -53,6 +53,13 @@ export default function Page() {
         message l’explique. Complétez le contact depuis la fiche.
       </Callout>
 
+      <h2>Rechercher partout</h2>
+      <p>
+        La barre de recherche en haut de page (raccourci <strong>Ctrl+K</strong>, ou <strong>Cmd+K</strong> sur Mac)
+        cherche dans vos leads (nom, secteur, ville, adresse, téléphone), vos contacts (nom, e-mail, téléphone) et vos
+        tâches. Elle ne montre que ce que vous avez le droit de lire, jamais la corbeille.
+      </p>
+
       <h2>Segments : vos vues enregistrées</h2>
       <p>
         Dans <strong>CRM › Leads</strong>, réglez la recherche, les filtres, l’onglet et le tri, puis{" "}
