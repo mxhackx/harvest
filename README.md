@@ -36,6 +36,10 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 
 `POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.
 
+## Documentation (centre d'aide)
+
+Les pages `/docs` suivent le modèle d'un centre d'aide : recherche (Ctrl+K), **deux parties** — *Guide utilisateur* (usage) et *API et intégrations* (webhooks, formats de fichiers) —, des **collections**, fil d'Ariane, « Cet article vous a-t-il aidé ? » et articles liés. Le rangement est dans `COLLECTIONS` de [web/src/lib/docs.ts](web/src/lib/docs.ts) : une nouvelle page doit y être ajoutée (un test le vérifie). La bulle de contact en bas à droite envoie `POST /public/contact` ; les avis vont dans `doc_feedback`.
+
 ## Journal d'audit
 
 Chaque action réussie qui modifie des données (POST, PATCH, PUT, DELETE d'un membre connecté) ajoute une ligne à `audit_log` : qui, quelle route, quel objet (nom conservé même après suppression). Jamais le contenu des requêtes (mots de passe, jetons). Le hook est dans [api/src/audit/record.ts](api/src/audit/record.ts) ; pour qu'une route garde le nom de l'objet touché, elle pose `req.auditLabel`. Lecture : `GET /audit` (droit `audit:read`, réservé au CEO) et page *ERP › Journal d'audit*. La phrase affichée pour chaque route est dans [web/src/lib/audit.ts](web/src/lib/audit.ts) : à compléter quand on ajoute une route.
@@ -106,6 +110,7 @@ démarrage de l'API (`npm run start:prod`).
 | `API_URL` | `https://api.hivation.tech` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
 | `GOOGLE_*`, `GITHUB_*` | vos clés OAuth, ou vides |
 | `RESEND_API_KEY` | clé API [Resend](https://resend.com) pour les e-mails (invitations, mot de passe oublié) ; vide : aucun e-mail, les liens s'affichent à l'écran |
+| `SUPPORT_EMAIL` | adresse qui reçoit les messages de la bulle de contact de la documentation (facultatif : sans elle, ils sont seulement gardés dans la table `contact_messages`) |
 | `MAIL_FROM` | expéditeur, ex. `Hivation <noreply@hivation.tech>`. Le domaine doit être vérifié chez Resend ; sans domaine, l'expéditeur par défaut (`onboarding@resend.dev`) n'écrit qu'à l'adresse de votre compte Resend |
 
 Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok"}`.
