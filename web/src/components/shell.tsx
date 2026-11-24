@@ -57,6 +57,7 @@ const MODULES: Module[] = [
       { label: "Modèles", short: "Modèles", href: ROUTES.templates, icon: FormIcon },
       { label: "Pipeline", short: "Pipeline", href: ROUTES.pipeline, icon: BoardIcon },
       { label: "Rapports", short: "Rapports", href: ROUTES.reports, icon: CoinIcon },
+      { label: "Champs", short: "Champs", href: ROUTES.fields, icon: FormIcon, needs: "field:create" },
       { label: "Objectifs", short: "Objectifs", href: ROUTES.objectives, icon: CoinIcon },
       { label: "Doublons", short: "Doublons", href: ROUTES.duplicates, icon: UsersIcon, needs: "lead:delete" },
       { label: "Corbeille", short: "Corbeille", href: ROUTES.trash, icon: TrashIcon, needs: "lead:delete" },

@@ -18,6 +18,8 @@ export const CATALOG = {
   finance: { actions: ["read", "create", "update", "delete"], scoped: true },
   // tout membre lit les régions et les vagues ; les gérer est un droit
   wave: { actions: ["create", "update", "delete"], scoped: false },
+  // tout membre lit les champs personnalisés ; les gérer est un droit
+  field: { actions: ["create", "update", "delete"], scoped: false },
   // chacun voit ses propres objectifs ; fixer ceux de l'équipe est un droit
   objective: { actions: ["update"], scoped: false },
   // journal des actions de l'entreprise : réservé au CEO

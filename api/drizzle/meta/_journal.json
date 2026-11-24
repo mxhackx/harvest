@@ -176,6 +176,13 @@
       "when": 1795547382333,
       "tag": "0024_objectives",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795547822428,
+      "tag": "0025_custom_fields",
+      "breakpoints": true
     }
   ]
 }
