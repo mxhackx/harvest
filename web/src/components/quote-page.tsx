@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { api, describeError } from "@/lib/api";
 import { STATUS_LABEL, STATUS_TOKEN, cleanLines, fmt, lineTotal, parseNumber, totals, type Quote, type QuoteStatus } from "@/lib/quotes";
 import { ROUTES } from "@/lib/routes";
+import { useCrumb } from "@/lib/crumb";
 import { useSession } from "@/lib/session";
 import { PlusIcon, TrashIcon } from "./icons";
 import { Button, Field, Notice, TextArea } from "./ui";
@@ -30,6 +31,7 @@ export function QuotePage() {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  useCrumb(quote ? `Devis ${quote.number}` : null);
 
   const apply = (q: Quote) => {
     setQuote(q);

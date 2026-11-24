@@ -10,6 +10,7 @@ import { dueLabel } from "@/lib/tasks";
 import type { Contact } from "@/lib/activity";
 import type { Recipient } from "@/lib/messages";
 import { useLeads } from "@/lib/leads";
+import { useCrumb } from "@/lib/crumb";
 import { useSession } from "@/lib/session";
 import { stageOf } from "@/lib/stages";
 import { useStages } from "@/lib/stages-store";
@@ -25,7 +26,7 @@ import { LostReasonModal } from "./lost-reason-modal";
 import { PencilIcon } from "./icons";
 import { Button, Notice, Panel } from "./ui";
 
-type Tab = "activity" | "contacts" | "tasks" | "quotes";
+type Tab = "overview" | "activity" | "tasks";
 
 /** Charge les contacts du lead puis ouvre l'envoi de message : chaque contact, plus le numéro de l'entreprise. */
 function MessageLauncher({ lead, onClose, onSent }: { lead: Lead; onClose: () => void; onSent: () => void }) {
@@ -51,7 +52,7 @@ export function LeadPage() {
   const { me, companyId } = useSession();
   const { leads, reload } = useLeads();
   const { stages } = useStages();
-  const [tab, setTab] = useState<Tab>("activity");
+  const [tab, setTab] = useState<Tab>("overview");
   const [version, setVersion] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -65,6 +66,7 @@ export function LeadPage() {
   const canUpdate = perms.includes("lead:update");
   const canAssign = perms.includes("lead:assign") && perms.includes("member:read");
   const lead: Lead | undefined = leads?.find((l) => l.id === id);
+  useCrumb(lead?.name); // « Admin › CRM › Leads › nom du lead »
 
   const ownerId = lead?.ownerId;
   useEffect(() => {
@@ -108,21 +110,19 @@ export function LeadPage() {
   }
 
   const visited = lead.visitedAt !== null;
+  const initial = lead.name.trim().charAt(0).toUpperCase() || "?";
+
+  /** Les gestes rapides sous le nom (comme une fiche de CRM) : note, e-mail, appel, tâche, visite. */
+  const quick: { label: string; icon: string; onClick: () => void; show: boolean }[] = [
+    { label: "Note", icon: "✎", onClick: () => setTab("activity"), show: true },
+    { label: "E-mail", icon: "✉", onClick: () => setMessaging(true), show: canUpdate },
+    { label: "Appel", icon: "☎", onClick: () => setTab("activity"), show: true },
+    { label: "Tâche", icon: "✓", onClick: () => setTab("tasks"), show: true },
+    { label: visited ? "À revoir" : "Visité", icon: "⚑", onClick: () => patch({ visited: !visited }), show: canUpdate },
+  ];
 
   return (
-    <div className="flex flex-col gap-5">
-      <div>
-        <Link href={ROUTES.leads} className="text-small font-medium text-accent-press hover:underline">← Leads</Link>
-        <div className="mt-2 flex flex-wrap items-center gap-3">
-          <h1 className="text-title font-semibold leading-snug">{lead.name}</h1>
-          {canUpdate && (
-            <Button variant="secondary" className="h-9 w-auto" onClick={() => setEditing(true)}>
-              <PencilIcon size={16} /> Modifier
-            </Button>
-          )}
-        </div>
-      </div>
-
+    <div className="flex flex-col gap-4">
       {error && <Notice onClose={() => setError(null)}>{error}</Notice>}
 
       <nav aria-label="Étape du pipeline" className="flex flex-wrap gap-1.5">
@@ -145,88 +145,83 @@ export function LeadPage() {
       </nav>
       {current.kind === "lost" && lead.lostReason && <p className="text-small text-muted">Motif de perte : {lead.lostReason}</p>}
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
-        <Panel title="Informations">
-          <dl className="grid grid-cols-[84px_1fr] gap-x-3 gap-y-2 text-small">
-            <dt className="text-muted">Secteur</dt>
-            <dd>{lead.sector || "—"}</dd>
-            <dt className="text-muted">Contact</dt>
-            <dd>{lead.contactName || "—"}</dd>
-            <dt className="text-muted">Téléphone</dt>
-            <dd className="font-mono">{lead.phone || "—"}</dd>
-            <dt className="text-muted">Adresse</dt>
-            <dd>{[lead.address, lead.city].filter(Boolean).join(", ") || "—"}</dd>
-            {lead.landmark && (<><dt className="text-muted">Repère</dt><dd>{lead.landmark}</dd></>)}
-            {lead.service && (<><dt className="text-muted">Service</dt><dd>{lead.service}</dd></>)}
-            {lead.estimatedValue !== null && (<><dt className="text-muted">Valeur</dt><dd className="font-mono">{formatValue(lead.estimatedValue)}</dd></>)}
-            {current.kind === "open" && (
-              <>
-                <dt className="text-muted">Probabilité</dt>
-                <dd>
-                  <span className="font-mono">{effectiveProbability(lead, stages)} %</span>
-                  {lead.probability === null && <span className="text-muted"> (selon l’étape)</span>}
-                  {weightedValue(lead, stages) !== null && <span className="text-muted"> · pondéré <span className="font-mono">{formatValue(weightedValue(lead, stages)!)}</span></span>}
-                </dd>
-              </>
-            )}
-            {lead.expectedCloseOn && (
-              <>
-                <dt className="text-muted">Conclusion</dt>
-                <dd className={closeDateLate(lead.expectedCloseOn, current.kind === "open") ? "font-medium text-fail" : ""}>
-                  {formatCloseDate(lead.expectedCloseOn)}
-                  {closeDateLate(lead.expectedCloseOn, current.kind === "open") && " · dépassée"}
-                </dd>
-              </>
-            )}
-            {current.kind === "open" && (
-              <>
-                <dt className="text-muted">Prochain suivi</dt>
-                <dd>
-                  {lead.nextFollowUpAt ? (
-                    <button type="button" onClick={() => setTab("tasks")} className="text-left hover:underline">{dueLabel({ dueAt: lead.nextFollowUpAt, doneAt: null })}</button>
-                  ) : (
-                    <button type="button" onClick={() => setTab("tasks")} className="text-left font-medium text-fail hover:underline">Aucun suivi prévu</button>
-                  )}
-                </dd>
-              </>
-            )}
-            <dt className="text-muted">Visite</dt>
-            <dd>{lead.visitedAt ? new Date(lead.visitedAt).toLocaleDateString("fr-FR") : "Pas encore visité"}</dd>
-            {owner && (<><dt className="text-muted">Responsable</dt><dd>{owner}</dd></>)}
-            <dt className="text-muted">Créé le</dt>
-            <dd>{new Date(lead.createdAt).toLocaleDateString("fr-FR")}</dd>
-          </dl>
-          <div className="mt-3 flex flex-col gap-3">
-            <LeadLinks lead={lead} />
-            {LOCATION_SOURCE_NOTE[lead.locationSource] && <p className="text-small text-muted">{LOCATION_SOURCE_NOTE[lead.locationSource]}</p>}
-            {canUpdate && (
-              <Button variant="secondary" className="h-9" onClick={() => setMessaging(true)}>
-                Envoyer un message
-              </Button>
-            )}
-            {canAssign && (
-              <Button variant="secondary" className="h-9" onClick={() => setAssigning(true)}>
-                Attribuer à…
-              </Button>
-            )}
-            {canUpdate && (
-              <Button variant="secondary" className="h-9" loading={busy} onClick={() => patch({ visited: !visited })}>
-                {visited ? "Remettre à visiter" : "Marquer visité"}
-              </Button>
-            )}
-          </div>
-        </Panel>
+      <div className="grid items-start gap-4 xl:grid-cols-[320px_minmax(0,1fr)_340px]">
+        {/* Colonne de gauche : qui est ce lead, gestes rapides, propriétés */}
+        <div className="flex flex-col gap-4">
+          <section aria-label="Résumé du lead" className="rounded-card border border-border bg-card p-4">
+            <div className="flex items-center gap-3">
+              <span aria-hidden className="flex size-12 shrink-0 items-center justify-center rounded-full bg-accent-soft font-display text-title font-bold text-accent-press">{initial}</span>
+              <div className="min-w-0">
+                <h1 className="truncate font-display text-title font-semibold leading-snug">{lead.name}</h1>
+                <p className="truncate text-small text-muted">{[lead.sector, lead.city].filter(Boolean).join(" · ") || "Lead"}</p>
+              </div>
+            </div>
+            <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-small">
+              <dt className="text-muted">Valeur</dt>
+              <dd className="font-mono">{lead.estimatedValue !== null ? formatValue(lead.estimatedValue) : "—"}</dd>
+              <dt className="text-muted">Conclusion</dt>
+              <dd>{lead.expectedCloseOn ? formatCloseDate(lead.expectedCloseOn) : "—"}</dd>
+              <dt className="text-muted">Étape</dt>
+              <dd>
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 font-medium">
+                  <span aria-hidden className="size-2 rounded-full" style={{ background: current.color }} />
+                  {current.name}
+                </span>
+              </dd>
+            </dl>
+            <div role="group" aria-label="Actions rapides" className="mt-4 flex justify-between gap-1">
+              {quick.filter((q) => q.show).map((q) => (
+                <button key={q.label} type="button" onClick={q.onClick} disabled={busy} className="flex flex-1 flex-col items-center gap-1 text-small text-muted hover:text-ink">
+                  <span aria-hidden className="flex size-10 items-center justify-center rounded-full border border-border bg-field text-body text-ink">{q.icon}</span>
+                  {q.label}
+                </button>
+              ))}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {canUpdate && (
+                <Button variant="secondary" className="h-9 w-auto" onClick={() => setEditing(true)}>
+                  <PencilIcon size={16} /> Modifier
+                </Button>
+              )}
+              {canAssign && (
+                <Button variant="secondary" className="h-9 w-auto" onClick={() => setAssigning(true)}>
+                  Attribuer à…
+                </Button>
+              )}
+            </div>
+          </section>
 
-        <section className="overflow-hidden rounded-card border border-border bg-card">
+          <Panel title="À propos de ce lead">
+            <dl className="grid grid-cols-[96px_1fr] gap-x-3 gap-y-2 text-small">
+              <dt className="text-muted">Type</dt>
+              <dd>{lead.visitMode === "remote" ? "Prospect simple (à distance)" : "À visiter en présentiel"}</dd>
+              <dt className="text-muted">Secteur</dt>
+              <dd>{lead.sector || "—"}</dd>
+              <dt className="text-muted">Contact</dt>
+              <dd>{lead.contactName || "—"}</dd>
+              <dt className="text-muted">Téléphone</dt>
+              <dd className="font-mono">{lead.phone || "—"}</dd>
+              <dt className="text-muted">Adresse</dt>
+              <dd>{[lead.address, lead.city].filter(Boolean).join(", ") || "—"}</dd>
+              {lead.landmark && (<><dt className="text-muted">Repère</dt><dd>{lead.landmark}</dd></>)}
+              {lead.service && (<><dt className="text-muted">Service</dt><dd>{lead.service}</dd></>)}
+              {owner && (<><dt className="text-muted">Responsable</dt><dd>{owner}</dd></>)}
+              <dt className="text-muted">Visite</dt>
+              <dd>{lead.visitedAt ? new Date(lead.visitedAt).toLocaleDateString("fr-FR") : "Pas encore visité"}</dd>
+              <dt className="text-muted">Créé le</dt>
+              <dd>{new Date(lead.createdAt).toLocaleDateString("fr-FR")}</dd>
+            </dl>
+            <div className="mt-3 flex flex-col gap-3">
+              <LeadLinks lead={lead} />
+              {LOCATION_SOURCE_NOTE[lead.locationSource] && <p className="text-small text-muted">{LOCATION_SOURCE_NOTE[lead.locationSource]}</p>}
+            </div>
+          </Panel>
+        </div>
+
+        {/* Centre : aperçu, activité, tâches */}
+        <section className="min-w-0 overflow-hidden rounded-card border border-border bg-card">
           <div role="tablist" aria-label="Détail du lead" className="flex gap-1 border-b border-rule px-3 pt-2">
-            {(
-              [
-                ["activity", "Activité"],
-                ["contacts", "Contacts"],
-                ["tasks", "Tâches"],
-                ["quotes", "Devis"],
-              ] as const
-            ).map(([key, label]) => (
+            {([["overview", "Aperçu"], ["activity", "Activité"], ["tasks", "Tâches"]] as const).map(([key, label]) => (
               <button
                 key={key}
                 role="tab"
@@ -240,17 +235,60 @@ export function LeadPage() {
             ))}
           </div>
           <div role="tabpanel" className="px-[18px] py-4">
-            {tab === "activity" ? (
+            {tab === "overview" ? (
+              <div className="flex flex-col gap-4">
+                <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                  {[
+                    ["Valeur", lead.estimatedValue !== null ? formatValue(lead.estimatedValue) : "—"],
+                    ["Probabilité", current.kind === "open" ? `${effectiveProbability(lead, stages)} %` : "—"],
+                    ["Pondéré", weightedValue(lead, stages) !== null ? formatValue(weightedValue(lead, stages)!) : "—"],
+                    ["Conclusion", lead.expectedCloseOn ? formatCloseDate(lead.expectedCloseOn) : "—"],
+                  ].map(([label, value]) => (
+                    <div key={label} className="rounded-control bg-field px-3 py-2">
+                      <dt className="text-small text-muted">{label}</dt>
+                      <dd className={`font-mono font-semibold ${label === "Conclusion" && lead.expectedCloseOn && closeDateLate(lead.expectedCloseOn, current.kind === "open") ? "text-fail" : ""}`}>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {current.kind === "open" && (
+                  <div className="rounded-control border border-border p-3 text-small">
+                    <p className="font-semibold">Prochain suivi</p>
+                    <button type="button" onClick={() => setTab("tasks")} className={`mt-1 text-left hover:underline ${lead.nextFollowUpAt ? "" : "font-medium text-fail"}`}>
+                      {lead.nextFollowUpAt ? dueLabel({ dueAt: lead.nextFollowUpAt, doneAt: null }) : "Aucun suivi prévu : planifier une tâche"}
+                    </button>
+                  </div>
+                )}
+                <div>
+                  <p className="mb-2 text-small font-semibold uppercase tracking-wide text-muted">Activité récente</p>
+                  <LeadActivity leadId={lead.id} canWrite={false} version={version} />
+                </div>
+              </div>
+            ) : tab === "activity" ? (
               <LeadActivity leadId={lead.id} canWrite={canUpdate} version={version} />
-            ) : tab === "tasks" ? (
-              <TaskList leadId={lead.id} onChanged={reload} />
-            ) : tab === "quotes" ? (
-              <LeadQuotes leadId={lead.id} canWrite={canUpdate} />
             ) : (
-              <LeadContacts leadId={lead.id} canWrite={canUpdate} onChanged={reload} />
+              <TaskList leadId={lead.id} onChanged={reload} />
             )}
           </div>
         </section>
+
+        {/* Colonne de droite : ce qui est associé au lead */}
+        <div className="flex flex-col gap-4">
+          <Panel title="Contacts">
+            <LeadContacts leadId={lead.id} canWrite={canUpdate} onChanged={reload} />
+          </Panel>
+          <Panel title="Compte">
+            {lead.accountId ? (
+              <Link href={ROUTES.account(lead.accountId)} className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
+                Voir le compte et ses opportunités
+              </Link>
+            ) : (
+              <p className="text-small text-muted">Ce lead n’est rattaché à aucun compte. Modifiez la fiche pour en choisir un ou en créer un.</p>
+            )}
+          </Panel>
+          <Panel title="Devis">
+            <LeadQuotes leadId={lead.id} canWrite={canUpdate} />
+          </Panel>
+        </div>
       </div>
 
       {editing && (

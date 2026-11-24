@@ -6,7 +6,6 @@ test("devis : remplir un brouillon, l'envoyer, le faire accepter, et la valeur d
   const lead = await addLead(request, user, { name: "Boulangerie Soleil" });
   await signIn(context, user);
   await page.goto(`/dashboard/crm/leads/${lead.id}`);
-  await page.getByRole("tab", { name: "Devis" }).click();
   await page.getByRole("button", { name: "Nouveau devis" }).click();
 
   await expect(page.getByText(/D-\d{4}-0001/).first()).toBeVisible();
