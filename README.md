@@ -68,11 +68,11 @@ démarrage de l'API (`npm run start:prod`).
 | Variable | Valeur |
 | --- | --- |
 | `DATABASE_URL` | l'URL du Session pooler de Supabase |
-| `APP_URLS` | l'adresse du site, ex. `https://harvest.vercel.app` |
-| `API_URL` | `https://harvest.vercel.app/api` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
+| `APP_URLS` | l'adresse du site, ex. `https://hivation.tech` |
+| `API_URL` | `https://hivation.tech/api` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
 | `GOOGLE_*`, `GITHUB_*` | vos clés OAuth, ou vides |
 | `RESEND_API_KEY` | clé API [Resend](https://resend.com) pour les e-mails (invitations, mot de passe oublié) ; vide : aucun e-mail, les liens s'affichent à l'écran |
-| `MAIL_FROM` | expéditeur, ex. `Hivation <noreply@mondomaine.com>`. Le domaine doit être vérifié chez Resend ; sans domaine, l'expéditeur par défaut (`onboarding@resend.dev`) n'écrit qu'à l'adresse de votre compte Resend |
+| `MAIL_FROM` | expéditeur, ex. `Hivation <noreply@hivation.tech>`. Le domaine doit être vérifié chez Resend ; sans domaine, l'expéditeur par défaut (`onboarding@resend.dev`) n'écrit qu'à l'adresse de votre compte Resend |
 
 Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok"}`.
 
@@ -82,7 +82,7 @@ Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok
 | --- | --- |
 | `NEXT_PUBLIC_API_URL` | `/api` |
 | `API_PROXY_TARGET` | `https://<votre-service>.onrender.com` |
-| `NEXT_PUBLIC_SITE_URL` | l'adresse du site, ex. `https://harvest.vercel.app` |
+| `NEXT_PUBLIC_SITE_URL` | l'adresse du site, ex. `https://hivation.tech` |
 
 Redéployez : ces variables sont lues à la compilation.
 
@@ -96,8 +96,8 @@ parle qu'à un seul domaine et le cookie reste un cookie du site. Si vous préf�
 
 Dans les consoles, déclarez comme adresse de retour :
 
-- `https://harvest.vercel.app/api/auth/google/callback`
-- `https://harvest.vercel.app/api/auth/github/callback`
+- `https://hivation.tech/api/auth/google/callback`
+- `https://hivation.tech/api/auth/github/callback`
 
 ### À savoir
 

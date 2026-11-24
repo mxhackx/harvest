@@ -34,7 +34,7 @@ export const config = {
   /**
    * E-mails via Resend. Sans RESEND_API_KEY, rien n'est envoyé (l'application reste utilisable : les liens
    * s'affichent à l'écran). Tant qu'aucun domaine n'est vérifié chez Resend, l'expéditeur par défaut ne peut écrire
-   * qu'à l'adresse du compte Resend : définir MAIL_FROM, ex. « Hivation <noreply@mondomaine.com> ».
+   * qu'à l'adresse du compte Resend : définir MAIL_FROM, ex. « Hivation <noreply@hivation.tech> ».
    */
   mail: {
     apiKey: process.env.RESEND_API_KEY ?? "",
