@@ -15,6 +15,11 @@ cd api && npm run dev          # http://localhost:4000
 cd web && npm run dev          # http://localhost:3000
 ```
 
+## Adresses du site
+
+- Publiques : `/` (présentation), `/login`, `/docs`, `/invitation`, `/mot-de-passe-oublie`, `/reinitialiser`.
+- Espace connecté : tout est sous `/dashboard` (`/dashboard/leads`, `/dashboard/taches`…), non référencé par les moteurs de recherche. Les adresses sont écrites une seule fois dans [web/src/lib/routes.ts](web/src/lib/routes.ts). Les anciennes adresses (`/leads`, `/taches`…) redirigent vers les nouvelles.
+
 ## Hooks Git (Husky)
 
 Installés par `npm install` à la racine (script `prepare`).

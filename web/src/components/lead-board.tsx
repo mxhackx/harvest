@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { useState } from "react";
 import { formatDay, formatValue, type Lead } from "@/lib/api";
@@ -59,7 +60,7 @@ function Card({
           className="mt-[3px] size-4 shrink-0 accent-accent"
         />
         <h3 className="text-body font-semibold leading-snug">
-          <Link href={`/leads/${lead.id}`} className="text-left hover:underline">
+          <Link href={ROUTES.lead(lead.id)} className="text-left hover:underline">
             {lead.name}
           </Link>
         </h3>

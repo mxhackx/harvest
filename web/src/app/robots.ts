@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/lib/seo";
 
-// L'application est privée : seuls la page de connexion et la documentation sont destinées aux moteurs de recherche.
+// L'espace connecté (/dashboard) est privé : la page d'accueil, la connexion et la documentation sont publiques.
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [{ userAgent: "*", allow: ["/login", "/docs"], disallow: ["/"] }],
+    rules: [{ userAgent: "*", allow: ["/", "/login", "/docs"], disallow: ["/dashboard"] }],
     sitemap: `${SITE.url}/sitemap.xml`,
   };
 }

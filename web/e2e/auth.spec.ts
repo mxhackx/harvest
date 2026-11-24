@@ -69,7 +69,7 @@ test.describe("connexion et inscription", () => {
     await page.getByLabel("Région de départ").fill("Cotonou");
     await page.getByRole("button", { name: "Créer mon espace" }).click();
 
-    await expect(page).toHaveURL(/localhost:3100\/$/);
+    await expect(page).toHaveURL(/localhost:3100\/dashboard$/);
     await expect(page.getByRole("heading", { name: "Bonjour Jean" })).toBeVisible();
     await expect(page.getByText("Rien à visiter pour l'instant.")).toBeVisible();
     await expect(page.getByText("Boulangerie du Port").first()).toBeVisible();
@@ -86,7 +86,7 @@ test.describe("connexion et inscription", () => {
   });
 
   test("les pages privées renvoient vers la connexion quand on n'est pas connecté", async ({ page }) => {
-    for (const path of ["/", "/leads", "/calendrier"]) {
+    for (const path of ["/dashboard", "/dashboard/leads", "/dashboard/calendrier"]) {
       await page.goto(path);
       await expect(page).toHaveURL(/\/login/);
     }
@@ -95,12 +95,12 @@ test.describe("connexion et inscription", () => {
   test("déconnexion depuis le menu du profil", async ({ page, context, request }) => {
     const user = await newUser(request);
     await signIn(context, user);
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page.getByRole("heading", { name: /Bonjour/ })).toBeVisible();
     await page.getByRole("button", { name: "Menu du compte" }).click();
     await page.getByRole("menuitem", { name: "Se déconnecter" }).click();
     await expect(page).toHaveURL(/\/login/);
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page).toHaveURL(/\/login/); // la session est bien détruite côté serveur
   });
 });

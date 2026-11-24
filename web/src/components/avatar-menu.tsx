@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -121,8 +122,7 @@ export function AvatarMenu() {
                   onClick={() => {
                     setActiveCompanyId(m.company.id);
                     // rechargement complet : plus aucune donnée de l'ancienne entreprise ne peut rester affichée
-                    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-                    window.location.assign("/");
+                    window.location.assign(ROUTES.home);
                   }}
                   className="flex h-10 w-full items-center rounded-control px-2 text-left text-body hover:bg-field"
                 >

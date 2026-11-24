@@ -1,3 +1,4 @@
+import { ROUTES } from "@/lib/routes";
 import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +14,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
           <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
           <span className="text-small text-muted">Documentation</span>
         </Link>
-        <Link href="/" className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
+        <Link href={ROUTES.home} className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
           Ouvrir l&apos;application
         </Link>
       </header>

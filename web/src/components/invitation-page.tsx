@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,7 +39,7 @@ export function InvitationPage() {
     try {
       const r = await api<{ companyId: string }>("/invitations/accept", { method: "POST", body: { token } });
       setActiveCompanyId(r.companyId);
-      router.replace("/");
+      router.replace(ROUTES.home);
     } catch (e) {
       setError(describeError(e));
       setBusy(false);

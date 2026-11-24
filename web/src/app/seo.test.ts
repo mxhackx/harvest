@@ -60,10 +60,10 @@ describe("jsonLd", () => {
 describe("robots.txt", () => {
   const r = robots();
   const rule = (Array.isArray(r.rules) ? r.rules[0] : r.rules) as { userAgent: string; allow: string[]; disallow: string[] };
-  it("laisse la connexion et la documentation, ferme tout le reste", () => {
+  it("laisse l'accueil, la connexion et la documentation, ferme l'espace connecté", () => {
     expect(rule.userAgent).toBe("*");
-    expect(rule.allow).toEqual(["/login", "/docs"]);
-    expect(rule.disallow).toEqual(["/"]);
+    expect(rule.allow).toEqual(["/", "/login", "/docs"]);
+    expect(rule.disallow).toEqual(["/dashboard"]);
   });
   it("annonce le sitemap", () => {
     expect(r.sitemap).toBe("https://harvest.example/sitemap.xml");
@@ -72,14 +72,14 @@ describe("robots.txt", () => {
 
 describe("sitemap.xml", () => {
   const urls = sitemap().map((e) => e.url);
-  it("contient la connexion et toutes les pages de documentation, en URL absolues", () => {
+  it("contient l'accueil, la connexion et toutes les pages de documentation, en URL absolues", () => {
+    expect(urls).toContain("https://harvest.example");
     expect(urls).toContain("https://harvest.example/login");
     for (const p of flattenDocs()) expect(urls).toContain(`https://harvest.example${p.href}`);
-    expect(urls.every((u) => u.startsWith("https://harvest.example/"))).toBe(true);
+    expect(urls.every((u) => u === "https://harvest.example" || u.startsWith("https://harvest.example/"))).toBe(true);
   });
   it("ne contient jamais une page privée", () => {
-    for (const priv of ["/leads", "/calendrier", "/onboarding", "/templates"]) expect(urls.some((u) => u.includes(priv)), priv).toBe(false);
-    expect(urls).not.toContain("https://harvest.example/");
+    for (const priv of ["/dashboard", "/leads", "/calendrier", "/onboarding", "/templates"]) expect(urls.some((u) => u.includes(priv)), priv).toBe(false);
   });
   it("sans doublon", () => {
     expect(new Set(urls).size).toBe(urls.length);
@@ -89,7 +89,7 @@ describe("sitemap.xml", () => {
 describe("manifest", () => {
   it("décrit l'application installable", () => {
     const m = manifest();
-    expect(m).toMatchObject({ name: BRAND.name, short_name: BRAND.name, lang: "fr", start_url: "/", display: "standalone", theme_color: "#0868c9", background_color: "#ffffff" });
+    expect(m).toMatchObject({ name: BRAND.name, short_name: BRAND.name, lang: "fr", start_url: "/dashboard", display: "standalone", theme_color: "#0868c9", background_color: "#ffffff" });
     expect(m.icons?.map((i) => i.sizes)).toEqual(["192x192", "512x512"]);
   });
 });

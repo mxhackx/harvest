@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { api, describeError } from "@/lib/api";
@@ -111,7 +112,7 @@ function TaskRow({ task, showLead, showAssignee, canEdit, onChanged, onEdit, onE
         <p className="flex flex-wrap gap-x-3 text-small text-muted">
           <span className={TONE[state]}>{dueLabel(task)}</span>
           {showLead && task.leadId && task.leadName && (
-            <Link href={`/leads/${task.leadId}`} className="hover:underline">{task.leadName}</Link>
+            <Link href={ROUTES.lead(task.leadId)} className="hover:underline">{task.leadName}</Link>
           )}
           {showAssignee && <span>{task.assigneeName}</span>}
           {state !== "done" && task.priority === "high" && <span className="font-medium text-fail">Priorité haute</span>}

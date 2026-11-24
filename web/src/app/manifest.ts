@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { DASHBOARD } from "@/lib/routes";
 import { SITE } from "@/lib/seo";
 
 export default function manifest(): MetadataRoute.Manifest {
@@ -7,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: SITE.name,
     description: SITE.description,
     lang: "fr",
-    start_url: "/",
+    start_url: DASHBOARD,
     display: "standalone",
     background_color: "#ffffff",
     theme_color: SITE.themeColor,

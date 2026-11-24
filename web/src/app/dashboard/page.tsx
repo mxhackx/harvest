@@ -1,11 +1,12 @@
-import { TasksPage } from "@/components/tasks-page";
+import { ROUTES } from "@/lib/routes";
+import { Dashboard } from "@/components/dashboard";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
-  title: "Tâches",
-  description: "Vos tâches et rappels, classés par urgence.",
-  path: "/taches",
+  title: "Tableau de bord",
+  description: "Vos leads sur la carte de tournée et ce qui vous attend aujourd’hui.",
+  path: ROUTES.home,
   index: false,
 });
 
@@ -13,5 +14,5 @@ export const metadata = pageMetadata({
 export const instant = false;
 
 export default function Page() {
-  return <TasksPage />;
+  return <Dashboard />;
 }

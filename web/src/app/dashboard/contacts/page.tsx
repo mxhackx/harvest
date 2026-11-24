@@ -1,11 +1,13 @@
-import { ReportsPage } from "@/components/reports-page";
+import { ROUTES } from "@/lib/routes";
+import { BRAND } from "@/lib/brand";
+import { ContactsPage } from "@/components/contacts-page";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
-  title: "Rapports",
-  description: "Pipeline en valeur, conversion par étape et activité par personne.",
-  path: "/rapports",
+  title: "Contacts",
+  description: `Contacts de votre CRM ${BRAND.name}.`,
+  path: ROUTES.contacts,
   index: false,
 });
 
@@ -13,5 +15,5 @@ export const metadata = pageMetadata({
 export const instant = false;
 
 export default function Page() {
-  return <ReportsPage />;
+  return <ContactsPage />;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,39 +26,39 @@ const MODULES: Module[] = [
   {
     key: "home",
     label: "Accueil",
-    href: "/",
+    href: ROUTES.home,
     icon: HomeIcon,
     pages: [
-      { label: "Tableau de bord", short: "Accueil", href: "/", icon: HomeIcon },
-      { label: "Calendrier", short: "Calendrier", href: "/calendrier", icon: CalendarIcon },
+      { label: "Tableau de bord", short: "Accueil", href: ROUTES.home, icon: HomeIcon },
+      { label: "Calendrier", short: "Calendrier", href: ROUTES.calendar, icon: CalendarIcon },
     ],
   },
   {
     key: "crm",
     label: "CRM",
-    href: "/leads",
+    href: ROUTES.leads,
     icon: UsersIcon,
     pages: [
-      { label: "Leads", short: "Leads", href: "/leads", icon: UsersIcon },
-      { label: "Contacts", short: "Contacts", href: "/contacts", icon: UserIcon },
-      { label: "Tâches", short: "Tâches", href: "/taches", icon: CheckIcon },
-      { label: "Modèles", short: "Modèles", href: "/modeles", icon: FormIcon },
-      { label: "Pipeline", short: "Pipeline", href: "/pipeline", icon: BoardIcon },
-      { label: "Rapports", short: "Rapports", href: "/rapports", icon: CoinIcon },
+      { label: "Leads", short: "Leads", href: ROUTES.leads, icon: UsersIcon },
+      { label: "Contacts", short: "Contacts", href: ROUTES.contacts, icon: UserIcon },
+      { label: "Tâches", short: "Tâches", href: ROUTES.tasks, icon: CheckIcon },
+      { label: "Modèles", short: "Modèles", href: ROUTES.templates, icon: FormIcon },
+      { label: "Pipeline", short: "Pipeline", href: ROUTES.pipeline, icon: BoardIcon },
+      { label: "Rapports", short: "Rapports", href: ROUTES.reports, icon: CoinIcon },
     ],
   },
   {
     key: "team",
     label: "ERP",
-    href: "/equipe",
+    href: ROUTES.team,
     icon: BriefcaseIcon,
     needs: "member:read",
-    pages: [{ label: "Équipe", short: "Équipe", href: "/equipe", icon: UsersIcon }],
+    pages: [{ label: "Équipe", short: "Équipe", href: ROUTES.team, icon: UsersIcon }],
   },
 ];
 
 const moduleFor = (path: string, modules: Module[]) =>
-  modules.find((m) => m.pages.some((p) => p.href !== "/" && path.startsWith(p.href))) ?? modules[0];
+  modules.find((m) => m.pages.some((p) => p.href !== ROUTES.home && path.startsWith(p.href))) ?? modules[0];
 
 export function Shell({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -130,7 +131,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <div className="flex min-h-dvh">
         {/* Rail de modules, 80 px */}
         <nav aria-label="Modules" className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 bg-accent py-3 md:flex">
-          <Link href="/" aria-label={BRAND.name} className="mb-2 flex size-11 items-center justify-center">
+          <Link href={ROUTES.home} aria-label={BRAND.name} className="mb-2 flex size-11 items-center justify-center">
             <Image src="/logo-on-blue.svg" alt="" width={38} height={38} priority />
           </Link>
           {modules.map((m) => (
@@ -168,11 +169,11 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-rule bg-card px-6">
             <div className="flex items-center gap-3">
-              <Link href="/" aria-label={BRAND.name} className="md:hidden">
+              <Link href={ROUTES.home} aria-label={BRAND.name} className="md:hidden">
                 <Image src="/logo.svg" alt="" width={26} height={26} />
               </Link>
               <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-small">
-                <Link href="/" className="hidden text-muted hover:text-ink hover:underline sm:inline">Admin</Link>
+                <Link href={ROUTES.home} className="hidden text-muted hover:text-ink hover:underline sm:inline">Admin</Link>
                 <span aria-hidden className="hidden text-muted sm:inline">›</span>
                 <Link href={active.href} className="text-muted hover:text-ink hover:underline">{active.label}</Link>
                 <span aria-hidden className="text-muted">›</span>

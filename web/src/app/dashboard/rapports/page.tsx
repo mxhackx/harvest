@@ -1,11 +1,12 @@
-import { LeadsPage } from "@/components/leads-page";
+import { ROUTES } from "@/lib/routes";
+import { ReportsPage } from "@/components/reports-page";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
-  title: "Leads",
-  description: "Gérez vos leads : board par étape, tableau, import et export.",
-  path: "/leads",
+  title: "Rapports",
+  description: "Pipeline en valeur, conversion par étape et activité par personne.",
+  path: ROUTES.reports,
   index: false,
 });
 
@@ -13,5 +14,5 @@ export const metadata = pageMetadata({
 export const instant = false;
 
 export default function Page() {
-  return <LeadsPage />;
+  return <ReportsPage />;
 }

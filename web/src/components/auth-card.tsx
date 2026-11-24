@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -37,7 +38,7 @@ export function AuthCard() {
           ...(mode === "register" ? { name: f.get("name") } : {}),
         },
       });
-      router.replace(safeNext(params.get("next")) ?? "/");
+      router.replace(safeNext(params.get("next")) ?? ROUTES.home);
     } catch (err) {
       setNotice(errorMessage(err instanceof ApiError ? err.code : null));
       setLoading(false);

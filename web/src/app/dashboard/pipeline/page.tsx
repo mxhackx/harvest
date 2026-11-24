@@ -1,11 +1,12 @@
-import { CalendarPage } from "@/components/calendar-page";
+import { ROUTES } from "@/lib/routes";
+import { PipelineSettings } from "@/components/pipeline-settings";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
-  title: "Calendrier",
-  description: "Planifiez vos visites, appels et relances.",
-  path: "/calendrier",
+  title: "Pipeline",
+  description: "Configurez les étapes du pipeline : noms, couleurs, probabilités, gagné et perdu.",
+  path: ROUTES.pipeline,
   index: false,
 });
 
@@ -13,5 +14,5 @@ export const metadata = pageMetadata({
 export const instant = false;
 
 export default function Page() {
-  return <CalendarPage />;
+  return <PipelineSettings />;
 }

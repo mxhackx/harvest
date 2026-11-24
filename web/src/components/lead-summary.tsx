@@ -1,3 +1,4 @@
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { LOCATION_SOURCE_NOTE, formatValue, type Lead } from "@/lib/api";
 import { PencilIcon } from "./icons";
@@ -63,7 +64,7 @@ export function LeadSummary({
         )}
       </div>
       <Link
-        href={`/leads/${lead.id}`}
+        href={ROUTES.lead(lead.id)}
         className="flex h-9 items-center justify-center rounded-control border border-frame text-small font-medium hover:bg-field"
       >
         Ouvrir la fiche

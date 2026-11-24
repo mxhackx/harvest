@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -18,7 +19,7 @@ export function Onboarding() {
 
   useEffect(() => {
     if (s.status === "unauthenticated") router.replace("/login");
-    if (s.status === "ready" && s.me.memberships.length > 0) router.replace("/");
+    if (s.status === "ready" && s.me.memberships.length > 0) router.replace(ROUTES.home);
   }, [s, router]);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -30,7 +31,7 @@ export function Onboarding() {
       await api("/companies", {
         body: { name: f.get("name"), sector: f.get("sector"), region: f.get("region"), teamName: f.get("teamName") },
       });
-      router.replace("/");
+      router.replace(ROUTES.home);
     } catch (err) {
       setNotice(errorMessage(err instanceof ApiError ? err.code : null));
       setLoading(false);

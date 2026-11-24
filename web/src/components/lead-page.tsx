@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -79,7 +80,7 @@ export function LeadPage() {
       <div className="flex flex-col items-start gap-3">
         <h1 className="text-title font-semibold">Lead introuvable</h1>
         <p className="text-small text-muted">Il a été supprimé, ou il n’est pas dans votre périmètre.</p>
-        <Link href="/leads" className="text-small font-medium text-accent-press hover:underline">← Retour aux leads</Link>
+        <Link href={ROUTES.leads} className="text-small font-medium text-accent-press hover:underline">← Retour aux leads</Link>
       </div>
     );
 
@@ -110,7 +111,7 @@ export function LeadPage() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <Link href="/leads" className="text-small font-medium text-accent-press hover:underline">← Leads</Link>
+        <Link href={ROUTES.leads} className="text-small font-medium text-accent-press hover:underline">← Leads</Link>
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <h1 className="text-title font-semibold leading-snug">{lead.name}</h1>
           {canUpdate && (
@@ -259,7 +260,7 @@ export function LeadPage() {
           }}
           onDeleted={async () => {
             await reload();
-            router.push("/leads");
+            router.push(ROUTES.leads);
           }}
         />
       )}
