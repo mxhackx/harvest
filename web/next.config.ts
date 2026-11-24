@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { legacyRedirects } from "./src/lib/legacy-routes";
 import { ROUTES } from "./src/lib/routes";
 
 /**
@@ -17,18 +18,13 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return apiProxyTarget ? [{ source: "/api/:path*", destination: `${apiProxyTarget}/:path*` }] : [];
   },
-  // Anciennes adresses : sans préfixe (avant /dashboard), puis sous /dashboard sans /crm. Favoris et liens déjà partagés.
+  // Un module tapé seul dans la barre d'adresse mène à sa première page (temporaire : elle peut changer),
+  // et les anciennes adresses françaises redirigent vers les actuelles (favoris, liens, e-mails déjà envoyés).
   async redirects() {
-    const crm = "leads|contacts|taches|modeles|pipeline|rapports";
     return [
-      // Un module tapé seul dans la barre d'adresse mène à sa première page (temporaire : elle peut changer).
       { source: "/dashboard/crm", destination: ROUTES.leads, permanent: false },
       { source: "/dashboard/erp", destination: ROUTES.team, permanent: false },
-      { source: `/:page(${crm})/:rest*`, destination: "/dashboard/crm/:page/:rest*", permanent: true },
-      { source: `/dashboard/:page(${crm})/:rest*`, destination: "/dashboard/crm/:page/:rest*", permanent: true },
-      { source: "/:page(equipe)/:rest*", destination: "/dashboard/erp/:page/:rest*", permanent: true },
-      { source: "/dashboard/:page(equipe)/:rest*", destination: "/dashboard/erp/:page/:rest*", permanent: true },
-      { source: "/calendrier", destination: "/dashboard/calendrier", permanent: true },
+      ...legacyRedirects(),
     ];
   },
   /* config options here */

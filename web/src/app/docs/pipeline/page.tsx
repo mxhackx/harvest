@@ -45,7 +45,7 @@ export default function Page() {
 
       <Callout title="Import et export">
         Dans les fichiers, l’étape s’écrit avec sa clé (<code>to_visit</code>…) ou son nom exact. Voir{" "}
-        <Link href="/docs/import/champs">les champs acceptés</Link>.
+        <Link href="/docs/import/fields">les champs acceptés</Link>.
       </Callout>
     </DocArticle>
   );

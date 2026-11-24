@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
 
-export const metadata = docMetadata("/docs/fiche-lead");
+export const metadata = docMetadata("/docs/lead");
 
 export default function Page() {
   return (
-    <DocArticle href="/docs/fiche-lead">
+    <DocArticle href="/docs/lead">
       <h2>Ouvrir la fiche</h2>
       <p>
         Cliquez sur le nom d’un lead dans le tableau, le board ou la carte (« Ouvrir la fiche »). Le crayon, lui, ouvre
@@ -28,10 +28,10 @@ export default function Page() {
         <li>
           <strong>Probabilité de conversion</strong> : de 0 à 100 %. Laissée vide, c’est la probabilité de l’étape qui
           s’applique. Elle sert à la valeur pondérée (valeur × probabilité) des{" "}
-          <Link href="/docs/rapports">rapports</Link>.
+          <Link href="/docs/reports">rapports</Link>.
         </li>
         <li><strong>Conclusion espérée</strong> : la date où vous comptez signer. Elle s’affiche en rouge une fois dépassée, tant que le lead est ouvert.</li>
-        <li><strong>Responsable</strong> : choisi à la création (voir <Link href="/docs/equipe">Équipe</Link>), modifiable avec « Attribuer à… ».</li>
+        <li><strong>Responsable</strong> : choisi à la création (voir <Link href="/docs/team">Équipe</Link>), modifiable avec « Attribuer à… ».</li>
         <li>
           <strong>Prochain suivi</strong> : calculé tout seul, c’est l’échéance la plus proche des tâches ouvertes du
           lead. Sans tâche à venir, la fiche affiche « Aucun suivi prévu » en rouge : un lead sans suivi risque d’être
@@ -62,7 +62,7 @@ export default function Page() {
       <h2>Tâches et attribution</h2>
       <p>
         L’onglet <strong>Tâches</strong> montre ce qu’il reste à faire pour ce lead (voir{" "}
-        <Link href="/docs/taches">Tâches et rappels</Link>). Avec le droit d’attribuer, le bouton « Attribuer à… »
+        <Link href="/docs/tasks">Tâches et rappels</Link>). Avec le droit d’attribuer, le bouton « Attribuer à… »
         confie le lead à un collègue, qui reçoit une notification.
       </p>
 

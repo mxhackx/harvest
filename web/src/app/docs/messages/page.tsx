@@ -11,7 +11,7 @@ export default function Page() {
       <h2>La page Contacts</h2>
       <p>
         <strong>CRM › Contacts</strong> réunit les personnes de tous vos leads. Cherchez par nom, fonction, téléphone,
-        e-mail ou nom de lead ; cliquez sur le lead pour ouvrir sa <Link href="/docs/fiche-lead">fiche</Link>. On ajoute
+        e-mail ou nom de lead ; cliquez sur le lead pour ouvrir sa <Link href="/docs/lead">fiche</Link>. On ajoute
         et on modifie les contacts depuis la fiche. Vous ne voyez que les contacts des leads que vous avez le droit de lire.
       </p>
 

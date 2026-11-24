@@ -299,6 +299,7 @@ describe("e-mails : invitation et mot de passe oublié", () => {
     const out = await sent();
     const before = out.length;
     await http(null, "POST", "/auth/forgot", { email: u.email });
+    expect(out[before].text).toContain("/reset-password?token="); // adresse de la page web
     const token = out[before].text.match(/token=([\w-]+)/)![1];
     expect((await http(u, "GET", "/me")).status).toBe(200);
     expect((await http(null, "POST", "/auth/reset", { token, password: "court" })).status).toBe(400);

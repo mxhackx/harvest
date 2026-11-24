@@ -2,11 +2,11 @@ import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
 
-export const metadata = docMetadata("/docs/rapports");
+export const metadata = docMetadata("/docs/reports");
 
 export default function Page() {
   return (
-    <DocArticle href="/docs/rapports">
+    <DocArticle href="/docs/reports">
       <h2>En bref</h2>
       <p>
         <strong>CRM › Rapports</strong> répond à trois questions : combien vaut mon pipeline, où perd-on des leads, et
@@ -35,7 +35,7 @@ export default function Page() {
       <h2>Activité par personne</h2>
       <p>
         Pour chaque personne : leads créés, appels, messages, visites, e-mails, notes, changements d’étape, tâches
-        terminées, leads gagnés et leur valeur. Ces chiffres viennent du <Link href="/docs/fiche-lead">fil d’activité</Link> :
+        terminées, leads gagnés et leur valeur. Ces chiffres viennent du <Link href="/docs/lead">fil d’activité</Link> :
         ils ne valent que ce qui y est saisi.
       </p>
 

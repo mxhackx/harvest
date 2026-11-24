@@ -1,6 +1,6 @@
 "use client";
 
-import { currentPath } from "./routes";
+import { currentPath } from "./legacy-routes";
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 const KEY = "harvest.pins";
