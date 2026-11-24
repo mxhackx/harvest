@@ -217,6 +217,18 @@ export function QuotePage() {
             </Button>
           </>
         )}
+        {quote.status === "accepted" && canWrite && (
+          <Button loading={busy === "invoice"} className="h-9 w-auto" onClick={() => run("invoice", async () => {
+            try {
+              const inv = await api<{ id: string }>(`/quotes/${id}/invoice`, { companyId, body: {} });
+              router.push(ROUTES.invoice(inv.id));
+            } catch (e) {
+              setError(describeError(e));
+            }
+          })}>
+            Créer la facture
+          </Button>
+        )}
         <Button className="h-9 w-auto" variant="secondary" onClick={() => window.print()}>
           Imprimer / PDF
         </Button>

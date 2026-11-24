@@ -21,6 +21,8 @@ export const ROUTES = {
   trash: `${CRM}/trash`,
   duplicates: `${CRM}/duplicates`,
   objectives: `${CRM}/objectives`,
+  invoices: `${CRM}/invoices`,
+  invoice: (id: string) => `${CRM}/invoices/${id}`,
   segments: `${CRM}/segments`,
   segment: (id: string) => `${CRM}/segments/${id}`,
   fields: `${CRM}/fields`,
