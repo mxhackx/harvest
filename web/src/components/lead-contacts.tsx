@@ -1,46 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api, describeError, downloadFrom } from "@/lib/api";
 import type { Contact } from "@/lib/activity";
 import { useSession } from "@/lib/session";
 import { DownloadIcon, PencilIcon, PlusIcon, TrashIcon, XIcon } from "./icons";
-import { Button, Field, Modal, Notice, TextArea } from "./ui";
-
-const EMPTY = { name: "", role: "", phone: "", whatsapp: "", email: "", notes: "" };
-
-function ContactForm({ contact, onClose, onSubmit }: { contact?: Contact; onClose: () => void; onSubmit: (v: typeof EMPTY) => Promise<void> }) {
-  const [v, setV] = useState(contact ? { name: contact.name, role: contact.role, phone: contact.phone, whatsapp: contact.whatsapp, email: contact.email, notes: contact.notes } : EMPTY);
-  const [busy, setBusy] = useState(false);
-  const set = (k: keyof typeof EMPTY) => (e: { target: { value: string } }) => setV((s) => ({ ...s, [k]: e.target.value }));
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      await onSubmit(v);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <Modal title={contact ? "Modifier le contact" : "Nouveau contact"} onClose={onClose} width="max-w-[520px]">
-      <form onSubmit={submit} className="flex flex-col gap-4">
-        <Field label="Nom" value={v.name} onChange={set("name")} required maxLength={100} />
-        <Field label="Fonction" value={v.role} onChange={set("role")} maxLength={100} placeholder="Gérant, comptable…" />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Téléphone" value={v.phone} onChange={set("phone")} maxLength={40} />
-          <Field label="WhatsApp" value={v.whatsapp} onChange={set("whatsapp")} maxLength={40} placeholder="+229…" />
-        </div>
-        <Field label="E-mail" type="email" value={v.email} onChange={set("email")} maxLength={200} />
-        <TextArea label="Notes" value={v.notes} onChange={set("notes")} maxLength={1000} />
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="secondary" className="w-auto" onClick={onClose}>Annuler</Button>
-          <Button type="submit" className="w-auto" loading={busy}>Enregistrer</Button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
+import { Button, Notice } from "./ui";
+import { ContactForm, type ContactValues } from "./contact-form";
 
 /** Les personnes à contacter dans l'entreprise ; une seule est « principale » et donne son nom au lead. */
 export function LeadContacts({ leadId, canWrite, onChanged }: { leadId: string; canWrite: boolean; onChanged: () => void }) {
@@ -154,9 +120,10 @@ export function LeadContacts({ leadId, canWrite, onChanged }: { leadId: string; 
       {form && (
         <ContactForm
           contact={form === "new" ? undefined : form}
+          siblings={(list ?? []).map((c) => ({ id: c.id, name: c.name }))}
           onClose={() => setForm(null)}
-          onSubmit={async (v) => {
-            const body = Object.fromEntries(Object.entries(v).map(([k, val]) => [k, val.trim()]));
+          onSubmit={async (v: ContactValues) => {
+            const body = { ...Object.fromEntries(Object.entries(v).map(([k, val]) => [k, val.trim()])), reportsToId: v.reportsToId || null };
             try {
               await run(() =>
                 form === "new"
