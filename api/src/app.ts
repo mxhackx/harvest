@@ -24,6 +24,7 @@ import { accountRoutes } from "./routes/accounts.js";
 import { quoteRoutes } from "./routes/quotes.js";
 import { tourRoutes } from "./routes/tours.js";
 import { invoiceRoutes } from "./routes/invoices.js";
+import { automationRoutes } from "./routes/automations.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -88,5 +89,6 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(quoteRoutes);
   await app.register(tourRoutes);
   await app.register(invoiceRoutes);
+  await app.register(automationRoutes);
   return app;
 }

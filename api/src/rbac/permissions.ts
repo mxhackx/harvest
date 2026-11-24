@@ -18,6 +18,8 @@ export const CATALOG = {
   finance: { actions: ["read", "create", "update", "delete"], scoped: true },
   // tout membre lit les régions et les vagues ; les gérer est un droit
   wave: { actions: ["create", "update", "delete"], scoped: false },
+  // automatisations : attribution automatique, relances (tâche ou e-mail) après la création d'un lead
+  automation: { actions: ["read", "create", "update", "delete"], scoped: false },
   // webhooks : réservés au CEO (ils envoient des données de l'entreprise à une adresse externe)
   webhook: { actions: ["read", "create", "delete"], scoped: false },
   // tout membre lit les comptes (entreprises clientes) ; les gérer est un droit
