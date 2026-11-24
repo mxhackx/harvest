@@ -232,6 +232,13 @@
       "when": 1795563287743,
       "tag": "0032_contacts_sf",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1795563472095,
+      "tag": "0033_segments_page",
+      "breakpoints": true
     }
   ]
 }

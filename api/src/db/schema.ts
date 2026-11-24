@@ -465,6 +465,7 @@ export const segments = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    description: text("description").notNull().default(""),
     config: jsonb("config").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
