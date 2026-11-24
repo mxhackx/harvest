@@ -24,6 +24,7 @@ export const ROUTES = {
   fields: `${CRM}/fields`,
   team: `${ERP}/team`,
   audit: `${ERP}/audit`,
+  webhooks: `${ERP}/webhooks`,
   waves: WAVES,
   regions: `${WAVES}/regions`,
   map: `${WAVES}/map`,

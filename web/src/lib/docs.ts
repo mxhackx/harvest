@@ -66,6 +66,11 @@ export const DOCS: DocPage[] = [
     description: "Fixez pour chaque commercial un objectif mensuel de visites, de leads gagnés et de valeur gagnée, et suivez l'avancement réel mois par mois.",
   },
   {
+    href: "/docs/webhooks",
+    title: "Webhooks",
+    description: "Prévenez un autre outil dès qu'un lead est créé, modifié ou supprimé, avec un envoi JSON signé que votre serveur peut vérifier.",
+  },
+  {
     href: "/docs/calendar",
     title: "Calendrier et export .ics",
     description: "Planifiez visites, appels et relances avec une heure de début et de fin, puis exportez-les vers Google Agenda, Apple Calendrier ou Outlook.",
