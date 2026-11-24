@@ -73,10 +73,10 @@ Pour rendre `main` inviolable, activez dans GitHub (Settings › Branches › r�
 
 ### Branches
 
-- `main` : toujours vert, déployé. On n'y pousse jamais directement.
-- `staging` : branche d'intégration. Chaque fonctionnalité (une branche = une fonctionnalité) y est fusionnée, testée par la CI et le contrôle complet du push ; une seule pull request `staging` vers `main` met ensuite le tout en ligne.
-- `feat/<sujet>` : nouvelle fonctionnalité. `test/<sujet>` : ajout ou réparation de tests. `fix/`, `chore/` et `docs/` sont aussi acceptés.
-- Tout autre nom est refusé au push. Les branches de fonctionnalité sont fusionnées dans `staging`, puis `staging` dans `main` par pull request ; le push vers `staging` déclenche le contrôle complet.
+- **Sur GitHub, seulement deux branches :** `main` (toujours vert, déployé, jamais de push direct) et `staging` (intégration).
+- **Tout le reste reste en local.** Une fonctionnalité = une branche locale `feat/<sujet>` (ou `fix/`, `chore/`, `docs/`, `test/`). On ne la pousse pas : on la fusionne dans `staging` (`git merge --no-ff`), on pousse `staging`, puis on **supprime la branche locale** (`git branch -d`).
+- Mise en ligne : une pull request `staging` vers `main`, après avoir vérifié que `staging` contient `origin/main` (sinon, fusionner `origin/main` dans `staging`).
+- Le push vers `staging` (comme vers `main`) lance le contrôle complet : types, tests unitaires du web, tests de l'API (base de test obligatoire). Un nom de branche doit commencer par `feat/`, `test/`, `fix/`, `chore/` ou `docs/` ; `main` et `staging` sont libres.
 
 Passer outre exceptionnellement : `git commit --no-verify`, ou `SKIP_PREPUSH=1 git push`.
 
