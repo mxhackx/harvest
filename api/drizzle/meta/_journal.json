@@ -162,6 +162,13 @@
       "when": 1795546576439,
       "tag": "0022_email_log",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1795547174695,
+      "tag": "0023_event_end",
+      "breakpoints": true
     }
   ]
 }
