@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { feature, mesh } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import worldData from "world-atlas/countries-110m.json";
+import { cssVar } from "@/lib/theme";
 import { ExpandIcon, ShrinkIcon } from "./icons";
 
 /** Quel panneau occupe toute la hauteur : aucun (les deux), le globe ou la carte. */
@@ -17,8 +18,6 @@ const land = feature(world, world.objects.land);
 const borders = mesh(world, world.objects.countries, (a, b) => a !== b);
 const graticule = geoGraticule10();
 
-const LINE = "#4aa3ff";
-const LINE_SOFT = "rgba(74, 163, 255, 0.22)";
 const FIRST_VIEW: [number, number] = [2.42, 6.37];
 
 /** Globe en fil de fer (canvas) : tourne tout seul, se fait glisser, et un clic envoie la carte à cet endroit. */
@@ -60,37 +59,49 @@ function Globe({ onPick, focus }: { onPick: (lng: number, lat: number) => void; 
     observer.observe(el);
     resize();
 
+    // couleurs lues une fois dans les jetons de globals.css (le canevas ne comprend pas var(--…))
+    const line = cssVar("--color-globe-line");
+    const glowColor = cssVar("--color-globe-glow");
+    const bg = cssVar("--color-globe-bg");
+    const marker = cssVar("--color-globe-marker");
+
     const draw = () => {
       projection.rotate([rotation.current[0], rotation.current[1], 0]);
       ctx.clearRect(0, 0, w, h);
       // la sphère : léger dégradé pour lui donner du volume
       const glow = ctx.createRadialGradient(w / 2 - radius * 0.3, h / 2 - radius * 0.3, radius * 0.1, w / 2, h / 2, radius);
-      glow.addColorStop(0, "rgba(30, 96, 190, 0.35)");
-      glow.addColorStop(1, "rgba(8, 26, 52, 0.15)");
+      glow.addColorStop(0, glowColor);
+      glow.addColorStop(1, bg);
       ctx.beginPath();
       path({ type: "Sphere" });
+      ctx.globalAlpha = 0.4;
       ctx.fillStyle = glow;
       ctx.fill();
+      ctx.globalAlpha = 1;
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = LINE;
+      ctx.strokeStyle = line;
       ctx.stroke();
 
       ctx.beginPath();
       path(graticule);
       ctx.lineWidth = 0.6;
-      ctx.strokeStyle = LINE_SOFT;
+      ctx.globalAlpha = 0.22;
+      ctx.strokeStyle = line;
       ctx.stroke();
+      ctx.globalAlpha = 1;
 
       ctx.beginPath();
       path(borders);
       ctx.lineWidth = 0.5;
-      ctx.strokeStyle = "rgba(74, 163, 255, 0.45)";
+      ctx.globalAlpha = 0.45;
+      ctx.strokeStyle = line;
       ctx.stroke();
+      ctx.globalAlpha = 1;
 
       ctx.beginPath();
       path(land);
       ctx.lineWidth = 1.1;
-      ctx.strokeStyle = LINE;
+      ctx.strokeStyle = line;
       ctx.stroke();
 
       const f = focusRef.current;
@@ -100,12 +111,12 @@ function Globe({ onPick, focus }: { onPick: (lng: number, lat: number) => void; 
         if (p && distanceToCenter(f, rotation.current) < 90) {
           ctx.beginPath();
           ctx.arc(p[0], p[1], 5, 0, Math.PI * 2);
-          ctx.fillStyle = "#ffffff";
+          ctx.fillStyle = marker;
           ctx.fill();
           ctx.beginPath();
           ctx.arc(p[0], p[1], 11, 0, Math.PI * 2);
           ctx.lineWidth = 1.5;
-          ctx.strokeStyle = "#ffffff";
+          ctx.strokeStyle = marker;
           ctx.stroke();
         }
       }
@@ -301,7 +312,7 @@ export function HomeMap() {
       style={{ gridTemplateRows: rows }}
       className={`grid h-[620px] ${mode === "both" ? "gap-3" : "gap-0"} transition-[grid-template-rows] duration-300 motion-reduce:transition-none md:h-[720px]`}
     >
-      <Panel title="le globe" mode={mode} me="globe" setMode={setMode} className="rounded-card bg-[#071a33]">
+      <Panel title="le globe" mode={mode} me="globe" setMode={setMode} className="rounded-card bg-globe-bg">
         <Globe onPick={pick} focus={focus} />
       </Panel>
       <Panel title="la carte" mode={mode} me="map" setMode={setMode} className="rounded-card border border-border bg-field">

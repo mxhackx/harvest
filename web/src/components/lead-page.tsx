@@ -136,7 +136,7 @@ export function LeadPage() {
               onClick={() => changeStage(s.key)}
               className={`inline-flex h-9 items-center gap-2 rounded-control border px-3 text-small font-medium disabled:cursor-default ${active ? "border-ink bg-ink text-white" : "border-frame bg-card hover:bg-field disabled:hover:bg-card"}`}
             >
-              <span aria-hidden className="size-2 rounded-full border border-black/15" style={{ background: s.color }} />
+              <span aria-hidden className="size-2 rounded-full border border-ink/15" style={{ background: s.color }} />
               {s.name}
             </button>
           );

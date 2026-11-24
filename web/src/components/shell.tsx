@@ -116,7 +116,7 @@ export function Shell({ children }: { children: ReactNode }) {
         onClick={() => togglePinned(p.href)}
         aria-pressed={pins.includes(p.href)}
         aria-label={pins.includes(p.href) ? `Désépingler ${p.label}` : `Épingler ${p.label}`}
-        className={`absolute right-1 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:bg-white hover:text-ink focus-visible:opacity-100 ${pins.includes(p.href) ? "text-accent-press" : "opacity-0 group-hover:opacity-100"}`}
+        className={`absolute right-1 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:bg-card hover:text-ink focus-visible:opacity-100 ${pins.includes(p.href) ? "text-accent-press" : "opacity-0 group-hover:opacity-100"}`}
       >
         <PushPinIcon size={15} />
       </button>
@@ -130,9 +130,9 @@ export function Shell({ children }: { children: ReactNode }) {
       <LeadsProvider>
       <div className="flex min-h-dvh">
         {/* Rail de modules, 80 px */}
-        <nav aria-label="Modules" className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 bg-accent py-3 md:flex">
+        <nav aria-label="Modules" className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 border-r border-rule bg-field py-3 md:flex">
           <Link href={ROUTES.home} aria-label={BRAND.name} className="mb-2 flex size-11 items-center justify-center">
-            <Image src="/logo-on-blue.svg" alt="" width={38} height={38} priority />
+            <Image src="/logo.svg" alt="" width={38} height={38} priority />
           </Link>
           {modules.map((m) => (
             <Link
@@ -140,7 +140,7 @@ export function Shell({ children }: { children: ReactNode }) {
               href={m.href}
               aria-current={m.key === active.key ? "page" : undefined}
               className={`flex h-14 w-16 flex-col items-center justify-center gap-1 rounded-control text-small ${
-                m.key === active.key ? "bg-white font-medium text-accent-press" : "text-on-dark-soft hover:bg-white/10"
+                m.key === active.key ? "bg-accent-soft font-medium text-accent-press" : "text-muted hover:bg-card hover:text-ink"
               }`}
             >
               <m.icon />
@@ -190,14 +190,14 @@ export function Shell({ children }: { children: ReactNode }) {
       </div>
 
       {/* Navigation basse sur mobile : le gérant est en tournée */}
-      <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 overflow-x-auto bg-accent md:hidden">
+      <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 overflow-x-auto border-t border-rule bg-card md:hidden">
         {mobilePages.map((p) => (
           <Link
             key={p.href}
             href={p.href}
             aria-current={p.href === path ? "page" : undefined}
             className={`flex min-w-[76px] flex-1 shrink-0 flex-col items-center justify-center gap-1 text-small ${
-              p.href === path ? "bg-white font-medium text-accent-press" : "text-on-dark-soft"
+              p.href === path ? "bg-accent-soft font-medium text-accent-press" : "text-muted"
             }`}
           >
             <p.icon />
