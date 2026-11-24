@@ -569,3 +569,26 @@ export const webhooks = pgTable(
   },
   (t) => [index("webhooks_company").on(t.companyId)],
 );
+
+/** Messages envoyés depuis la bulle de contact de la documentation (public, sans compte). Toujours gardés, même sans e-mail de support. */
+export const contactMessages = pgTable("contact_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull(),
+  message: text("message").notNull(),
+  // page de la documentation d'où vient le message
+  page: text("page").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+/** Avis « cet article vous a-t-il aidé ? » : une ligne par réponse, sans donnée personnelle. */
+export const docFeedback = pgTable(
+  "doc_feedback",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    page: text("page").notNull(),
+    // 1 = pas du tout, 2 = moyen, 3 = oui
+    rating: integer("rating").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("doc_feedback_page").on(t.page)],
+);
