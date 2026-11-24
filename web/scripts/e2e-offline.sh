@@ -8,6 +8,7 @@ rm -rf .next-offline
 npx next build > /dev/null
 npx next start -p 3100 > /dev/null 2>&1 &
 SERVER=$!
-trap 'kill $SERVER 2>/dev/null || true; rm -rf .next-offline' EXIT
+# next start lance un processus fils : on libère le port pour ne pas laisser de serveur orphelin
+trap 'kill $SERVER 2>/dev/null || true; fuser -k 3100/tcp >/dev/null 2>&1 || true; rm -rf .next-offline' EXIT
 for _ in $(seq 1 40); do curl -s -o /dev/null -m 2 http://localhost:3100/login && break; sleep 1; done
 E2E_OFFLINE=1 npx playwright test e2e/offline.spec.ts
