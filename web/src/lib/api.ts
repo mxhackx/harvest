@@ -219,6 +219,24 @@ export async function downloadLeads(opts: {
   URL.revokeObjectURL(url);
 }
 
+/** Télécharge un fichier renvoyé par l'API (en-tête content-disposition) : export RGPD d'un contact, calendrier .ics… */
+export async function downloadFrom(path: string, companyId: string, fallbackName: string): Promise<void> {
+  const res = await fetch(`${API_URL}${path}`, { credentials: "include", headers: { "x-company-id": companyId } });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, (data as { error?: string }).error ?? "unknown");
+  }
+  const name = /filename="([^"]+)"/.exec(res.headers.get("content-disposition") ?? "")?.[1] ?? fallbackName;
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 /** Message affiché après la création ou la modification d'un lead : dit clairement s'il est sur la carte. */
 export function savedMessage(l: Pick<Lead, "lat" | "lng" | "locationSource">, mode: "created" | "updated"): string {
   const located = l.lat !== null && l.lng !== null;
