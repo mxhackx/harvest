@@ -99,11 +99,12 @@ test.describe("modifier un lead", () => {
     await expect(board(page, "À visiter").getByRole("heading", { name: "Boulangerie du Soleil" })).toBeVisible();
   });
 
-  test("cliquer sur le nom ouvre aussi la fiche, et « Déjà visité » est enregistré", async ({ page, context, request }) => {
+  test("« Déjà visité » est enregistré depuis la fiche, et le nom mène à la page du lead", async ({ page, context, request }) => {
     const user = await newUser(request);
     await addLead(request, user, { name: "Salon Prestige" });
     await openLeads(page, context, user);
-    await card(page, "Salon Prestige").getByRole("button", { name: "Salon Prestige", exact: true }).click();
+    await expect(card(page, "Salon Prestige").getByRole("link", { name: "Salon Prestige" })).toHaveAttribute("href", /\/dashboard\/crm\/leads\//);
+    await card(page, "Salon Prestige").getByRole("button", { name: "Modifier Salon Prestige" }).click();
     await dialog(page).getByLabel("Déjà visité").check();
     await dialog(page).getByRole("button", { name: "Enregistrer" }).click();
     await expect(card(page, "Salon Prestige").getByText(/Visité le/)).toBeVisible();
@@ -126,14 +127,22 @@ test.describe("modifier un lead", () => {
     await addLead(request, user, { name: "À supprimer" });
     await openLeads(page, context, user);
     await page.getByRole("button", { name: "Modifier À supprimer" }).click();
-    await dialog(page).getByRole("button", { name: "Supprimer ce lead" }).click();
-    await expect(dialog(page).getByText(/Supprimer définitivement/)).toBeVisible();
+    await dialog(page).getByRole("button", { name: "Mettre à la corbeille", exact: true }).click();
+    await expect(dialog(page).getByText(/Vous pourrez le restaurer/)).toBeVisible();
     await dialog(page).getByRole("button", { name: "Annuler" }).click(); // « Annuler » ne supprime rien
-    await expect(dialog(page).getByRole("button", { name: "Supprimer ce lead" })).toBeVisible();
-    await dialog(page).getByRole("button", { name: "Supprimer ce lead" }).click();
-    await dialog(page).getByRole("button", { name: "Supprimer", exact: true }).click();
+    await expect(dialog(page).getByRole("button", { name: "Mettre à la corbeille", exact: true })).toBeVisible();
+    await dialog(page).getByRole("button", { name: "Mettre à la corbeille", exact: true }).click();
+    await dialog(page).getByRole("button", { name: "Mettre à la corbeille", exact: true }).click();
     await expect(banner(page)).toHaveText(/« À supprimer » supprimé/);
     await expect(card(page, "À supprimer")).toHaveCount(0);
+
+    // il est dans la corbeille, et on peut le restaurer
+    await page.goto("/dashboard/crm/trash");
+    await expect(page.getByText("À supprimer")).toBeVisible();
+    await page.getByRole("button", { name: "Restaurer" }).click();
+    await expect(page.getByText("La corbeille est vide.")).toBeVisible();
+    await page.goto("/dashboard/crm/leads");
+    await expect(card(page, "À supprimer")).toBeVisible();
   });
 
   test("sans le droit de modifier, la fiche est en lecture seule", async ({ page, context, request }) => {
@@ -141,11 +150,11 @@ test.describe("modifier un lead", () => {
     const affilie = await addMember(request, ceo, "affilie");
     await addLead(request, affilie, { name: "Lead de l'affilié" }); // il peut créer, pas modifier
     await openLeads(page, context, affilie);
-    await card(page, "Lead de l'affilié").getByRole("button", { name: "Lead de l'affilié", exact: true }).click();
+    await card(page, "Lead de l'affilié").getByRole("button", { name: "Modifier Lead de l'affilié" }).click();
     await expect(dialog(page).getByText("Vous n'avez pas le droit de modifier ce lead.")).toBeVisible();
     await expect(dialog(page).getByLabel("Nom de l'entreprise")).toBeDisabled();
     await expect(dialog(page).getByRole("button", { name: "Enregistrer" })).toHaveCount(0);
-    await expect(dialog(page).getByRole("button", { name: "Supprimer ce lead" })).toHaveCount(0);
+    await expect(dialog(page).getByRole("button", { name: "Mettre à la corbeille", exact: true })).toHaveCount(0);
     await expect(dialog(page).getByRole("button", { name: "Fermer", exact: true }).last()).toBeVisible();
   });
 });
@@ -188,8 +197,8 @@ test.describe("board, tableau et sélection", () => {
     await page.getByLabel("Sélectionner Jeter 1").check();
     await page.getByLabel("Sélectionner Jeter 2").check();
     await page.getByRole("button", { name: "Supprimer" }).click();
-    await expect(dialog(page).getByRole("heading", { name: "Supprimer 2 leads ?" })).toBeVisible();
-    await dialog(page).getByRole("button", { name: "Supprimer définitivement" }).click();
+    await expect(dialog(page).getByRole("heading", { name: "Mettre 2 leads à la corbeille ?" })).toBeVisible();
+    await dialog(page).getByRole("button", { name: "Mettre à la corbeille" }).click();
     await expect(banner(page)).toHaveText(/2 leads supprimés/);
     await expect(card(page, "Garder")).toBeVisible();
     await expect(page.locator("article")).toHaveCount(1);
