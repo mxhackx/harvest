@@ -263,3 +263,64 @@ describe("équipes et membres", () => {
     expect(t.team_id).toBe(north.id);
   });
 });
+
+describe("e-mails : invitation et mot de passe oublié", () => {
+  const sent = async () => (await import("../mail/send.js")).outbox;
+
+  it("inviter envoie un e-mail avec le lien, et indique emailSent", async () => {
+    const { ceo } = await setup();
+    const roles = await roleIds(ceo);
+    const before = (await sent()).length;
+    const r = (await invite(ceo, { email: `Nouveau-${run}@Test.dev`, roleIds: [roles.worker] })).json();
+    expect(r.emailSent).toBe(true);
+    const mail = (await sent())[before];
+    expect(mail.to).toBe(`nouveau-${run}@test.dev`);
+    expect(mail.subject).toContain("Le CEO");
+    expect(mail.text).toContain(`/invitation?token=${r.token}`);
+    expect(mail.html).toContain("Acme");
+  });
+
+  it("mot de passe oublié : même réponse pour un compte inconnu, aucun e-mail pour lui", async () => {
+    const u = await user("Oublieux");
+    const out = await sent();
+    const before = out.length;
+    const known = await http(null, "POST", "/auth/forgot", { email: u.email });
+    const unknown = await http(null, "POST", "/auth/forgot", { email: `inconnu-${run}@test.dev` });
+    expect(known.status).toBe(202);
+    expect(unknown.status).toBe(202);
+    expect(known.text).toBe(unknown.text);
+    expect(out.length).toBe(before + 1);
+    expect(out[before].to).toBe(u.email);
+    expect((await http(null, "POST", "/auth/forgot", { email: "pas-un-mail" })).status).toBe(400);
+  });
+
+  it("réinitialiser : le nouveau mot de passe marche, l'ancien et les sessions ouvertes non, le jeton ne sert qu'une fois", async () => {
+    const u = await user("Oublieux");
+    const out = await sent();
+    const before = out.length;
+    await http(null, "POST", "/auth/forgot", { email: u.email });
+    const token = out[before].text.match(/token=([\w-]+)/)![1];
+    expect((await http(u, "GET", "/me")).status).toBe(200);
+    expect((await http(null, "POST", "/auth/reset", { token, password: "court" })).status).toBe(400);
+    expect((await http(null, "POST", "/auth/reset", { token, password: "nouveau-mot-de-passe" })).status).toBe(204);
+    expect((await http(u, "GET", "/me")).status).toBe(401); // l'ancienne session est fermée
+    expect((await http(null, "POST", "/auth/login", { email: u.email, password: "motdepasse-ok" })).status).toBe(401);
+    expect((await http(null, "POST", "/auth/login", { email: u.email, password: "nouveau-mot-de-passe" })).status).toBe(200);
+    expect((await http(null, "POST", "/auth/reset", { token, password: "encore-un-autre" })).json().error).toBe("invalid_reset");
+  });
+
+  it("une nouvelle demande annule la précédente ; un jeton inventé ou expiré est refusé", async () => {
+    const u = await user("Oublieux");
+    const out = await sent();
+    const before = out.length;
+    await http(null, "POST", "/auth/forgot", { email: u.email });
+    await http(null, "POST", "/auth/forgot", { email: u.email });
+    const [first, second] = [out[before].text.match(/token=([\w-]+)/)![1], out[before + 1].text.match(/token=([\w-]+)/)![1]];
+    expect((await http(null, "POST", "/auth/reset", { token: first, password: "nouveau-mot-de-passe" })).status).toBe(400);
+    expect((await http(null, "POST", "/auth/reset", { token: "x".repeat(43), password: "nouveau-mot-de-passe" })).status).toBe(400);
+    const { db } = await import("../db/index.js");
+    const { passwordResets } = await import("../db/schema.js");
+    await db.update(passwordResets).set({ expiresAt: new Date(Date.now() - 1000) });
+    expect((await http(null, "POST", "/auth/reset", { token: second, password: "nouveau-mot-de-passe" })).status).toBe(400);
+  });
+});

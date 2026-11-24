@@ -30,6 +30,15 @@ export const config = {
   locateRateLimit: process.env.NODE_ENV === "test" ? 10_000 : 30,
   /** Tentatives par minute et par IP sur les routes d'auth (large en test). */
   authRateLimit: process.env.NODE_ENV === "test" ? 10_000 : 10,
+  /**
+   * E-mails via Resend. Sans RESEND_API_KEY, rien n'est envoyé (l'application reste utilisable : les liens
+   * s'affichent à l'écran). Tant qu'aucun domaine n'est vérifié chez Resend, l'expéditeur par défaut ne peut écrire
+   * qu'à l'adresse du compte Resend : définir MAIL_FROM, ex. « Harvest <noreply@mondomaine.com> ».
+   */
+  mail: {
+    apiKey: process.env.RESEND_API_KEY ?? "",
+    from: process.env.MAIL_FROM ?? "Harvest <onboarding@resend.dev>",
+  },
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID ?? "",
     clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",

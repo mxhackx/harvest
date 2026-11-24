@@ -53,6 +53,22 @@ export const sessions = pgTable("sessions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+/** Demande de réinitialisation de mot de passe : jeton haché, valable une heure, à usage unique. */
+export const passwordResets = pgTable(
+  "password_resets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("password_resets_user").on(t.userId)],
+);
+
 export const companies = pgTable("companies", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),

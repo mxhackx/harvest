@@ -5,6 +5,7 @@ import rateLimit from "@fastify/rate-limit";
 import { config } from "./config.js";
 import { loadUser } from "./plugins/auth.js";
 import { authRoutes } from "./routes/auth.js";
+import { passwordResetRoutes } from "./routes/password-reset.js";
 import { companyRoutes } from "./routes/companies.js";
 import { roleRoutes } from "./routes/roles.js";
 import { memberRoutes } from "./routes/members.js";
@@ -41,6 +42,7 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
 
   app.get("/health", async () => ({ status: "ok" }));
   await app.register(authRoutes);
+  await app.register(passwordResetRoutes);
   await app.register(companyRoutes);
   await app.register(roleRoutes);
   await app.register(memberRoutes);
