@@ -729,3 +729,43 @@ export const invoices = pgTable(
   },
   (t) => [uniqueIndex("invoices_number").on(t.companyId, t.number), index("invoices_lead").on(t.leadId)],
 );
+
+/**
+ * Automatisation : une règle qui agit toute seule sur les leads. `assign` répartit les nouveaux leads à tour de rôle entre
+ * des personnes ; `task` crée une tâche de relance X jours après la création si rien ne s'est passé ; `email` envoie
+ * un e-mail de suivi au contact principal X jours après. Chaque lead n'est traité qu'une fois par règle (automation_runs).
+ */
+export const automations = pgTable(
+  "automations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    // assign | task | email
+    kind: text("kind").notNull(),
+    params: jsonb("params").$type<Record<string, unknown>>().notNull(),
+    active: boolean("active").notNull().default(true),
+    // prochain rang de la répartition à tour de rôle
+    cursor: integer("cursor").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("automations_company").on(t.companyId)],
+);
+
+export const automationRuns = pgTable(
+  "automation_runs",
+  {
+    automationId: uuid("automation_id")
+      .notNull()
+      .references(() => automations.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    // ce qui s'est passé : done (action faite) ou skipped (condition non remplie)
+    outcome: text("outcome").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("automation_runs_unique").on(t.automationId, t.leadId)],
+);
