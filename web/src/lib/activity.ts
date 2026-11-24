@@ -20,6 +20,16 @@ export type Contact = {
   whatsapp: string;
   email: string;
   notes: string;
+  salutation: string;
+  firstName: string;
+  lastName: string;
+  reportsToId: string | null;
+  ownerId: string | null;
+  country: string;
+  street: string;
+  city: string;
+  region: string;
+  postalCode: string;
   isPrimary: boolean;
 };
 

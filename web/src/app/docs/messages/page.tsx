@@ -10,9 +10,16 @@ export default function Page() {
     <DocArticle href="/docs/messages">
       <h2>La page Contacts</h2>
       <p>
-        <strong>CRM › Contacts</strong> réunit les personnes de tous vos leads. Cherchez par nom, fonction, téléphone,
-        e-mail ou nom de lead ; cliquez sur le lead pour ouvrir sa <Link href="/docs/lead">fiche</Link>. On ajoute
-        et on modifie les contacts depuis la fiche. Vous ne voyez que les contacts des leads que vous avez le droit de lire.
+        <strong>CRM › Contacts</strong> (« Tous les contacts ») réunit les personnes de tous vos leads : nom complet, nom du
+        compte, fonction, téléphone, adresse e-mail et propriétaire. Cherchez dans la liste, triez par nom, compte ou
+        fonction, et cliquez sur le compte pour ouvrir la <Link href="/docs/lead">fiche du lead</Link>. <strong>Nouveau</strong>{" "}
+        crée un contact en choisissant son lead. Vous ne voyez que les contacts des leads que vous avez le droit de lire.
+      </p>
+      <p>
+        La fiche d’un contact est rangée en deux parties. <strong>À propos</strong> : civilité, prénom, nom, fonction,
+        responsable hiérarchique (une autre personne du même lead) et description. <strong>Coordonnées</strong> : téléphone,
+        WhatsApp, adresse e-mail et adresse postale (pays, rue, ville, région, code postal). Le propriétaire est la personne
+        qui a créé le contact.
       </p>
 
       <h2>Envoyer un e-mail depuis {BRAND.name}</h2>
