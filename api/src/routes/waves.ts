@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "../db/index.js";
 import { regions, waves } from "../db/schema.js";
 import { requireMember, requirePermission } from "../plugins/auth.js";
+import { emitWebhook } from "../webhooks/deliver.js";
 import { computeBilan, todayString, wavePhase, type Wave } from "../waves/stats.js";
 
 const uuid = z.string().uuid();
@@ -86,6 +87,8 @@ export async function waveRoutes(app: FastifyInstance) {
     const { bilan } = await computeBilan(wave);
     const [closed] = await db.update(waves).set({ closedAt: new Date(), bilan }).where(eq(waves.id, wave.id)).returning();
     req.auditLabel = closed.name;
-    return present(closed);
+    const result = await present(closed);
+    void emitWebhook(closed.companyId, "wave.closed", { id: closed.id, name: closed.name, stats: result.stats });
+    return result;
   });
 }

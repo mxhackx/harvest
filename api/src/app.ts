@@ -18,6 +18,7 @@ import { searchRoutes } from "./routes/search.js";
 import { duplicateRoutes } from "./routes/duplicates.js";
 import { objectiveRoutes } from "./routes/objectives.js";
 import { customFieldRoutes } from "./routes/custom-fields.js";
+import { webhookRoutes } from "./routes/webhooks.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -76,5 +77,6 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(duplicateRoutes);
   await app.register(objectiveRoutes);
   await app.register(customFieldRoutes);
+  await app.register(webhookRoutes);
   return app;
 }

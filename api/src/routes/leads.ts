@@ -19,6 +19,7 @@ import { logActivities } from "../activities/log.js";
 import { alive, findReadableLead, leadAttrs } from "../leads/access.js";
 import { TRASH_DAYS, trashLeads } from "../leads/trash.js";
 import { assignRegions } from "../waves/geo.js";
+import { emitWebhook } from "../webhooks/deliver.js";
 import { listFields } from "./custom-fields.js";
 import { mergeCustom } from "../fields/custom.js";
 import { ensurePrimaryContact } from "./contacts.js";
@@ -158,6 +159,7 @@ export async function leadRoutes(app: FastifyInstance) {
       })
       .returning();
     req.auditLabel = lead.name;
+    void emitWebhook(subject.companyId, "lead.created", { id: lead.id, name: lead.name });
     await assignRegions(subject.companyId, [lead.id]);
     if (lead.contactName) await ensurePrimaryContact(lead.id, subject.companyId, lead.contactName);
     await logActivities([{ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "created", meta: { source: "manual", stage: stage.name } }], logError(req));
@@ -491,6 +493,7 @@ export async function leadRoutes(app: FastifyInstance) {
     if (hasCoords(data) || data.lat === null || position.lat !== undefined) await assignRegions(subject.companyId, [updated.id]);
     await logActivities(events, logError(req));
     req.auditLabel = updated.name;
+    void emitWebhook(subject.companyId, "lead.updated", { id: updated.id, name: updated.name, status: updated.status });
     return updated;
   });
 
@@ -501,6 +504,7 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!can(subject, "lead:delete", attrs(lead))) return reply.code(403).send({ error: "forbidden" });
     await trashLeads([lead.id], subject.userId);
     req.auditLabel = lead.name;
+    void emitWebhook(subject.companyId, "lead.deleted", { id: lead.id, name: lead.name });
     return reply.code(204).send();
   });
 
