@@ -32,6 +32,7 @@ export const ROUTES = {
   team: `${ERP}/team`,
   audit: `${ERP}/audit`,
   webhooks: `${ERP}/webhooks`,
+  automations: `${ERP}/automations`,
   waves: WAVES,
   regions: `${WAVES}/regions`,
   tours: `${WAVES}/tours`,

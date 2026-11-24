@@ -77,6 +77,7 @@ const MODULES: Module[] = [
     needs: "member:read",
     pages: [
       { label: "Équipe", short: "Équipe", href: ROUTES.team, icon: UsersIcon },
+      { label: "Automatisations", short: "Auto", href: ROUTES.automations, icon: BoardIcon, needs: "automation:read" },
       { label: "Webhooks", short: "Webhooks", href: ROUTES.webhooks, icon: BriefcaseIcon, needs: "webhook:read" },
       { label: "Journal d'audit", short: "Audit", href: ROUTES.audit, icon: FormIcon, needs: "audit:read" },
     ],
