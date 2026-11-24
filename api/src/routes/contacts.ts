@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { and, asc, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { contacts, leads } from "../db/schema.js";
+import { contacts, emailLog, leads } from "../db/schema.js";
 import { alive, findReadableLead, leadAttrs } from "../leads/access.js";
 import { whatsappField } from "../leads/fields.js";
 import { can } from "../rbac/policy.js";
@@ -41,7 +41,10 @@ const likeEscape = (s: string) => s.replace(/[\\%_]/g, (m) => `\\${m}`);
  * Efface les données d'une personne gardées ailleurs que dans sa fiche contact (point d'extension : e-mails envoyés…).
  * Le texte libre des notes du fil n'est pas analysé : il se relit à la main.
  */
-export async function eraseContactData(_contact: typeof contacts.$inferSelect): Promise<void> {}
+export async function eraseContactData(contact: typeof contacts.$inferSelect): Promise<void> {
+  const byContact = eq(emailLog.contactId, contact.id);
+  await db.delete(emailLog).where(contact.email ? and(eq(emailLog.leadId, contact.leadId), or(byContact, eq(emailLog.toEmail, contact.email.toLowerCase()))) : byContact);
+}
 
 /** `leads.contactName` reste le nom du contact principal : listes, import et export continuent de s'en servir. */
 export async function syncLeadContactName(leadId: string) {
@@ -155,11 +158,16 @@ export async function contactRoutes(app: FastifyInstance) {
     if (!can(subject, "lead:export", leadAttrs(found.lead))) return reply.code(403).send({ error: "forbidden" });
     const { contact, lead } = found;
     req.auditLabel = contact.name;
+    const emails = await db
+      .select({ to: emailLog.toEmail, subject: emailLog.subject, body: emailLog.body, status: emailLog.status, sentAt: emailLog.createdAt })
+      .from(emailLog)
+      .where(and(eq(emailLog.leadId, lead.id), contact.email ? or(eq(emailLog.contactId, contact.id), eq(emailLog.toEmail, contact.email.toLowerCase())) : eq(emailLog.contactId, contact.id)));
     reply.header("content-disposition", `attachment; filename="contact-${contact.id}.json"`);
     return {
       exportedAt: new Date().toISOString(),
       contact: { name: contact.name, role: contact.role, phone: contact.phone, whatsapp: contact.whatsapp, email: contact.email, notes: contact.notes, isPrimary: contact.isPrimary, createdAt: contact.createdAt },
       lead: { id: lead.id, name: lead.name, city: lead.city },
+      emails,
     };
   });
 
