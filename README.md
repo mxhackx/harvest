@@ -18,7 +18,8 @@ cd web && npm run dev          # http://localhost:3000
 ## Adresses du site
 
 - Publiques : `/` (présentation), `/login`, `/docs`, `/invitation`, `/mot-de-passe-oublie`, `/reinitialiser`.
-- Espace connecté : tout est sous `/dashboard` (`/dashboard/leads`, `/dashboard/taches`…), non référencé par les moteurs de recherche. Les adresses sont écrites une seule fois dans [web/src/lib/routes.ts](web/src/lib/routes.ts). Les anciennes adresses (`/leads`, `/taches`…) redirigent vers les nouvelles.
+- Espace connecté : tout est sous `/dashboard`, non référencé par les moteurs de recherche. Chaque module a son préfixe : `/dashboard/crm/…` (`leads`, `contacts`, `taches`, `modeles`, `pipeline`, `rapports`) et `/dashboard/erp/…` (`equipe`). Seuls l'accueil (`/dashboard`) et le calendrier (`/dashboard/calendrier`) n'en ont pas. Taper `/dashboard/crm` ou `/dashboard/erp` seul mène à la première page du module. Les adresses sont écrites une seule fois dans [web/src/lib/routes.ts](web/src/lib/routes.ts).
+- Anciennes adresses (`/leads`, `/dashboard/leads`, `/equipe`…) : elles redirigent vers les nouvelles ([web/next.config.ts](web/next.config.ts)), et les pages épinglées dans le navigateur sont réécrites à la lecture.
 
 ## Hooks Git (Husky)
 

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { ROUTES } from "./src/lib/routes";
 
 /**
  * Site et API sur deux domaines différents (Vercel + Render) : le cookie de session de l'API serait un cookie
@@ -16,12 +17,18 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return apiProxyTarget ? [{ source: "/api/:path*", destination: `${apiProxyTarget}/:path*` }] : [];
   },
-  // Les anciennes adresses de l'espace connecté (avant /dashboard) redirigent vers les nouvelles : favoris et liens déjà partagés.
+  // Anciennes adresses : sans préfixe (avant /dashboard), puis sous /dashboard sans /crm. Favoris et liens déjà partagés.
   async redirects() {
-    const moved = ["calendrier", "contacts", "equipe", "leads", "modeles", "pipeline", "rapports", "taches"];
+    const crm = "leads|contacts|taches|modeles|pipeline|rapports";
     return [
-      ...moved.map((p) => ({ source: `/${p}`, destination: `/dashboard/${p}`, permanent: true })),
-      { source: "/leads/:id", destination: "/dashboard/leads/:id", permanent: true },
+      // Un module tapé seul dans la barre d'adresse mène à sa première page (temporaire : elle peut changer).
+      { source: "/dashboard/crm", destination: ROUTES.leads, permanent: false },
+      { source: "/dashboard/erp", destination: ROUTES.team, permanent: false },
+      { source: `/:page(${crm})/:rest*`, destination: "/dashboard/crm/:page/:rest*", permanent: true },
+      { source: `/dashboard/:page(${crm})/:rest*`, destination: "/dashboard/crm/:page/:rest*", permanent: true },
+      { source: "/:page(equipe)/:rest*", destination: "/dashboard/erp/:page/:rest*", permanent: true },
+      { source: "/dashboard/:page(equipe)/:rest*", destination: "/dashboard/erp/:page/:rest*", permanent: true },
+      { source: "/calendrier", destination: "/dashboard/calendrier", permanent: true },
     ];
   },
   /* config options here */
