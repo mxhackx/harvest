@@ -34,7 +34,7 @@ Installés par `npm install` à la racine (script `prepare`).
 | Hook | Ce qu'il fait |
 | --- | --- |
 | `pre-commit` | refuse tout secret ou fichier `.env` (`scripts/check-secrets.mjs`), lance ESLint sur les fichiers web indexés, puis le contrôle de types de `api/` et `web/` |
-| `pre-push` | dépend de la branche poussée (`scripts/pre-push.sh`) : **vers `main`**, types + tests unitaires du web + tests de l'API (la base de test est obligatoire) ; **vers toute autre branche**, types seulement |
+| `pre-push` | dépend de la branche poussée (`scripts/pre-push.sh`) : **vers `main` ou `staging`**, types + tests unitaires du web + tests de l'API (la base de test est obligatoire) ; **vers toute autre branche**, types seulement |
 
 ### Intégration continue
 
