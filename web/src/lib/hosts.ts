@@ -32,3 +32,11 @@ export function hostRedirect(host: string, pathname: string, search: string, sit
   if (host === siteHost && APP_PREFIXES.some((p) => under(pathname, p))) return `${app}${pathname}${search}`;
   return null;
 }
+
+const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL ? trim(process.env.NEXT_PUBLIC_APP_URL) : "";
+const SITE_ORIGIN = APP_ORIGIN && process.env.NEXT_PUBLIC_SITE_URL ? trim(process.env.NEXT_PUBLIC_SITE_URL) : "";
+
+/** Lien vers une page de l'application : absolu (app.…) quand le domaine est configuré, relatif sinon. Évite de passer par www. */
+export const appHref = (path: string) => `${APP_ORIGIN}${path}`;
+/** Lien vers une page de la vitrine (docs…), pour les liens écrits depuis l'application. */
+export const siteHref = (path: string) => `${SITE_ORIGIN}${path}`;
