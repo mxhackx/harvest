@@ -19,6 +19,8 @@ import { logActivities } from "../activities/log.js";
 import { alive, findReadableLead, leadAttrs } from "../leads/access.js";
 import { TRASH_DAYS, trashLeads } from "../leads/trash.js";
 import { assignRegions } from "../waves/geo.js";
+import { listFields } from "./custom-fields.js";
+import { mergeCustom } from "../fields/custom.js";
 import { ensurePrimaryContact } from "./contacts.js";
 import { closingFields, defaultStage, listStages } from "../stages/store.js";
 
@@ -95,7 +97,14 @@ export async function leadRoutes(app: FastifyInstance) {
     const body = createBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
     const { subject } = req.member!;
-    const { visited, ...data } = body.data;
+    const { visited, custom: customInput, ...data } = body.data;
+    // champs personnalisés : chaque valeur est vérifiée selon le type de son champ
+    let custom: Record<string, string | number> = {};
+    if (customInput) {
+      const merged = mergeCustom(await listFields(subject.companyId), {}, customInput);
+      if (!merged.ok) return reply.code(400).send({ error: "invalid_body", issues: [{ message: `${merged.field} : ${merged.message}`, path: ["custom"] }] });
+      custom = merged.value;
+    }
     // Responsable : soi-même par défaut ; une autre personne demande le droit d'attribuer (lead:assign) dans la portée de cette personne.
     const wanted = z.object({ ownerId: z.string().uuid().optional() }).safeParse(req.body);
     if (!wanted.success) return reply.code(400).send({ error: "invalid_body", issues: wanted.error.issues });
@@ -138,6 +147,7 @@ export async function leadRoutes(app: FastifyInstance) {
       .insert(leads)
       .values({
         ...data,
+        custom,
         ...position,
         status: stage.key,
         ...closingFields(stage, { closedAt: null, lostReason: "" }, data.lostReason),
@@ -294,7 +304,7 @@ export async function leadRoutes(app: FastifyInstance) {
       if (body.data.dryRun || fresh.length === 0) return report;
 
       const values = fresh.map((r) => {
-        const { visited, ...data } = r.data;
+        const { visited, custom: _custom, ...data } = r.data; // l import ne remplit pas les champs personnalisés
         let position: { lat: number | null; lng: number | null; locationSource: string } = { lat: data.lat ?? null, lng: data.lng ?? null, locationSource: typeof data.lat === "number" ? "manual" : "" };
         if (position.lat === null && data.googleMapsUrl) {
           const c = parseGoogleMapsCoords(data.googleMapsUrl); // lecture du lien, sans réseau
@@ -411,7 +421,13 @@ export async function leadRoutes(app: FastifyInstance) {
     const lead = await findLead(subject, req.params.id);
     if (!lead) return reply.code(404).send({ error: "not_found" });
     if (!can(subject, "lead:update", attrs(lead))) return reply.code(403).send({ error: "forbidden" });
-    const { visited, ...data } = body.data;
+    const { visited, custom: customInput, ...data } = body.data;
+    let customPatch: { custom?: Record<string, string | number> } = {};
+    if (customInput) {
+      const merged = mergeCustom(await listFields(subject.companyId), lead.custom, customInput);
+      if (!merged.ok) return reply.code(400).send({ error: "invalid_body", issues: [{ message: `${merged.field} : ${merged.message}`, path: ["custom"] }] });
+      customPatch = { custom: merged.value };
+    }
     // Renommer vers un nom déjà pris numérote le lead ; un simple changement de casse reste tel quel.
     if (data.name !== undefined && data.name.trim().toLowerCase() !== lead.name.toLowerCase()) {
       data.name = pickUniqueName(data.name, await takenNames(subject.companyId, data.name, lead.id));
@@ -449,6 +465,7 @@ export async function leadRoutes(app: FastifyInstance) {
       .update(leads)
       .set({
         ...data,
+        ...customPatch,
         ...stageFields,
         ...position,
         ...(visited === undefined ? {} : { visitedAt: visited ? (lead.visitedAt ?? new Date()) : null }),

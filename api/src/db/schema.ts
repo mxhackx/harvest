@@ -231,6 +231,8 @@ export const leads = pgTable("leads", {
   deletedBy: uuid("deleted_by").references(() => users.id, { onDelete: "set null" }),
   // région où tombe sa position (déduite des coordonnées, jamais saisie) ; null = hors de toute région ou sans position
   regionId: uuid("region_id").references(() => regions.id, { onDelete: "set null" }),
+  // valeurs des champs personnalisés : { identifiant du champ: valeur }
+  custom: jsonb("custom").$type<Record<string, string | number>>().notNull().default({}),
 });
 
 export const eventKindEnum = pgEnum("event_kind", ["visit", "call", "followup", "other"]);
@@ -524,4 +526,23 @@ export const objectives = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [uniqueIndex("objectives_unique").on(t.companyId, t.userId, t.month)],
+);
+
+/** Champ personnalisé d'une entreprise : une information de plus à saisir sur chaque lead (texte, nombre, date ou liste). */
+export const customFields = pgTable(
+  "custom_fields",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    label: text("label").notNull(),
+    // text | number | date | select
+    type: text("type").notNull(),
+    // choix d'un champ « liste »
+    options: jsonb("options").$type<string[]>().notNull().default([]),
+    position: integer("position").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("custom_fields_company").on(t.companyId, t.position)],
 );
