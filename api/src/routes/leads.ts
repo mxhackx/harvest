@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { and, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
 import { companies, contacts, leads, memberships, notifications, users } from "../db/schema.js";
@@ -75,7 +75,11 @@ async function loadAllowed(subject: Subject, ids: string[], permission: string) 
 export async function leadRoutes(app: FastifyInstance) {
   app.get("/leads", { preHandler: requirePermission("lead:read") }, async (req) => {
     const where = scopeWhere(req.member!.subject, "lead:read")!;
-    return db.select().from(leads).where(where).orderBy(desc(leads.createdAt)).limit(1000);
+    // « Prochain suivi » : l'échéance la plus proche parmi les tâches ouvertes du lead
+    // (colonnes écrites en toutes lettres : Drizzle retire le préfixe de table dans un SELECT à table unique,
+    // et « id » serait alors celui des tâches)
+    const nextFollowUpAt = sql<string | null>`(select min(t.due_at) from tasks t where t.lead_id = "leads"."id" and t.done_at is null and t.due_at is not null)`.as("next_follow_up_at");
+    return db.select({ ...getTableColumns(leads), nextFollowUpAt }).from(leads).where(where).orderBy(desc(leads.createdAt)).limit(1000);
   });
 
   app.post("/leads", { preHandler: requirePermission("lead:create") }, async (req, reply) => {

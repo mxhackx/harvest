@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  date,
   index,
   jsonb,
   doublePrecision,
@@ -182,6 +183,10 @@ export const leads = pgTable("leads", {
   lat: doublePrecision("lat"),
   lng: doublePrecision("lng"),
   estimatedValue: integer("estimated_value"),
+  // opportunité : service demandé, probabilité propre au lead (null = celle de l'étape) et date de conclusion espérée
+  service: text("service").notNull().default(""),
+  probability: integer("probability"),
+  expectedCloseOn: date("expected_close_on", { mode: "string" }),
   // null = pas encore visité (pastille « à visiter » sur la carte)
   visitedAt: timestamp("visited_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -290,6 +295,8 @@ export const tasks = pgTable(
     title: text("title").notNull(),
     dueAt: timestamp("due_at", { withTimezone: true }),
     doneAt: timestamp("done_at", { withTimezone: true }),
+    // low | normal | high
+    priority: text("priority").notNull().default("normal"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },

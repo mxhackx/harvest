@@ -198,3 +198,55 @@ describe("liste de tous les contacts", () => {
     expect((await http(null, "GET", "/contacts")).status).toBe(401);
   });
 });
+
+describe("opportunité : service, probabilité, conclusion espérée, prochain suivi, priorité des tâches", () => {
+  it("les champs d'opportunité se saisissent à la création et se modifient ; valeurs invalides refusées", async () => {
+    const { ceo } = await setup();
+    const lead = await mkLead(ceo, "Hôtel Lagune", { service: "Site vitrine", probability: 60, expectedCloseOn: "2027-02-15", estimatedValue: 500000 });
+    expect(lead).toMatchObject({ service: "Site vitrine", probability: 60, expectedCloseOn: "2027-02-15" });
+    const back = (await http(ceo, "PATCH", `/leads/${lead.id}`, { probability: null, expectedCloseOn: null, service: "" })).json();
+    expect(back).toMatchObject({ service: "", probability: null, expectedCloseOn: null });
+    for (const bad of [{ probability: 101 }, { probability: -1 }, { probability: 12.5 }, { expectedCloseOn: "15/02/2027" }, { expectedCloseOn: "2027-02-31" }]) {
+      expect((await http(ceo, "PATCH", `/leads/${lead.id}`, bad)).status).toBe(400);
+    }
+  });
+
+  it("GET /leads donne le prochain suivi : l'échéance la plus proche des tâches ouvertes, pas des terminées", async () => {
+    const { ceo } = await setup();
+    const lead = await mkLead(ceo, "Boutique");
+    const other = await mkLead(ceo, "Sans tâche");
+    const soon = new Date(Date.now() + 2 * 86_400_000).toISOString();
+    const later = new Date(Date.now() + 9 * 86_400_000).toISOString();
+    const done = (await http(ceo, "POST", "/tasks", { title: "Fait", leadId: lead.id, dueAt: new Date(Date.now() + 86_400_000).toISOString() })).json();
+    await http(ceo, "PATCH", `/tasks/${done.id}`, { done: true });
+    await http(ceo, "POST", "/tasks", { title: "Plus tard", leadId: lead.id, dueAt: later });
+    await http(ceo, "POST", "/tasks", { title: "Bientôt", leadId: lead.id, dueAt: soon });
+    await http(ceo, "POST", "/tasks", { title: "Sans échéance", leadId: lead.id });
+    const rows = (await http(ceo, "GET", "/leads")).json() as any[];
+    expect(new Date(rows.find((l) => l.id === lead.id).nextFollowUpAt).toISOString()).toBe(soon);
+    expect(rows.find((l) => l.id === other.id).nextFollowUpAt).toBeNull();
+  });
+
+  it("priorité des tâches : normale par défaut, modifiable, valeur inconnue refusée, les urgentes passent devant à échéance égale", async () => {
+    const { ceo } = await setup();
+    const due = new Date(Date.now() + 86_400_000).toISOString();
+    const a = (await http(ceo, "POST", "/tasks", { title: "A", dueAt: due })).json();
+    const b = (await http(ceo, "POST", "/tasks", { title: "B", dueAt: due, priority: "high" })).json();
+    expect(a.priority).toBe("normal");
+    expect(b.priority).toBe("high");
+    expect((await http(ceo, "POST", "/tasks", { title: "C", priority: "urgent" })).status).toBe(400);
+    expect(((await http(ceo, "GET", "/tasks")).json() as any[]).map((t) => t.title)).toEqual(["B", "A"]);
+    expect((await http(ceo, "PATCH", `/tasks/${a.id}`, { priority: "high" })).json().priority).toBe("high");
+    expect((await http(ceo, "PATCH", `/tasks/${a.id}`, { priority: "x" })).status).toBe(400);
+  });
+
+  it("le rapport pondère avec la probabilité du lead quand elle existe", async () => {
+    const { ceo } = await setup();
+    const stages = ((await http(ceo, "GET", "/stages")).json() as any[]);
+    const open = stages.find((s) => s.kind === "open");
+    await mkLead(ceo, "P", { status: open.key, estimatedValue: 1000, probability: 100 });
+    const now = new Date();
+    const r = (await http(ceo, "GET", `/reports?from=${new Date(+now - 86_400_000).toISOString()}&to=${new Date(+now + 86_400_000).toISOString()}`)).json();
+    expect(r.pipeline.openWeighted).toBe(1000);
+  });
+});
