@@ -13,6 +13,16 @@ export default function Page() {
         qui fait quoi. La période se règle en haut de la page (7 jours, 30 jours, 90 jours, 12 mois).
       </p>
 
+      <h2>Indicateurs de performance et prévision</h2>
+      <p>
+        En bas de la page Rapports : le <strong>taux de conversion</strong> (affaires gagnées sur gagnées plus perdues), la{" "}
+        <strong>durée moyenne d’une vente</strong> (de la création du lead à sa conclusion), le <strong>chiffre d’affaires
+        gagné</strong> et le <strong>panier moyen</strong>, sur les affaires clôturées pendant la période choisie. La{" "}
+        <strong>prévision de chiffre d’affaires</strong> range les affaires en cours par mois de conclusion espérée ; la valeur{" "}
+        <strong>pondérée</strong> est la valeur multipliée par la probabilité (celle du lead, ou celle de son étape). Les
+        affaires sans date sont regroupées à part. Un tableau donne enfin le chiffre d’affaires gagné par commercial.
+      </p>
+
       <h2>Les quatre chiffres du haut</h2>
       <ul>
         <li><strong>Pipeline ouvert</strong> : somme des valeurs estimées des leads encore en cours. Indépendant de la période.</li>
