@@ -1,4 +1,5 @@
 import { BRAND } from "@/lib/brand";
+import { THEME } from "@/lib/theme";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
@@ -13,11 +14,11 @@ export default async function Image() {
   const src = `data:image/png;base64,${logo.toString("base64")}`;
   return new ImageResponse(
     (
-      <div style={{ display: "flex", width: "100%", height: "100%", background: "#ffffff", alignItems: "center", padding: 90, gap: 70 }}>
+      <div style={{ display: "flex", width: "100%", height: "100%", background: THEME.page, alignItems: "center", padding: 90, gap: 70 }}>
         <img src={src} width={300} height={300} alt="" />
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 110, fontWeight: 700, color: "#14222e" }}>{BRAND.name}</div>
-          <div style={{ fontSize: 42, color: "#5a6b78", marginTop: 12, maxWidth: 640 }}>Prospection et suivi de leads sur le terrain</div>
+          <div style={{ fontSize: 110, fontWeight: 700, color: THEME.ink }}>{BRAND.name}</div>
+          <div style={{ fontSize: 42, color: THEME.muted, marginTop: 12, maxWidth: 640 }}>Prospection et suivi de leads sur le terrain</div>
         </div>
       </div>
     ),

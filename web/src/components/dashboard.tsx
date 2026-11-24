@@ -36,7 +36,7 @@ export function Dashboard() {
   return (
     <div className="flex w-full flex-col gap-4">
       <div>
-        <h1 className="font-serif text-title font-semibold">Bonjour {firstName}</h1>
+        <h1 className="font-display text-title font-semibold">Bonjour {firstName}</h1>
         <p className="text-small text-muted">
           {!canRead
             ? "Vous n'avez pas accès aux leads."

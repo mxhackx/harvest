@@ -1,15 +1,29 @@
 @import "tailwindcss";
 
-/* Jetons du cahier de design : 2 polices (+ mono), 3 tailles, une rampe de bleus, aucune ombre. */
+/*
+ * Jetons du cahier de design : seule source des polices, tailles et couleurs. Les composants utilisent les classes
+ * Tailwind qui en découlent (font-display, text-heading, bg-accent…) ou var(--…), jamais une valeur écrite en dur.
+ * Le code qui ne peut pas lire le CSS (aperçu de partage, themeColor) a ses copies dans lib/theme.ts, vérifiées par un test.
+ */
 @theme {
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-display: var(--font-jakarta), var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
   --text-title: 18px;
   --text-body: 15px;
   --text-small: 13px;
   --text-brand: 22px;
+  --text-micro: 11px;
+  --text-caption: 12px;
+  --text-lead: 18px;
+  --text-stat: 26px;
+  --text-heading: 28px;
+  --text-hero-sm: 40px;
+  --text-hero: 56px;
+
+  --leading-hero: 1.1;
+  --tracking-display: -0.02em;
 
   --color-page: #ffffff;
   --color-card: #ffffff;
@@ -33,6 +47,9 @@
   /* Cadre du formulaire et contour des boutons secondaires : bleu-gris */
   --color-frame: #b3c2d3;
   --color-on-dark-accent: #0969da;
+  --color-on-dark-soft: #d6e8fb; /* texte discret sur le bleu du menu */
+  --color-neutral: #8a99a6; /* gris des éléments sans couleur propre (étape perdue, autre événement) */
+  --color-route: #e5484d; /* trait de la tournée sur la carte */
 
   --radius-card: 16px;
   --radius-control: 10px;
@@ -48,7 +65,7 @@ html {
 
 body {
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: var(--text-body);
   font-variant-numeric: tabular-nums;
 }
 
@@ -59,14 +76,14 @@ body {
 
 /* Contenu de la documentation : titres, listes, liens et code, avec les trois tailles du cahier. */
 .doc h2 {
-  font-family: var(--font-serif);
-  font-size: 18px;
+  font-family: var(--font-display);
+  font-size: var(--text-title);
   font-weight: 600;
   margin-top: 32px;
   margin-bottom: 8px;
 }
 .doc h3 {
-  font-size: 15px;
+  font-size: var(--text-body);
   font-weight: 600;
   margin-top: 20px;
   margin-bottom: 4px;
@@ -100,7 +117,7 @@ body {
 }
 .doc code {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--text-small);
   background: var(--color-field);
   border-radius: var(--radius-micro);
   padding: 1px 6px;
@@ -112,7 +129,7 @@ body {
 .doc table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--text-small);
 }
 .doc th {
   text-align: left;
