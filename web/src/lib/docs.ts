@@ -101,3 +101,47 @@ export const DOCS: DocPage[] = [
 export const flattenDocs = (pages: DocPage[] = DOCS): DocPage[] => pages.flatMap((p) => [p, ...flattenDocs(p.children ?? [])]);
 
 export const findDoc = (href: string) => flattenDocs().find((p) => p.href === href);
+
+// ---------- Centre d'aide : deux parties (usage / API), des collections, de la recherche ----------
+
+export type DocSection = "guide" | "api";
+export type Collection = { id: string; section: DocSection; title: string; description: string; hrefs: string[] };
+
+export const SECTIONS: Record<DocSection, { title: string; description: string }> = {
+  guide: { title: "Guide utilisateur", description: "Utiliser l'application au quotidien : prospecter par vagues, suivre ses leads, travailler en équipe." },
+  api: { title: "API et intégrations", description: "Brancher d'autres outils : webhooks signés et formats de fichiers pour l'import." },
+};
+
+/** Chaque page de documentation appartient à exactement une collection (un test le vérifie). */
+export const COLLECTIONS: Collection[] = [
+  { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/location", "/docs/calendar", "/docs/tasks"] },
+  { id: "leads", section: "guide", title: "Leads et clients", description: "La fiche d'un lead, le pipeline, les contacts et les messages.", hrefs: ["/docs/lead", "/docs/pipeline", "/docs/messages"] },
+  { id: "donnees", section: "guide", title: "Importer et exporter", description: "Faire entrer vos leads existants, et en sortir vos données.", hrefs: ["/docs/import", "/docs/export"] },
+  { id: "equipe", section: "guide", title: "Équipe et suivi", description: "Inviter, répartir, fixer des objectifs et lire les rapports.", hrefs: ["/docs/team", "/docs/objectives", "/docs/reports"] },
+  { id: "webhooks", section: "api", title: "Webhooks", description: "Être prévenu en temps réel quand un lead change.", hrefs: ["/docs/webhooks"] },
+  { id: "formats", section: "api", title: "Formats de fichiers", description: "Référence technique des fichiers CSV et JSON acceptés à l'import.", hrefs: ["/docs/import/csv", "/docs/import/json", "/docs/import/fields", "/docs/import/errors"] },
+];
+
+export const collectionOf = (href: string) => COLLECTIONS.find((c) => c.hrefs.includes(href));
+export const pagesOf = (c: Collection): DocPage[] => c.hrefs.map((h) => findDoc(h)!);
+
+/** Pages de la même collection, pour « Articles liés » (la page courante exclue). */
+export const relatedTo = (href: string, limit = 5): DocPage[] => {
+  const c = collectionOf(href);
+  return c ? pagesOf(c).filter((p) => p.href !== href).slice(0, limit) : [];
+};
+
+const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+/** Recherche dans les titres et descriptions : toutes les expressions saisies doivent apparaître ; les titres passent d'abord. */
+export function searchDocs(query: string, limit = 8): DocPage[] {
+  const words = fold(query).split(/\s+/).filter((w) => w.length >= 2);
+  if (words.length === 0) return [];
+  return flattenDocs()
+    .filter((p) => p.href !== "/docs")
+    .map((p) => ({ p, title: fold(p.title), text: fold(`${p.title} ${p.description}`) }))
+    .filter((x) => words.every((w) => x.text.includes(w)))
+    .sort((a, b) => Number(words.every((w) => b.title.includes(w))) - Number(words.every((w) => a.title.includes(w))))
+    .slice(0, limit)
+    .map((x) => x.p);
+}

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
 import { appHref } from "@/lib/hosts";
+import { ContactBubble } from "@/components/contact-bubble";
 import { ROUTES } from "@/lib/routes";
 import { SITE, jsonLd, pageMetadata } from "@/lib/seo";
 
@@ -127,6 +128,7 @@ export default function HomePage() {
           <Link href={appHref("/login")} className="hover:underline">Connexion</Link>
         </nav>
       </footer>
+      <ContactBubble />
     </div>
   );
 }

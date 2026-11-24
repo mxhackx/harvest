@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { DOCS, findDoc, flattenDocs } from "./docs";
+import { COLLECTIONS, DOCS, collectionOf, findDoc, flattenDocs, relatedTo, searchDocs } from "./docs";
 
 const appDir = path.join(process.cwd(), "src/app");
 const pages = flattenDocs();
@@ -58,5 +58,27 @@ describe("pages réelles", () => {
     };
     walk(path.join(appDir, "docs"));
     expect(found.sort()).toEqual(pages.map((p) => p.href).sort());
+  });
+});
+
+describe("centre d'aide : collections et recherche", () => {
+  it("chaque page (hors accueil) est dans exactement une collection, et chaque collection ne vise que des pages qui existent", () => {
+    for (const p of pages.filter((x) => x.href !== "/docs")) expect(COLLECTIONS.filter((c) => c.hrefs.includes(p.href)).length, p.href).toBe(1);
+    for (const c of COLLECTIONS) for (const h of c.hrefs) expect(findDoc(h), h).toBeDefined();
+  });
+  it("sépare l'usage de l'API : les webhooks et les formats de fichiers sont côté API", () => {
+    expect(collectionOf("/docs/webhooks")?.section).toBe("api");
+    expect(collectionOf("/docs/import/csv")?.section).toBe("api");
+    expect(collectionOf("/docs/waves")?.section).toBe("guide");
+  });
+  it("articles liés : la même collection, sans la page courante", () => {
+    expect(relatedTo("/docs/import/csv").map((p) => p.href)).toEqual(["/docs/import/json", "/docs/import/fields", "/docs/import/errors"]);
+    expect(relatedTo("/docs")).toEqual([]);
+  });
+  it("recherche sans tenir compte des accents ni de la casse, titres d'abord", () => {
+    expect(searchDocs("VAGUES")[0].href).toBe("/docs/waves");
+    expect(searchDocs("webhook signé").map((p) => p.href)).toContain("/docs/webhooks");
+    expect(searchDocs("a")).toEqual([]);
+    expect(searchDocs("zzzzzz")).toEqual([]);
   });
 });

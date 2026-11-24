@@ -2,42 +2,38 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DOCS, type DocPage } from "@/lib/docs";
+import { COLLECTIONS, SECTIONS, pagesOf, type DocSection } from "@/lib/docs";
 
-function Item({ page, path, depth }: { page: DocPage; path: string; depth: number }) {
-  const active = page.href === path;
-  const open = path === page.href || path.startsWith(page.href + "/");
-  return (
-    <li>
-      <Link
-        href={page.href}
-        aria-current={active ? "page" : undefined}
-        className={`flex min-h-9 items-center rounded-control border px-2 text-body ${depth ? "ml-3" : ""} ${
-          active ? "border-accent/25 bg-accent-soft font-medium" : "border-transparent hover:bg-field"
-        }`}
-      >
-        {page.title}
-      </Link>
-      {page.children && open && (
-        <ul className="mt-1 flex flex-col gap-1">
-          {page.children.map((c) => (
-            <Item key={c.href} page={c} path={path} depth={depth + 1} />
-          ))}
-        </ul>
-      )}
-    </li>
-  );
-}
-
+/** Menu de la documentation : deux parties (usage, API), chacune avec ses collections et leurs articles. */
 export function DocNav() {
   const path = usePathname();
   return (
-    <nav aria-label="Sommaire de la documentation">
-      <ul className="flex flex-col gap-1">
-        {DOCS.map((p) => (
-          <Item key={p.href} page={p} path={path} depth={0} />
-        ))}
-      </ul>
+    <nav aria-label="Sommaire de la documentation" className="flex flex-col gap-5">
+      {(Object.keys(SECTIONS) as DocSection[]).map((section) => (
+        <div key={section}>
+          <p className="mb-2 px-2 text-small font-semibold uppercase tracking-wide text-muted">{SECTIONS[section].title}</p>
+          <div className="flex flex-col gap-3">
+            {COLLECTIONS.filter((c) => c.section === section).map((c) => (
+              <div key={c.id}>
+                <p className="px-2 text-small font-semibold">{c.title}</p>
+                <ul className="mt-1 flex flex-col gap-1">
+                  {pagesOf(c).map((p) => (
+                    <li key={p.href}>
+                      <Link
+                        href={p.href}
+                        aria-current={p.href === path ? "page" : undefined}
+                        className={`flex min-h-8 items-center rounded-control border px-2 text-small ${p.href === path ? "border-accent/25 bg-accent-soft font-medium" : "border-transparent text-muted hover:bg-field hover:text-ink"}`}
+                      >
+                        {p.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </nav>
   );
 }
