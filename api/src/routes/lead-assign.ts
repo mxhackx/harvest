@@ -4,7 +4,7 @@ import { z } from "zod";
 import { logActivities } from "../activities/log.js";
 import { db } from "../db/index.js";
 import { leads, memberships, notifications, users } from "../db/schema.js";
-import { leadAttrs } from "../leads/access.js";
+import { alive, leadAttrs } from "../leads/access.js";
 import { can } from "../rbac/policy.js";
 import { requirePermission } from "../plugins/auth.js";
 
@@ -32,7 +32,7 @@ export async function leadAssignRoutes(app: FastifyInstance) {
       .select({ lead: leads, ownerName: users.name })
       .from(leads)
       .innerJoin(users, eq(users.id, leads.ownerId))
-      .where(and(eq(leads.companyId, subject.companyId), inArray(leads.id, parsed.data.ids)));
+      .where(and(eq(leads.companyId, subject.companyId), alive, inArray(leads.id, parsed.data.ids)));
     const movable = rows.filter(({ lead }) => lead.ownerId !== target.userId && can(subject, "lead:read", leadAttrs(lead)) && can(subject, "lead:assign", leadAttrs(lead)));
     if (movable.length) {
       const ids = movable.map((m) => m.lead.id);

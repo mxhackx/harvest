@@ -1,6 +1,6 @@
 # Hivation
 
-> **Changer le nom du produit** : une seule ligne par application. Site : `name` dans [web/src/lib/brand.ts](web/src/lib/brand.ts) (interface, titres, référencement, documentation). API : `BRAND_NAME` dans [api/src/brand.ts](api/src/brand.ts) (e-mails, expéditeur par défaut). Le logo se remplace à part : `web/public/logo.svg`, `logo-on-blue.svg`, `logo.png`, `icon-192.png`, `icon-512.png`, `web/src/app/icon.svg` et `apple-icon.png`. Les identifiants techniques (`harvest_session`, clés `harvest.*` du navigateur, noms de base) gardent leur nom : les changer déconnecterait les utilisateurs.
+> **Changer le nom du produit** : une seule ligne par application. Site : `name` dans [web/src/lib/brand.ts](web/src/lib/brand.ts) (interface, titres, référencement, documentation). API : `BRAND_NAME` dans [api/src/brand.ts](api/src/brand.ts) (e-mails, expéditeur par défaut). Le logo se remplace à part : `web/public/logo.svg`, `logo.png`, `icon-192.png`, `icon-512.png`, `web/src/app/favicon.ico`, `icon.png` et `apple-icon.png`. Les identifiants techniques (`harvest_session`, clés `harvest.*` du navigateur, noms de base) gardent leur nom : les changer déconnecterait les utilisateurs.
 
 Prospection et suivi de leads sur le terrain. Deux projets indépendants :
 
@@ -21,11 +21,36 @@ cd web && npm run dev          # http://localhost:3000
 - Espace connecté : tout est sous `/dashboard`, non référencé par les moteurs de recherche. Chaque module a son préfixe : `/dashboard/crm/…` (`leads`, `contacts`, `tasks`, `templates`, `pipeline`, `reports`) et `/dashboard/erp/…` (`team`). Seuls l'accueil (`/dashboard`) et le calendrier (`/dashboard/calendar`) n'en ont pas. Taper `/dashboard/crm` ou `/dashboard/erp` seul mène à la première page du module. Toutes les adresses sont en anglais et écrites une seule fois dans [web/src/lib/routes.ts](web/src/lib/routes.ts).
 - Anciennes adresses (françaises, ou sans `/crm`, comme `/taches`, `/dashboard/leads`, `/reinitialiser`, `/docs/equipe`…) : elles redirigent vers les nouvelles, sous-pages et paramètres compris (les e-mails déjà envoyés restent valides), et les pages épinglées dans le navigateur sont réécrites à la lecture. La liste est dans [web/src/lib/legacy-routes.ts](web/src/lib/legacy-routes.ts).
 
+## Tâches de fond (API)
+
+Le serveur lance des tâches périodiques ([api/src/jobs.ts](api/src/jobs.ts)), jamais pendant les tests : la **purge de la corbeille** toutes les 6 h (les leads supprimés depuis plus de 30 jours sont effacés pour de bon) la **purge du journal d'audit** (conservé un an) et les **rappels** toutes les 5 min (notification et e-mail Resend, une heure avant l'échéance d'une tâche ou d'un rendez-vous ; chaque échéance n'est rappelée qu'une fois, `reminded_at`). Une erreur est journalisée sans arrêter l'API.
+
+## Vagues et régions
+
+Le produit tourne autour des **vagues** : une région couverte pendant une période, avec un objectif de visites et un bilan.
+- **Régions** (`regions`) : un centre et un rayon. `leads.region_id` est *déduit* de la position du lead ([api/src/waves/geo.ts](api/src/waves/geo.ts), haversine) à la création, à la modification, à l'import, à la localisation en arrière-plan, et recalculé pour toute l'entreprise quand une région change.
+- **Vagues** (`waves`) : région, période, objectif. Phase calculée (à venir, en cours, en retard, clôturée) ; bilan (visités, convertis, à repasser) calculé en direct par [api/src/waves/stats.ts](api/src/waves/stats.ts), figé à la clôture.
+- Droits `wave:create|update|delete` (CEO et Manager) ; tout membre lit. Interface : section *Vagues* du menu (vagues, régions, carte). Documentation utilisateur : `/docs/waves`.
+
+## E-mails depuis le CRM
+
+`POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.
+
+## Documentation (centre d'aide)
+
+Les pages `/docs` suivent le modèle d'un centre d'aide : recherche (Ctrl+K), **deux parties** — *Guide utilisateur* (usage) et *API et intégrations* (webhooks, formats de fichiers) —, des **collections**, fil d'Ariane, « Cet article vous a-t-il aidé ? » et articles liés. Le rangement est dans `COLLECTIONS` de [web/src/lib/docs.ts](web/src/lib/docs.ts) : une nouvelle page doit y être ajoutée (un test le vérifie). La bulle de contact en bas à droite envoie `POST /public/contact` ; les avis vont dans `doc_feedback`.
+
+## Journal d'audit
+
+Chaque action réussie qui modifie des données (POST, PATCH, PUT, DELETE d'un membre connecté) ajoute une ligne à `audit_log` : qui, quelle route, quel objet (nom conservé même après suppression). Jamais le contenu des requêtes (mots de passe, jetons). Le hook est dans [api/src/audit/record.ts](api/src/audit/record.ts) ; pour qu'une route garde le nom de l'objet touché, elle pose `req.auditLabel`. Lecture : `GET /audit` (droit `audit:read`, réservé au CEO) et page *ERP › Journal d'audit*. La phrase affichée pour chaque route est dans [web/src/lib/audit.ts](web/src/lib/audit.ts) : à compléter quand on ajoute une route.
+
 ## Styles
 
 Polices, tailles et couleurs sont définies une seule fois, dans [web/src/app/globals.css](web/src/app/globals.css) (bloc `@theme`). Les composants utilisent les classes qui en découlent (`font-display`, `text-heading`, `bg-accent`…) ou `var(--…)` : aucune valeur de style écrite en dur. Exceptions : le code qui ne lit pas le CSS (cartes MapLibre via `cssVar()`, aperçu de partage et `themeColor` via `THEME`) passe par [web/src/lib/theme.ts](web/src/lib/theme.ts), et un test vérifie que ces copies suivent `globals.css`. Les couleurs d'étapes du pipeline et du logo Google sont des données, pas du style.
 
 Police des titres : Plus Jakarta Sans (`font-display`), texte : Inter.
+
+**Mode sombre** : les mêmes jetons ont des valeurs sombres dans `:root[data-theme="dark"]` (même fichier). Le choix (clair, sombre, auto) se fait dans le menu du compte et est gardé dans le navigateur (`hivation.theme`) ; un petit script du layout l'applique avant l'affichage, pour éviter un éclair clair. Les fonds de carte OpenStreetMap restent clairs.
 
 ## Hooks Git (Husky)
 
@@ -85,6 +110,7 @@ démarrage de l'API (`npm run start:prod`).
 | `API_URL` | `https://api.hivation.tech` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
 | `GOOGLE_*`, `GITHUB_*` | vos clés OAuth, ou vides |
 | `RESEND_API_KEY` | clé API [Resend](https://resend.com) pour les e-mails (invitations, mot de passe oublié) ; vide : aucun e-mail, les liens s'affichent à l'écran |
+| `SUPPORT_EMAIL` | adresse qui reçoit les messages de la bulle de contact de la documentation (facultatif : sans elle, ils sont seulement gardés dans la table `contact_messages`) |
 | `MAIL_FROM` | expéditeur, ex. `Hivation <noreply@hivation.tech>`. Le domaine doit être vérifié chez Resend ; sans domaine, l'expéditeur par défaut (`onboarding@resend.dev`) n'écrit qu'à l'adresse de votre compte Resend |
 
 Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok"}`.

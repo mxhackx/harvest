@@ -5,6 +5,7 @@ import { db } from "../db/index.js";
 import { activities, leads, tasks, users } from "../db/schema.js";
 import { can } from "../rbac/policy.js";
 import { scopeCondition } from "../rbac/sql.js";
+import { alive } from "../leads/access.js";
 import { requirePermission } from "../plugins/auth.js";
 import { funnel, pipelineByStage, type Move } from "../reports/compute.js";
 import { listStages } from "../stages/store.js";
@@ -43,7 +44,7 @@ export async function reportRoutes(app: FastifyInstance) {
       return reply.code(400).send({ error: "invalid_query", issues: [{ message: "période invalide (1 à 366 jours)", path: ["from"] }] });
     }
     const { subject } = req.member!;
-    const scope = scopeCondition(leads, subject, "lead:read")!;
+    const scope = and(scopeCondition(leads, subject, "lead:read")!, alive)!;
     const stages = await listStages(subject.companyId);
     const wonKeys = new Set(stages.filter((s) => s.kind === "won").map((s) => s.key));
     const inPeriod = (col: typeof leads.createdAt | typeof leads.closedAt) => and(gte(col, from), lt(col, to));

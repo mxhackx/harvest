@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { and, asc, desc, eq, isNotNull, isNull, lt, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
 import { leads, memberships, notifications, tasks, users } from "../db/schema.js";
@@ -68,7 +68,8 @@ export async function taskRoutes(app: FastifyInstance) {
     const q = listQuery.safeParse(req.query);
     if (!q.success) return reply.code(400).send({ error: "invalid_query", issues: q.error.issues });
     const { subject } = req.member!;
-    const conds = [scopeCondition(tasks, subject, "task:read")!];
+    // une tâche rattachée à un lead de la corbeille disparaît avec lui (et revient s'il est restauré)
+    const conds = [scopeCondition(tasks, subject, "task:read")!, or(isNull(tasks.leadId), isNull(leads.deletedAt))!];
     if (q.data.status === "open") conds.push(isNull(tasks.doneAt));
     if (q.data.status === "done") conds.push(isNotNull(tasks.doneAt));
     if (q.data.status === "overdue") conds.push(isNull(tasks.doneAt), lt(tasks.dueAt, sql`now()`));
@@ -142,7 +143,10 @@ export async function taskRoutes(app: FastifyInstance) {
 
     const set: Partial<typeof tasks.$inferInsert> = { updatedAt: new Date() };
     if (body.data.title !== undefined) set.title = body.data.title;
-    if (body.data.dueAt !== undefined) set.dueAt = body.data.dueAt;
+    if (body.data.dueAt !== undefined) {
+      set.dueAt = body.data.dueAt;
+      if (body.data.dueAt?.getTime() !== task.dueAt?.getTime()) set.remindedAt = null; // nouvelle échéance : nouveau rappel
+    }
     if (body.data.leadId !== undefined) set.leadId = body.data.leadId;
     if (body.data.priority !== undefined) set.priority = body.data.priority;
     if (body.data.done !== undefined) set.doneAt = body.data.done ? (task.doneAt ?? new Date()) : null;

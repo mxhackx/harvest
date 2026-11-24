@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
-import { HomeMap } from "@/components/home-map";
 import { appHref } from "@/lib/hosts";
+import { ContactBubble } from "@/components/contact-bubble";
 import { ROUTES } from "@/lib/routes";
 import { SITE, jsonLd, pageMetadata } from "@/lib/seo";
 
@@ -23,7 +23,7 @@ const FEATURES: { title: string; text: string }[] = [
 
 const STEPS: { title: string; text: string }[] = [
   { title: "Rassemblez vos leads", text: "Saisissez-les sur le terrain ou importez un fichier CSV ou JSON. Les doublons sont repérés." },
-  { title: "Prospectez par vagues", text: "Une région à la fois : la carte, la liste et le calendrier vous disent où aller et qui relancer." },
+  { title: "Prospectez par vagues", text: "Définissez vos régions, planifiez une vague par semaine avec un objectif de visites : l’outil sait quelle région est faite, laquelle reste, et ce qu’il faut repasser." },
   { title: "Relancez et mesurez", text: "Rien n'est oublié, et les rapports montrent ce qui convertit." },
 ];
 
@@ -53,7 +53,7 @@ export default function HomePage() {
         <nav aria-label="Navigation principale" className="flex items-center gap-5 text-small font-medium">
           <Link href="/docs" className="hover:underline">Documentation</Link>
           <Link href={appHref("/login")} className="hover:underline">Se connecter</Link>
-          <Link href={appHref(ROUTES.home)} className={`${button} hidden h-10 bg-accent text-white hover:bg-accent-press sm:inline-flex`}>Ouvrir l’application</Link>
+          <Link href={appHref(ROUTES.home)} className={`${button} hidden h-10 bg-accent text-white hover:bg-accent-hover sm:inline-flex`}>Ouvrir l’application</Link>
         </nav>
       </header>
 
@@ -67,18 +67,8 @@ export default function HomePage() {
             {BRAND.name} réunit la carte de tournée, le pipeline, les relances et les rapports. Vous savez où aller, qui rappeler et ce qui rapporte.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link href={appHref("/login")} className={`${button} bg-accent text-white hover:bg-accent-press`}>Commencer</Link>
+            <Link href={appHref("/login")} className={`${button} bg-accent text-white hover:bg-accent-hover`}>Commencer</Link>
             <Link href="/docs" className={`${button} border border-frame bg-card hover:bg-field`}>Lire la documentation</Link>
-          </div>
-        </section>
-
-        <section aria-labelledby="carte" className="mx-auto w-full max-w-[1080px] px-6 pb-16">
-          <h2 id="carte" className="font-serif text-[28px] font-semibold">Du globe jusqu’à la rue</h2>
-          <p className="mt-2 max-w-[620px] text-small text-muted">
-            Faites tourner le globe, cliquez sur une région : la carte s’y rend. Chaque panneau peut prendre toute la hauteur.
-          </p>
-          <div className="mt-6">
-            <HomeMap />
           </div>
         </section>
 
@@ -123,10 +113,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="bg-ink text-white">
+        <section className="bg-inverse text-on-inverse">
           <div className="mx-auto flex w-full max-w-[1080px] flex-col items-start gap-4 px-6 py-14">
             <h2 className="font-display text-heading font-bold tracking-display">Prêt pour votre prochaine vague ?</h2>
-            <Link href={appHref("/login")} className={`${button} bg-white text-ink hover:bg-field`}>Créer mon espace</Link>
+            <Link href={appHref("/login")} className={`${button} bg-on-inverse text-inverse hover:opacity-90`}>Créer mon espace</Link>
           </div>
         </section>
       </main>
@@ -138,6 +128,7 @@ export default function HomePage() {
           <Link href={appHref("/login")} className="hover:underline">Connexion</Link>
         </nav>
       </footer>
+      <ContactBubble />
     </div>
   );
 }

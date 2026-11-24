@@ -36,6 +36,8 @@ export const config = {
    * s'affichent à l'écran). Tant qu'aucun domaine n'est vérifié chez Resend, l'expéditeur par défaut ne peut écrire
    * qu'à l'adresse du compte Resend : définir MAIL_FROM, ex. « Hivation <noreply@hivation.tech> ».
    */
+  /** Adresse qui reçoit les messages de la bulle de contact (ex. support@hivation.tech). Sans elle, les messages sont seulement gardés en base. */
+  supportEmail: process.env.SUPPORT_EMAIL ?? "",
   mail: {
     apiKey: process.env.RESEND_API_KEY ?? "",
     from: process.env.MAIL_FROM ?? `${BRAND_NAME} <onboarding@resend.dev>`,

@@ -41,7 +41,7 @@ export async function api<T = unknown>(path: string, init: { method?: string; bo
 }
 
 export type Me = {
-  user: { id: string; email: string; name: string; image: string | null };
+  user: { id: string; email: string; name: string; image: string | null; emailReminders: boolean };
   memberships: {
     company: { id: string; name: string; sector: string; region: string };
     teamId: string | null;
@@ -61,6 +61,13 @@ export const ERROR_MESSAGES: Record<string, string> = {
   invalid_body: "Vérifiez les champs saisis.",
   forbidden: "Vous n'avez pas le droit de faire cela.",
   stage_exists: "Une étape porte déjà ce nom.",
+  field_exists: "Un champ porte déjà ce nom.",
+  too_many_fields: "Vingt champs personnalisés au plus.",
+  region_exists: "Une région porte déjà ce nom.",
+  region_in_use: "Cette région a des vagues : elle garde leur historique et ne peut pas être supprimée.",
+  mail_failed: "L’e-mail n’a pas pu partir (service d’envoi indisponible). Vous pouvez l’ouvrir dans votre messagerie.",
+  email_limit: "Limite d’e-mails atteinte pour aujourd’hui (100 par personne et par jour).",
+  wave_closed: "Cette vague est clôturée : elle ne peut plus être modifiée.",
   too_many_stages: "Vingt étapes au plus.",
   last_open_stage: "Il faut garder au moins une étape ouverte.",
   not_found: "Introuvable ou hors de votre périmètre.",
@@ -89,6 +96,10 @@ export const errorMessage = (code?: string | null) =>
 
 export type Lead = {
   id: string;
+  /** région où tombe sa position (déduite des coordonnées) */
+  regionId: string | null;
+  /** valeurs des champs personnalisés : { identifiant du champ: valeur } */
+  custom: Record<string, string | number>;
   ownerId: string;
   teamId: string | null;
   name: string;
@@ -214,6 +225,24 @@ export async function downloadLeads(opts: {
   URL.revokeObjectURL(url);
 }
 
+/** Télécharge un fichier renvoyé par l'API (en-tête content-disposition) : export RGPD d'un contact, calendrier .ics… */
+export async function downloadFrom(path: string, companyId: string, fallbackName: string): Promise<void> {
+  const res = await fetch(`${API_URL}${path}`, { credentials: "include", headers: { "x-company-id": companyId } });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, (data as { error?: string }).error ?? "unknown");
+  }
+  const name = /filename="([^"]+)"/.exec(res.headers.get("content-disposition") ?? "")?.[1] ?? fallbackName;
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 /** Message affiché après la création ou la modification d'un lead : dit clairement s'il est sur la carte. */
 export function savedMessage(l: Pick<Lead, "lat" | "lng" | "locationSource">, mode: "created" | "updated"): string {
   const located = l.lat !== null && l.lng !== null;
@@ -234,6 +263,8 @@ export type CalEvent = {
   title: string;
   kind: EventKind;
   startsAt: string;
+  /** null = durée non précisée */
+  endsAt: string | null;
   notes: string;
   done: boolean;
   leadId: string | null;

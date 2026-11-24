@@ -15,6 +15,15 @@ export default function Page() {
         et on modifie les contacts depuis la fiche. Vous ne voyez que les contacts des leads que vous avez le droit de lire.
       </p>
 
+      <h2>Envoyer un e-mail depuis {BRAND.name}</h2>
+      <p>
+        Pour un modèle d’e-mail, <strong>Envoyer</strong> fait partir le message depuis {BRAND.name} : le destinataire voit
+        l’objet et le texte, et ses <strong>réponses arrivent dans votre propre boîte mail</strong> (votre adresse est mise
+        en « répondre à »). L’e-mail est inscrit dans le fil du lead (« E-mail à … — objet »). Si l’envoi échoue, ou si vous
+        préférez votre messagerie, <strong>Ouvrir dans ma messagerie</strong> reste disponible. Limite : 100 e-mails par
+        personne et par jour. Les e-mails envoyés à une personne sont inclus dans son export RGPD et effacés avec elle.
+      </p>
+
       <h2>Modèles de messages</h2>
       <p>
         <strong>CRM › Modèles de messages</strong> contient des textes prêts à envoyer, par canal (WhatsApp ou e-mail),
@@ -43,6 +52,13 @@ export default function Page() {
         Si le destinataire n’a pas de numéro (ou d’adresse e-mail pour un modèle e-mail), le bouton reste grisé et un
         message l’explique. Complétez le contact depuis la fiche.
       </Callout>
+
+      <h2>Rechercher partout</h2>
+      <p>
+        La barre de recherche en haut de page (raccourci <strong>Ctrl+K</strong>, ou <strong>Cmd+K</strong> sur Mac)
+        cherche dans vos leads (nom, secteur, ville, adresse, téléphone), vos contacts (nom, e-mail, téléphone) et vos
+        tâches. Elle ne montre que ce que vous avez le droit de lire, jamais la corbeille.
+      </p>
 
       <h2>Segments : vos vues enregistrées</h2>
       <p>

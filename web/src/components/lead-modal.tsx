@@ -7,6 +7,7 @@ import { useStages } from "@/lib/stages-store";
 import { useSession } from "@/lib/session";
 import { LeadLinks } from "./lead-links";
 import { LocationPicker, type Coords } from "./location-picker";
+import { parseCustomInput, type CustomField } from "@/lib/custom-fields";
 import { Button, Field, Modal, Notice, Select } from "./ui";
 
 type Located = { found: boolean; lat?: number; lng?: number; source?: string; reason?: string };
@@ -65,6 +66,10 @@ export function LeadModal({
     lat: lead?.lat != null ? fmt(lead.lat) : "",
     lng: lead?.lng != null ? fmt(lead.lng) : "",
   });
+  const [customFields, setCustomFields] = useState<CustomField[]>([]);
+  useEffect(() => {
+    api<CustomField[]>("/custom-fields", { companyId }).then(setCustomFields).catch(() => {});
+  }, [companyId]);
   const [notice, setNotice] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -177,6 +182,8 @@ export function LeadModal({
         service: text("service"),
         probability,
         expectedCloseOn: text("expectedCloseOn") || null,
+        // champs personnalisés : une valeur vide efface
+        custom: Object.fromEntries(customFields.map((cf) => [cf.id, parseCustomInput(cf.type, String(f.get(`custom:${cf.id}`) ?? ""))])),
         ...positionPart,
         ...(!lead && canChooseOwner && ownerId !== me.user.id ? { ownerId } : {}),
       };
@@ -281,6 +288,20 @@ export function LeadModal({
           {(info || sourceNote) && <p className="text-small text-muted">{info ?? sourceNote}</p>}
         </Group>
 
+        {customFields.length > 0 && (
+          <Group title="Champs personnalisés">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {customFields.map((cf) =>
+                cf.type === "select" ? (
+                  <Select key={cf.id} label={cf.label} name={`custom:${cf.id}`} defaultValue={String(lead?.custom?.[cf.id] ?? "")} options={[{ value: "", label: "—" }, ...cf.options.map((o) => ({ value: o, label: o }))]} />
+                ) : (
+                  <Field key={cf.id} label={cf.label} name={`custom:${cf.id}`} type={cf.type === "date" ? "date" : "text"} inputMode={cf.type === "number" ? "decimal" : undefined} maxLength={500} defaultValue={String(lead?.custom?.[cf.id] ?? "")} />
+                ),
+              )}
+            </div>
+          </Group>
+        )}
+
         <Group title="Suivi">
           <div className="grid gap-3 sm:grid-cols-2">
             <Select
@@ -329,14 +350,14 @@ export function LeadModal({
 
         {confirmDelete ? (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-border bg-field p-3">
-            <p className="text-small font-medium">Supprimer définitivement « {lead?.name} » et ses rendez-vous ?</p>
+            <p className="text-small font-medium">Mettre « {lead?.name} » à la corbeille ? Vous pourrez le restaurer pendant 30 jours.</p>
             <div className="flex gap-2">
               {/* « Annuler » porte l'accent : le choix sûr est le plus accessible */}
               <Button type="button" onClick={() => setConfirmDelete(false)} className="h-9 w-auto">
                 Annuler
               </Button>
               <Button type="button" variant="secondary" loading={deleting} onClick={remove} className="h-9 w-auto">
-                Supprimer
+                Mettre à la corbeille
               </Button>
             </div>
           </div>
@@ -349,7 +370,7 @@ export function LeadModal({
                 onClick={() => setConfirmDelete(true)}
                 className="text-small font-medium text-muted underline decoration-dotted decoration-2 underline-offset-4 hover:text-ink"
               >
-                Supprimer ce lead
+                Mettre à la corbeille
               </button>
             ) : (
               <span />

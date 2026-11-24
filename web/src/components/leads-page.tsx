@@ -245,7 +245,7 @@ export function LeadsPage() {
                         requestMove([...sel], st.key);
                       }}
                     >
-                      <span aria-hidden className="size-2.5 rounded-full border border-black/15" style={{ background: st.color }} />
+                      <span aria-hidden className="size-2.5 rounded-full border border-ink/15" style={{ background: st.color }} />
                       {st.name}
                     </MenuItem>
                   ))
@@ -527,8 +527,8 @@ export function LeadsPage() {
 
       {confirmDelete && (
         <Modal
-          title={`Supprimer ${plural(sel.size, "lead", "leads")} ?`}
-          description="Cette action est définitive."
+          title={`Mettre ${plural(sel.size, "lead", "leads")} à la corbeille ?`}
+          description="Ils vont dans la corbeille et restent restaurables pendant 30 jours."
           onClose={() => setConfirmDelete(false)}
           width="max-w-[440px]"
         >
@@ -538,7 +538,7 @@ export function LeadsPage() {
               Annuler
             </Button>
             <Button variant="secondary" onClick={bulkDelete} loading={busy} className="sm:w-auto">
-              Supprimer définitivement
+              Mettre à la corbeille
             </Button>
           </div>
         </Modal>

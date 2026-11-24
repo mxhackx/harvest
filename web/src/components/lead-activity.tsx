@@ -5,6 +5,7 @@ import { api, describeError } from "@/lib/api";
 import { KIND_LABEL, MANUAL_KINDS, describeActivity, isManualKind, relativeTime, type Activity, type ActivityKind } from "@/lib/activity";
 import { useSession } from "@/lib/session";
 import { PencilIcon, TrashIcon } from "./icons";
+import { activeMention, applyMention, mentionIds, suggest, type Person } from "@/lib/mentions";
 import { Button, Notice, TextArea } from "./ui";
 
 type Page = { items: Activity[]; next: string | null };
@@ -31,6 +32,9 @@ export function LeadActivity({ leadId, canWrite, version }: { leadId: string; ca
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [editing, setEditing] = useState<{ id: string; body: string } | null>(null);
+  // collègues mentionnables (chargés une fois) et ceux qu'on a choisis dans le texte en cours
+  const [people, setPeople] = useState<Person[]>([]);
+  const [picked, setPicked] = useState<Person[]>([]);
 
   const load = useCallback(
     () =>
@@ -42,6 +46,12 @@ export function LeadActivity({ leadId, canWrite, version }: { leadId: string; ca
         .catch((e) => setError(describeError(e))),
     [leadId, companyId],
   );
+
+  useEffect(() => {
+    api<Person[]>(`/leads/${leadId}/mentionable`, { companyId }).then(setPeople).catch(() => {});
+  }, [leadId, companyId]);
+  const mention = activeMention(body);
+  const suggestions = mention ? suggest(people, mention.query) : [];
 
   // `version` change quand la fiche modifie le lead (étape, visite) : le fil se recharge
   useEffect(() => {
@@ -64,8 +74,9 @@ export function LeadActivity({ leadId, canWrite, version }: { leadId: string; ca
     if (!body.trim()) return;
     setSending(true);
     try {
-      await api(`/leads/${leadId}/activities`, { method: "POST", body: { kind, body: body.trim() }, companyId });
+      await api(`/leads/${leadId}/activities`, { method: "POST", body: { kind, body: body.trim(), mentions: mentionIds(body, picked) }, companyId });
       setBody("");
+      setPicked([]);
       setError(null);
       await load();
     } catch (err) {
@@ -108,13 +119,33 @@ export function LeadActivity({ leadId, canWrite, version }: { leadId: string; ca
                 type="button"
                 aria-pressed={kind === k.value}
                 onClick={() => setKind(k.value)}
-                className={`h-8 rounded-full border px-3 text-small font-medium ${kind === k.value ? "border-accent-press bg-accent text-white" : "border-frame bg-card hover:bg-field"}`}
+                className={`h-8 rounded-full border px-3 text-small font-medium ${kind === k.value ? "border-accent-hover bg-accent text-white" : "border-frame bg-card hover:bg-field"}`}
               >
                 {k.label}
               </button>
             ))}
           </div>
-          <TextArea label="Ce qui s'est passé" value={body} onChange={(e) => setBody(e.target.value)} maxLength={2000} placeholder="Ex. : a demandé un devis, à rappeler jeudi." />
+          <TextArea label="Ce qui s'est passé" value={body} onChange={(e) => setBody(e.target.value)} maxLength={2000} placeholder="Ex. : a demandé un devis, à rappeler jeudi. Tapez @ pour mentionner un collègue." />
+          {suggestions.length > 0 && (
+            <ul role="listbox" aria-label="Collègues à mentionner" className="flex flex-wrap gap-2">
+              {suggestions.map((p) => (
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={false}
+                    onClick={() => {
+                      setBody(applyMention(body, p));
+                      setPicked((cur) => [...cur.filter((c) => c.id !== p.id), p]);
+                    }}
+                    className="h-8 rounded-full border border-frame bg-card px-3 text-small font-medium hover:bg-field"
+                  >
+                    @{p.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
           <div className="flex justify-end">
             <Button type="submit" className="h-9 w-auto" loading={sending} disabled={!body.trim()}>
               Ajouter

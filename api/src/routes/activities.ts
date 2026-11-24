@@ -2,7 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { and, desc, eq, lt } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { activities, users } from "../db/schema.js";
+import { activities, notifications, users } from "../db/schema.js";
+import { mentionableMembers } from "../activities/mentions.js";
 import { MANUAL_KINDS, isManualKind } from "../activities/log.js";
 import { findReadableLead, leadAttrs } from "../leads/access.js";
 import { can } from "../rbac/policy.js";
@@ -16,6 +17,8 @@ const createBody = z.object({
   kind: z.enum(MANUAL_KINDS),
   body: z.string().trim().min(1).max(2000),
   occurredAt: date.refine(notFuture, "la date ne peut pas être dans le futur").optional(),
+  // collègues mentionnés : ils reçoivent une notification
+  mentions: z.array(z.string().uuid()).max(10).optional(),
 });
 const patchBody = z.object({
   body: z.string().trim().min(1).max(2000).optional(),
@@ -50,6 +53,14 @@ export async function activityRoutes(app: FastifyInstance) {
     };
   });
 
+  // Collègues qu'on peut mentionner sur ce lead.
+  app.get<{ Params: { id: string } }>("/leads/:id/mentionable", { preHandler: requirePermission("lead:update") }, async (req, reply) => {
+    const { subject } = req.member!;
+    const lead = await findReadableLead(subject, req.params.id);
+    if (!lead) return reply.code(404).send({ error: "not_found" });
+    return mentionableMembers(subject.companyId, subject.userId, lead);
+  });
+
   app.post<{ Params: { id: string } }>("/leads/:id/activities", { preHandler: requirePermission("lead:update") }, async (req, reply) => {
     const body = createBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
@@ -57,11 +68,22 @@ export async function activityRoutes(app: FastifyInstance) {
     const lead = await findReadableLead(subject, req.params.id);
     if (!lead) return reply.code(404).send({ error: "not_found" });
     if (!can(subject, "lead:update", leadAttrs(lead))) return reply.code(403).send({ error: "forbidden" });
+    const { mentions: wanted = [], ...data } = body.data;
+    let mentioned: { id: string; name: string }[] = [];
+    if (wanted.length) {
+      const ok = await mentionableMembers(subject.companyId, subject.userId, lead);
+      mentioned = ok.filter((m) => wanted.includes(m.id));
+      // quelqu'un qui ne peut pas lire ce lead (ou soi-même, ou un inconnu) ne se mentionne pas
+      if (mentioned.length !== new Set(wanted).size) return reply.code(400).send({ error: "invalid_body", issues: [{ message: "personne non mentionnable sur ce lead", path: ["mentions"] }] });
+    }
     const [created] = await db
       .insert(activities)
-      .values({ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, ...body.data })
+      .values({ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, ...data, ...(mentioned.length ? { meta: { mentions: mentioned } } : {}) })
       .returning();
     const [author] = await db.select({ name: users.name }).from(users).where(eq(users.id, subject.userId));
+    if (mentioned.length) {
+      await db.insert(notifications).values(mentioned.map((m) => ({ companyId: subject.companyId, userId: m.id, kind: "mention", title: `${author.name} vous a mentionné : ${lead.name}`, leadId: lead.id })));
+    }
     return reply.code(201).send({ ...created, authorName: author.name });
   });
 

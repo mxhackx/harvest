@@ -27,6 +27,8 @@ export const users = pgTable("users", {
   emailVerified: boolean("email_verified").notNull().default(false),
   // photo de profil Google / GitHub ; null → l'interface affiche les initiales
   image: text("image"),
+  // reçoit un e-mail pour les tâches et rendez-vous qui arrivent (en plus de la notification dans l'application)
+  emailReminders: boolean("email_reminders").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -167,6 +169,23 @@ export const pipelineStages = pgTable(
   (t) => [uniqueIndex("pipeline_stages_company_key").on(t.companyId, t.key)],
 );
 
+/** Zone de prospection : un centre et un rayon. Un lead appartient à la plus proche région qui le contient. */
+export const regions = pgTable(
+  "regions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    lat: doublePrecision("lat").notNull(),
+    lng: doublePrecision("lng").notNull(),
+    radiusKm: doublePrecision("radius_km").notNull().default(5),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("regions_company").on(t.companyId)],
+);
+
 export const leads = pgTable("leads", {
   id: uuid("id").primaryKey().defaultRandom(),
   companyId: uuid("company_id")
@@ -207,6 +226,13 @@ export const leads = pgTable("leads", {
   visitedAt: timestamp("visited_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  // corbeille : un lead supprimé est seulement masqué (deletedAt) ; il est effacé pour de bon après 30 jours ou à la demande
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  deletedBy: uuid("deleted_by").references(() => users.id, { onDelete: "set null" }),
+  // région où tombe sa position (déduite des coordonnées, jamais saisie) ; null = hors de toute région ou sans position
+  regionId: uuid("region_id").references(() => regions.id, { onDelete: "set null" }),
+  // valeurs des champs personnalisés : { identifiant du champ: valeur }
+  custom: jsonb("custom").$type<Record<string, string | number>>().notNull().default({}),
 });
 
 export const eventKindEnum = pgEnum("event_kind", ["visit", "call", "followup", "other"]);
@@ -227,8 +253,11 @@ export const events = pgTable("events", {
   title: text("title").notNull(),
   kind: eventKindEnum("kind").notNull().default("visit"),
   startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+  // fin du rendez-vous ; null = durée non précisée (une heure dans le calendrier exporté)
+  endsAt: timestamp("ends_at", { withTimezone: true }),
   notes: text("notes").notNull().default(""),
   done: boolean("done").notNull().default(false),
+  remindedAt: timestamp("reminded_at", { withTimezone: true }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -313,6 +342,8 @@ export const tasks = pgTable(
     doneAt: timestamp("done_at", { withTimezone: true }),
     // low | normal | high
     priority: text("priority").notNull().default("normal"),
+    // rappel déjà envoyé pour cette échéance (remis à zéro quand l'échéance change)
+    remindedAt: timestamp("reminded_at", { withTimezone: true }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
@@ -401,4 +432,163 @@ export const segments = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [uniqueIndex("segments_user_name").on(t.companyId, t.userId, sql`lower(${t.name})`)],
+);
+
+/**
+ * Journal d'audit : qui a fait quoi, quand. Une ligne par action qui modifie des données (jamais le contenu des requêtes :
+ * ni mots de passe, ni jetons). `entityLabel` garde le nom de l'objet (ex. le lead supprimé) même s'il n'existe plus.
+ */
+export const auditLog = pgTable(
+  "audit_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
+    // « DELETE /leads/:id » : la route appelée ; l'interface la traduit en phrase
+    action: text("action").notNull(),
+    entityId: uuid("entity_id"),
+    entityLabel: text("entity_label").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("audit_company_time").on(t.companyId, t.createdAt)],
+);
+
+/**
+ * Vague : une région couverte pendant une période, avec un objectif de visites. Clôturée, elle garde son bilan
+ * (visités, convertis, à repasser) tel qu'il était ce jour-là.
+ */
+export const waves = pgTable(
+  "waves",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    regionId: uuid("region_id")
+      .notNull()
+      .references(() => regions.id),
+    name: text("name").notNull(),
+    startsOn: date("starts_on", { mode: "string" }).notNull(),
+    endsOn: date("ends_on", { mode: "string" }).notNull(),
+    targetVisits: integer("target_visits").notNull().default(0),
+    closedAt: timestamp("closed_at", { withTimezone: true }),
+    bilan: jsonb("bilan").$type<{ total: number; visited: number; converted: number; toRevisit: number; targetVisits: number }>(),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("waves_company").on(t.companyId, t.startsOn)],
+);
+
+/**
+ * E-mails envoyés depuis le CRM : qui a écrit à qui, quand, avec quel résultat. Les réponses arrivent dans la boîte
+ * de la personne qui écrit (reply-to) : le CRM n'a pas de boîte de réception. Effacés avec le contact (RGPD).
+ */
+export const emailLog = pgTable(
+  "email_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+    sentBy: uuid("sent_by").references(() => users.id, { onDelete: "set null" }),
+    toEmail: text("to_email").notNull(),
+    subject: text("subject").notNull(),
+    body: text("body").notNull(),
+    // sent | failed
+    status: text("status").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("email_log_lead").on(t.leadId, t.createdAt)],
+);
+
+/** Objectifs d'une personne pour un mois : visites, leads gagnés et valeur gagnée. 0 = pas d'objectif sur ce point. */
+export const objectives = pgTable(
+  "objectives",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // premier jour du mois (AAAA-MM-01)
+    month: date("month", { mode: "string" }).notNull(),
+    targetVisits: integer("target_visits").notNull().default(0),
+    targetWon: integer("target_won").notNull().default(0),
+    targetValue: integer("target_value").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("objectives_unique").on(t.companyId, t.userId, t.month)],
+);
+
+/** Champ personnalisé d'une entreprise : une information de plus à saisir sur chaque lead (texte, nombre, date ou liste). */
+export const customFields = pgTable(
+  "custom_fields",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    label: text("label").notNull(),
+    // text | number | date | select
+    type: text("type").notNull(),
+    // choix d'un champ « liste »
+    options: jsonb("options").$type<string[]>().notNull().default([]),
+    position: integer("position").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("custom_fields_company").on(t.companyId, t.position)],
+);
+
+/**
+ * Webhook : une adresse externe prévenue (POST signé) quand quelque chose change dans l'entreprise. Le secret sert à
+ * signer chaque envoi (HMAC SHA-256) ; il n'est montré qu'à la création. Après trop d'échecs de suite, le webhook s'éteint.
+ */
+export const webhooks = pgTable(
+  "webhooks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    secret: text("secret").notNull(),
+    events: jsonb("events").$type<string[]>().notNull(),
+    active: boolean("active").notNull().default(true),
+    failures: integer("failures").notNull().default(0),
+    lastStatus: integer("last_status"),
+    lastAt: timestamp("last_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("webhooks_company").on(t.companyId)],
+);
+
+/** Messages envoyés depuis la bulle de contact de la documentation (public, sans compte). Toujours gardés, même sans e-mail de support. */
+export const contactMessages = pgTable("contact_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull(),
+  message: text("message").notNull(),
+  // page de la documentation d'où vient le message
+  page: text("page").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+/** Avis « cet article vous a-t-il aidé ? » : une ligne par réponse, sans donnée personnelle. */
+export const docFeedback = pgTable(
+  "doc_feedback",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    page: text("page").notNull(),
+    // 1 = pas du tout, 2 = moyen, 3 = oui
+    rating: integer("rating").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("doc_feedback_page").on(t.page)],
 );

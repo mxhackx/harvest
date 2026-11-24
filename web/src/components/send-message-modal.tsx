@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { api, describeError } from "@/lib/api";
 import { renderTemplate, sendUrl, type Recipient, type Template } from "@/lib/messages";
 import { useSession } from "@/lib/session";
-import { Button, Modal, Notice, Select, TextArea } from "./ui";
+import { Button, Field, Modal, Notice, Select, TextArea } from "./ui";
 
 /**
  * Envoi d'un message à partir d'un modèle : choix du modèle et du destinataire, texte modifiable, puis ouverture de
@@ -28,6 +28,8 @@ export function SendMessageModal({
   // retouche manuelle du texte, valable seulement pour le couple modèle + destinataire où elle a été faite
   const [edit, setEdit] = useState<{ key: string; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [subjectEdit, setSubjectEdit] = useState<{ key: string; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     api<Template[]>("/templates", { companyId })
@@ -46,7 +48,24 @@ export function SendMessageModal({
   const key = `${templateId}:${who}`;
   const text = edit && edit.key === key ? edit.text : template ? renderTemplate(template.body, vars) : "";
 
-  const url = template && recipient ? sendUrl(template.channel, recipient, text, lead.name) : null;
+  const subjectKey = templateId;
+  const subject = subjectEdit && subjectEdit.key === subjectKey ? subjectEdit.text : (template?.name ?? "");
+  const url = template && recipient ? sendUrl(template.channel, recipient, text, subject || lead.name) : null;
+  const canSendFromApp = template?.channel === "email" && !!recipient && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(recipient.email);
+
+  /** Envoi par Hivation : l'e-mail part de l'application, les réponses arrivent dans votre boîte, et le fil garde la trace. */
+  async function sendFromApp() {
+    if (!recipient || !text.trim() || !subject.trim()) return;
+    setBusy(true);
+    try {
+      await api(`/leads/${lead.id}/emails`, { body: { to: recipient.email, subject: subject.trim(), body: text }, companyId });
+      onSent?.();
+      onClose();
+    } catch (e) {
+      setError(describeError(e));
+      setBusy(false);
+    }
+  }
 
   async function send() {
     if (!url || !template) return;
@@ -79,14 +98,20 @@ export function SendMessageModal({
             ) : (
               <p className="text-small text-muted">Aucun contact ni numéro sur ce lead.</p>
             )}
+            {template?.channel === "email" && <Field label="Objet" value={subject} maxLength={200} onChange={(e) => setSubjectEdit({ key: subjectKey, text: e.target.value })} />}
             <TextArea label="Message" rows={6} value={text} onChange={(e) => setEdit({ key, text: e.target.value })} maxLength={1900} />
             {template && recipient && !url && (
               <p className="text-small text-fail">{template.channel === "email" ? "Ce destinataire n’a pas d’adresse e-mail." : "Ce destinataire n’a pas de numéro utilisable."}</p>
             )}
             <div className="flex justify-end gap-2">
               <Button variant="secondary" className="w-auto" onClick={onClose}>Annuler</Button>
-              <Button className="w-auto" disabled={!url || !text.trim()} onClick={send}>
-                {template?.channel === "email" ? "Ouvrir l’e-mail" : "Ouvrir WhatsApp"}
+              {canSendFromApp && (
+                <Button className="w-auto" loading={busy} disabled={!text.trim() || !subject.trim()} onClick={sendFromApp}>
+                  Envoyer
+                </Button>
+              )}
+              <Button variant={canSendFromApp ? "secondary" : "primary"} className="w-auto" disabled={!url || !text.trim()} onClick={send}>
+                {template?.channel === "email" ? "Ouvrir dans ma messagerie" : "Ouvrir WhatsApp"}
               </Button>
             </div>
           </>

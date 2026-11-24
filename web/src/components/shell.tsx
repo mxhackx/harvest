@@ -13,12 +13,13 @@ import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
 import { usePins } from "@/lib/pins";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, PushPinIcon, UserIcon, UsersIcon } from "./icons";
+import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
+import { GlobalSearch } from "./global-search";
 import { NotificationsBell } from "./notifications-bell";
 import { Notice } from "./ui";
 
 type Icon = ComponentType<{ size?: number }>;
-type Page = { label: string; short: string; href: string; icon: Icon };
+type Page = { label: string; short: string; href: string; icon: Icon; /** droit requis pour voir la page */ needs?: string };
 type Module = { key: string; label: string; href: string; icon: Icon; pages: Page[]; /** droit requis pour voir le module */ needs?: string };
 
 // Seuls les modules et pages réellement construits apparaissent.
@@ -34,6 +35,17 @@ const MODULES: Module[] = [
     ],
   },
   {
+    key: "waves",
+    label: "Vagues",
+    href: ROUTES.waves,
+    icon: MapIcon,
+    pages: [
+      { label: "Vagues", short: "Vagues", href: ROUTES.waves, icon: BoardIcon },
+      { label: "Régions", short: "Régions", href: ROUTES.regions, icon: PinIcon },
+      { label: "Carte", short: "Carte", href: ROUTES.map, icon: MapIcon },
+    ],
+  },
+  {
     key: "crm",
     label: "CRM",
     href: ROUTES.leads,
@@ -45,6 +57,10 @@ const MODULES: Module[] = [
       { label: "Modèles", short: "Modèles", href: ROUTES.templates, icon: FormIcon },
       { label: "Pipeline", short: "Pipeline", href: ROUTES.pipeline, icon: BoardIcon },
       { label: "Rapports", short: "Rapports", href: ROUTES.reports, icon: CoinIcon },
+      { label: "Champs", short: "Champs", href: ROUTES.fields, icon: FormIcon, needs: "field:create" },
+      { label: "Objectifs", short: "Objectifs", href: ROUTES.objectives, icon: CoinIcon },
+      { label: "Doublons", short: "Doublons", href: ROUTES.duplicates, icon: UsersIcon, needs: "lead:delete" },
+      { label: "Corbeille", short: "Corbeille", href: ROUTES.trash, icon: TrashIcon, needs: "lead:delete" },
     ],
   },
   {
@@ -53,7 +69,11 @@ const MODULES: Module[] = [
     href: ROUTES.team,
     icon: BriefcaseIcon,
     needs: "member:read",
-    pages: [{ label: "Équipe", short: "Équipe", href: ROUTES.team, icon: UsersIcon }],
+    pages: [
+      { label: "Équipe", short: "Équipe", href: ROUTES.team, icon: UsersIcon },
+      { label: "Webhooks", short: "Webhooks", href: ROUTES.webhooks, icon: BriefcaseIcon, needs: "webhook:read" },
+      { label: "Journal d'audit", short: "Audit", href: ROUTES.audit, icon: FormIcon, needs: "audit:read" },
+    ],
   },
 ];
 
@@ -95,7 +115,7 @@ export function Shell({ children }: { children: ReactNode }) {
   if (!session) return <main className="min-h-dvh" aria-busy />;
 
   const granted = session.me.memberships[0].permissions.map((p) => p.permission);
-  const modules = MODULES.filter((m) => !m.needs || granted.includes(m.needs));
+  const modules = MODULES.filter((m) => !m.needs || granted.includes(m.needs)).map((m) => ({ ...m, pages: m.pages.filter((p) => !p.needs || granted.includes(p.needs)) }));
   const mobilePages = modules.flatMap((m) => m.pages);
   const active = moduleFor(path, modules);
   const pinnedPages = pins.map((h) => mobilePages.find((p) => p.href === h)).filter((p): p is Page => !!p);
@@ -116,7 +136,7 @@ export function Shell({ children }: { children: ReactNode }) {
         onClick={() => togglePinned(p.href)}
         aria-pressed={pins.includes(p.href)}
         aria-label={pins.includes(p.href) ? `Désépingler ${p.label}` : `Épingler ${p.label}`}
-        className={`absolute right-1 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:bg-white hover:text-ink focus-visible:opacity-100 ${pins.includes(p.href) ? "text-accent-press" : "opacity-0 group-hover:opacity-100"}`}
+        className={`absolute right-1 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:bg-card hover:text-ink focus-visible:opacity-100 ${pins.includes(p.href) ? "text-accent-press" : "opacity-0 group-hover:opacity-100"}`}
       >
         <PushPinIcon size={15} />
       </button>
@@ -130,9 +150,9 @@ export function Shell({ children }: { children: ReactNode }) {
       <LeadsProvider>
       <div className="flex min-h-dvh">
         {/* Rail de modules, 80 px */}
-        <nav aria-label="Modules" className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 bg-accent py-3 md:flex">
+        <nav aria-label="Modules" className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 border-r border-rule bg-field py-3 md:flex">
           <Link href={ROUTES.home} aria-label={BRAND.name} className="mb-2 flex size-11 items-center justify-center">
-            <Image src="/logo-on-blue.svg" alt="" width={38} height={38} priority />
+            <Image src="/logo.svg" alt="" width={38} height={38} priority />
           </Link>
           {modules.map((m) => (
             <Link
@@ -140,7 +160,7 @@ export function Shell({ children }: { children: ReactNode }) {
               href={m.href}
               aria-current={m.key === active.key ? "page" : undefined}
               className={`flex h-14 w-16 flex-col items-center justify-center gap-1 rounded-control text-small ${
-                m.key === active.key ? "bg-white font-medium text-accent-press" : "text-on-dark-soft hover:bg-white/10"
+                m.key === active.key ? "bg-accent-soft font-medium text-accent-press" : "text-muted hover:bg-card hover:text-ink"
               }`}
             >
               <m.icon />
@@ -180,7 +200,8 @@ export function Shell({ children }: { children: ReactNode }) {
                 <span aria-current="page" className="font-medium text-ink">{page.label}</span>
               </nav>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+              <GlobalSearch />
               <NotificationsBell />
               <AvatarMenu />
             </div>
@@ -190,14 +211,14 @@ export function Shell({ children }: { children: ReactNode }) {
       </div>
 
       {/* Navigation basse sur mobile : le gérant est en tournée */}
-      <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 overflow-x-auto bg-accent md:hidden">
+      <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 overflow-x-auto border-t border-rule bg-card md:hidden">
         {mobilePages.map((p) => (
           <Link
             key={p.href}
             href={p.href}
             aria-current={p.href === path ? "page" : undefined}
             className={`flex min-w-[76px] flex-1 shrink-0 flex-col items-center justify-center gap-1 text-small ${
-              p.href === path ? "bg-white font-medium text-accent-press" : "text-on-dark-soft"
+              p.href === path ? "bg-accent-soft font-medium text-accent-press" : "text-muted"
             }`}
           >
             <p.icon />

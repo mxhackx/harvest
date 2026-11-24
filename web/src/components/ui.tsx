@@ -16,7 +16,7 @@ export function Button({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary"; loading?: boolean }) {
   const look =
     variant === "primary"
-      ? "border border-accent-press bg-accent text-white hover:bg-accent-press"
+      ? "border border-accent-hover bg-accent text-white hover:bg-accent-hover"
       : "border border-frame bg-card text-ink hover:bg-field";
   return (
     <button
@@ -247,7 +247,7 @@ export function Modal({
   }, [onClose]);
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-ink/40 p-4"
+      className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-scrim p-4"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div role="dialog" aria-modal="true" aria-label={title} className={`w-full ${width} rounded-card border border-frame bg-card`}>

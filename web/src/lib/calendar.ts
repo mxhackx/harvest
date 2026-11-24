@@ -33,6 +33,16 @@ export function toInputs(iso: string): { date: string; time: string } {
   return { date: dayKey(d), time: `${pad(d.getHours())}:${pad(d.getMinutes())}` };
 }
 
+/**
+ * Fin saisie (heure, le même jour que le début) : `null` si laissée vide, `"invalid"` si illisible ou si elle ne
+ * suit pas le début, sinon l'instant de fin.
+ */
+export function endFromInputs(date: string, startsAt: Date, endTime: string): Date | null | "invalid" {
+  if (!endTime) return null;
+  const end = fromInputs(date, endTime);
+  return end && end > startsAt ? end : "invalid";
+}
+
 /** « AAAA-MM-JJ » + « HH:MM » saisis par l'utilisateur → instant. `null` si invalide. */
 export function fromInputs(date: string, time: string): Date | null {
   const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);

@@ -9,6 +9,7 @@ import { useSession } from "@/lib/session";
 import { setActiveCompanyId } from "@/lib/active-company";
 import { BookIcon } from "./icons";
 import { siteHref } from "@/lib/hosts";
+import { ThemeToggle } from "./theme-toggle";
 
 const initials = (name: string) =>
   name
@@ -17,6 +18,29 @@ const initials = (name: string) =>
     .slice(0, 2)
     .map((w) => w[0]!.toUpperCase())
     .join("") || "?";
+
+/** Recevoir (ou non) par e-mail les rappels de tâches et de rendez-vous ; les notifications de la cloche restent. */
+function EmailRemindersToggle({ initial }: { initial: boolean }) {
+  const [on, setOn] = useState(initial);
+  const [failed, setFailed] = useState(false);
+  const change = async (next: boolean) => {
+    setOn(next);
+    setFailed(false);
+    try {
+      await api("/me/preferences", { method: "PATCH", body: { emailReminders: next } });
+    } catch {
+      setOn(!next);
+      setFailed(true);
+    }
+  };
+  return (
+    <label className="flex cursor-pointer items-center gap-2 px-1 text-small">
+      <input type="checkbox" checked={on} onChange={(e) => change(e.target.checked)} className="size-4 accent-accent" />
+      Rappels par e-mail
+      {failed && <span className="text-fail">échec</span>}
+    </label>
+  );
+}
 
 export function Avatar({ name, image, size = 36 }: { name: string; image: string | null; size?: number }) {
   const [broken, setBroken] = useState(false);
@@ -133,6 +157,10 @@ export function AvatarMenu() {
             </>
           )}
           <hr className="my-2 border-rule" />
+          <div className="flex flex-col gap-2 px-1 pb-1">
+            <ThemeToggle />
+            <EmailRemindersToggle initial={me.user.emailReminders} />
+          </div>
           <Link
             role="menuitem"
             href={siteHref("/docs")}

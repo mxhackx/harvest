@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { SITE } from "@/lib/seo";
+import { THEME_SCRIPT, ThemeSync } from "@/lib/theme-mode";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -25,8 +26,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} h-full antialiased`}>
-      <body className="min-h-full">{children}</body>
+    <html lang="fr" suppressHydrationWarning className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
+      <body className="min-h-full">
+        <ThemeSync />
+        {children}
+      </body>
     </html>
   );
 }

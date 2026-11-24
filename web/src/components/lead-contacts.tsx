@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { api, describeError } from "@/lib/api";
+import { api, describeError, downloadFrom } from "@/lib/api";
 import type { Contact } from "@/lib/activity";
 import { useSession } from "@/lib/session";
-import { PencilIcon, PlusIcon, TrashIcon } from "./icons";
+import { DownloadIcon, PencilIcon, PlusIcon, TrashIcon, XIcon } from "./icons";
 import { Button, Field, Modal, Notice, TextArea } from "./ui";
 
 const EMPTY = { name: "", role: "", phone: "", whatsapp: "", email: "", notes: "" };
@@ -44,7 +44,8 @@ function ContactForm({ contact, onClose, onSubmit }: { contact?: Contact; onClos
 
 /** Les personnes à contacter dans l'entreprise ; une seule est « principale » et donne son nom au lead. */
 export function LeadContacts({ leadId, canWrite, onChanged }: { leadId: string; canWrite: boolean; onChanged: () => void }) {
-  const { companyId } = useSession();
+  const { me, companyId } = useSession();
+  const perms = me.memberships[0].permissions.map((x) => x.permission);
   const [list, setList] = useState<Contact[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<Contact | "new" | null>(null);
@@ -72,6 +73,13 @@ export function LeadContacts({ leadId, canWrite, onChanged }: { leadId: string; 
     }
   }
 
+  /** RGPD : télécharger tout ce qu'on garde sur la personne, ou l'effacer pour de bon (après confirmation). */
+  const exportData = (c: Contact) => downloadFrom(`/contacts/${c.id}/export`, companyId, `contact-${c.id}.json`).catch((e) => setError(describeError(e)));
+  const erase = (c: Contact) => {
+    if (!window.confirm(`Effacer définitivement ${c.name} (droit à l’effacement) ? Cette action est irréversible.`)) return;
+    run(() => api(`/contacts/${c.id}/erase`, { companyId, body: { confirm: true } })).catch(() => {});
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {error && <Notice onClose={() => setError(null)}>{error}</Notice>}
@@ -96,8 +104,19 @@ export function LeadContacts({ leadId, canWrite, onChanged }: { leadId: string; 
                   </p>
                   {c.role && <p className="text-small text-muted">{c.role}</p>}
                 </div>
-                {canWrite && (
+                {(canWrite || perms.includes("lead:export") || perms.includes("lead:delete")) && (
                   <div className="flex shrink-0 gap-1">
+                    {perms.includes("lead:export") && (
+                      <button type="button" aria-label={`Exporter les données de ${c.name}`} title="Exporter ses données (RGPD)" onClick={() => exportData(c)} className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-field hover:text-ink">
+                        <DownloadIcon size={15} />
+                      </button>
+                    )}
+                    {perms.includes("lead:delete") && (
+                      <button type="button" aria-label={`Effacer ${c.name} (RGPD)`} title="Effacer définitivement (RGPD)" onClick={() => erase(c)} className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-field hover:text-fail">
+                        <XIcon size={15} />
+                      </button>
+                    )}
+                    {canWrite && (<>
                     <button type="button" aria-label={`Modifier ${c.name}`} onClick={() => setForm(c)} className="flex size-8 items-center justify-center rounded-full text-muted hover:bg-field hover:text-ink">
                       <PencilIcon size={15} />
                     </button>
@@ -109,6 +128,7 @@ export function LeadContacts({ leadId, canWrite, onChanged }: { leadId: string; 
                     >
                       <TrashIcon size={15} />
                     </button>
+                    </>)}
                   </div>
                 )}
               </div>

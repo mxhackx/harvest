@@ -51,6 +51,21 @@ export default function Page() {
         Les noms d’étape du fil sont ceux de l’époque : renommer une étape plus tard ne réécrit pas l’histoire.
       </p>
 
+      <h2>Champs personnalisés</h2>
+      <p>
+        <strong>CRM › Champs</strong> (réservé aux responsables) ajoute des informations propres à votre métier sur chaque
+        lead : texte, nombre, date ou liste de choix, jusqu’à 20 champs. Ils apparaissent dans la fiche du lead, section
+        « Champs personnalisés ». Le type d’un champ ne change pas une fois créé ; supprimer un champ retire ses valeurs de
+        tous les leads. Ils ne sont pas encore inclus dans l’import et l’export CSV.
+      </p>
+
+      <h2>Mentionner un collègue</h2>
+      <p>
+        Dans une note du fil, tapez <strong>@</strong> puis les premières lettres d’un prénom ou d’un nom : choisissez le
+        collègue proposé. Il reçoit une <strong>notification</strong> (la cloche) qui mène au lead. On ne peut mentionner
+        que quelqu’un qui a le droit de lire ce lead : un collègue qui ne le voit pas n’est pas proposé.
+      </p>
+
       <h2>Plusieurs contacts par entreprise</h2>
       <p>
         L’onglet <strong>Contacts</strong> liste les personnes à joindre : nom, fonction, téléphone, WhatsApp, e-mail,
@@ -64,6 +79,34 @@ export default function Page() {
         L’onglet <strong>Tâches</strong> montre ce qu’il reste à faire pour ce lead (voir{" "}
         <Link href="/docs/tasks">Tâches et rappels</Link>). Avec le droit d’attribuer, le bouton « Attribuer à… »
         confie le lead à un collègue, qui reçoit une notification.
+      </p>
+
+      <h2>Supprimer et restaurer</h2>
+      <p>
+        Supprimer un lead (depuis sa fiche ou une sélection) le met à la <strong>corbeille</strong> : il disparaît des
+        listes, de la carte, des rapports et des tâches, mais ses contacts, son historique et ses tâches sont conservés.
+        La page <strong>Corbeille</strong> (CRM) permet de le <strong>restaurer</strong> pendant 30 jours, ou de l’effacer
+        tout de suite. Passé ce délai, il est effacé définitivement. La corbeille est réservée à ceux qui ont le droit de
+        supprimer des leads.
+      </p>
+
+      <h2>Doublons et fusion</h2>
+      <p>
+        <strong>CRM › Doublons</strong> liste les leads qui semblent être la même entreprise : même numéro de téléphone
+        (au moins 7 chiffres), ou même nom dans la même ville (« Salon (2) » compte comme « Salon »). Choisissez le lead à
+        garder et cliquez sur <strong>Fusionner</strong> : contacts, historique, tâches, rendez-vous et e-mails passent au
+        lead gardé, ses champs vides sont complétés par ceux du doublon, et une note « Fusion » est ajoutée au fil. La
+        fusion est irréversible ; elle demande le droit de modifier et de supprimer les leads concernés.
+      </p>
+
+      <h2>Données personnelles (RGPD)</h2>
+      <p>
+        Chaque contact de l’onglet <strong>Contacts</strong> a deux actions pour répondre à une demande d’une personne :
+        <strong> Exporter ses données</strong> télécharge un fichier JSON avec tout ce qui est gardé sur elle, et{" "}
+        <strong>Effacer</strong> la supprime définitivement (après confirmation) et retire son nom du lead. L’export
+        demande le droit d’exporter, l’effacement celui de supprimer des leads. Le journal d’audit garde la trace de
+        l’action, sans le nom de la personne. Les notes libres du fil ne sont pas analysées : relisez-les si elles
+        citent la personne.
       </p>
 
       <Callout title="Qui voit quoi ?">

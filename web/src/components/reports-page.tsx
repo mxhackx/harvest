@@ -57,7 +57,7 @@ export function ReportsPage() {
               type="button"
               aria-pressed={days === p.days}
               onClick={() => setDays(p.days)}
-              className={`h-9 rounded-full border px-3 text-small font-medium ${days === p.days ? "border-accent-press bg-accent text-white" : "border-frame bg-card hover:bg-field"}`}
+              className={`h-9 rounded-full border px-3 text-small font-medium ${days === p.days ? "border-accent-hover bg-accent text-white" : "border-frame bg-card hover:bg-field"}`}
             >
               {p.label}
             </button>
@@ -82,7 +82,7 @@ export function ReportsPage() {
               {report.pipeline.stages.map((s) => (
                 <li key={s.key} className="grid gap-1 sm:grid-cols-[180px_minmax(0,1fr)_200px] sm:items-center sm:gap-4">
                   <span className="flex items-center gap-2 text-body">
-                    <span aria-hidden className="size-2.5 rounded-full border border-black/15" style={{ background: s.color }} />
+                    <span aria-hidden className="size-2.5 rounded-full border border-ink/15" style={{ background: s.color }} />
                     {s.name}
                   </span>
                   <Bar width={barWidth(byValue ? s.value : s.count, byValue ? maxValue : maxCount)} color={s.color} />
@@ -103,7 +103,7 @@ export function ReportsPage() {
                 {report.funnel.stages.map((s) => (
                   <li key={s.key} className="grid gap-1 sm:grid-cols-[180px_minmax(0,1fr)_200px] sm:items-center sm:gap-4">
                     <span className="flex items-center gap-2 text-body">
-                      <span aria-hidden className="size-2.5 rounded-full border border-black/15" style={{ background: s.color }} />
+                      <span aria-hidden className="size-2.5 rounded-full border border-ink/15" style={{ background: s.color }} />
                       {s.name}
                     </span>
                     <Bar width={(s.ofCohort ?? 0) * 100} color={s.color} />

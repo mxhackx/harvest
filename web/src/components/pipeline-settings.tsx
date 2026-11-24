@@ -26,7 +26,7 @@ function Swatches({ value, onChange, disabled }: { value: string; onChange: (c: 
           aria-label={`Couleur ${c}`}
           title={c}
           onClick={() => onChange(c)}
-          className={`size-6 rounded-full border ${value === c ? "ring-2 ring-ink ring-offset-1" : "border-black/15"} disabled:opacity-60`}
+          className={`size-6 rounded-full border ${value === c ? "ring-2 ring-ink ring-offset-1" : "border-ink/15"} disabled:opacity-60`}
           style={{ background: c }}
         />
       ))}

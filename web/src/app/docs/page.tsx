@@ -1,63 +1,50 @@
 import { BRAND } from "@/lib/brand";
 import Link from "next/link";
-import { Callout, DocArticle } from "@/components/docs/blocks";
-import { DOCS } from "@/lib/docs";
+import { DocsSearch } from "@/components/docs/docs-search";
+import { COLLECTIONS, SECTIONS, pagesOf, type DocSection } from "@/lib/docs";
 import { docMetadata } from "@/lib/seo";
 
 export const metadata = docMetadata("/docs");
 
+/** Accueil du centre d'aide : une recherche en grand, puis les deux parties (usage, API) et leurs collections. */
 export default function Page() {
   return (
-    <DocArticle href="/docs">
-      <h2>Par où commencer</h2>
-      <p>
-        {BRAND.name} vous aide à repérer, visiter et suivre vos leads sur le terrain. Cette documentation explique comment
-        faire entrer vos leads existants dans {BRAND.name}, comment en sortir vos données, et comment chaque lead est placé
-        sur la carte.
-      </p>
-      <ol>
-        <li>
-          Réglez votre <Link href="/docs/pipeline">pipeline</Link>, puis suivez chaque lead depuis sa{" "}
-          <Link href="/docs/lead">fiche</Link> : activité, contacts, <Link href="/docs/tasks">tâches</Link>.
-        </li>
-        <li>
-          <Link href="/docs/team">Invitez votre équipe</Link> et répartissez les leads.
-        </li>
-        <li>
-          <Link href="/docs/import">Importer des leads</Link> depuis un tableur ou un autre outil : un fichier CSV ou
-          JSON suffit.
-        </li>
-        <li>
-          Présentez votre fichier selon le <Link href="/docs/import/csv">format CSV</Link> ou le{" "}
-          <Link href="/docs/import/json">format JSON</Link>.
-        </li>
-        <li>
-          Vérifiez les <Link href="/docs/import/fields">champs acceptés</Link> et, si l’analyse signale des problèmes,
-          consultez les <Link href="/docs/import/errors">messages d’erreur</Link>.
-        </li>
-      </ol>
-      <Callout title="Un seul champ est obligatoire">
-        Le nom de l’entreprise. Tout le reste est facultatif : vous pouvez importer une simple liste de noms et
-        compléter les fiches ensuite.
-      </Callout>
+    <div>
+      <section className="rounded-card bg-field px-6 py-10 text-center">
+        <h1 className="font-display text-heading font-bold tracking-display">Comment peut-on vous aider ?</h1>
+        <p className="mx-auto mt-2 max-w-[520px] text-muted">
+          Tout ce qu’il faut pour prospecter par vagues avec {BRAND.name}, et pour le brancher à vos autres outils.
+        </p>
+        <div className="mt-6 flex justify-center">
+          <DocsSearch large />
+        </div>
+      </section>
 
-      <h2>Les guides</h2>
-      <ul>
-        {DOCS.filter((p) => p.href !== "/docs").map((p) => (
-          <li key={p.href}>
-            <Link href={p.href}>{p.title}</Link> — {p.description}
-            {p.children && (
-              <ul>
-                {p.children.map((c) => (
-                  <li key={c.href}>
-                    <Link href={c.href}>{c.title}</Link> — {c.description}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
-    </DocArticle>
+      {(Object.keys(SECTIONS) as DocSection[]).map((section) => (
+        <section key={section} id={section} aria-labelledby={`${section}-title`} className="mt-10 scroll-mt-20">
+          <h2 id={`${section}-title`} className="font-display text-title font-semibold">{SECTIONS[section].title}</h2>
+          <p className="text-small text-muted">{SECTIONS[section].description}</p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {COLLECTIONS.filter((c) => c.section === section).map((c) => (
+              <article key={c.id} id={c.id} className="scroll-mt-20 rounded-card border border-border bg-card p-5">
+                <h3 className="font-semibold">{c.title}</h3>
+                <p className="mb-3 text-small text-muted">
+                  {c.description} · {c.hrefs.length} article{c.hrefs.length > 1 ? "s" : ""}
+                </p>
+                <ul className="flex flex-col gap-1.5 text-small">
+                  {pagesOf(c).map((p) => (
+                    <li key={p.href}>
+                      <Link href={p.href} className="font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
+                        {p.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
   );
 }

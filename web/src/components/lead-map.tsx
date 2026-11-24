@@ -335,7 +335,7 @@ export function LeadMap({
               aria-pressed={filter === key}
               onClick={() => setFilter(key)}
               className={`flex h-9 items-center gap-2 rounded-full border px-3 text-small font-medium ${
-                filter === key ? "border-accent-press bg-accent text-white" : "border-frame bg-card text-ink hover:bg-field"
+                filter === key ? "border-accent-hover bg-accent text-white" : "border-frame bg-card text-ink hover:bg-field"
               }`}
             >
               {key !== "all" && (
@@ -350,7 +350,7 @@ export function LeadMap({
             aria-pressed={showRoute}
             onClick={() => setShowRoute((v) => !v)}
             className={`flex h-9 items-center rounded-full border px-3 text-small font-medium ${
-              showRoute ? "border-accent-press bg-accent text-white" : "border-frame bg-card text-ink hover:bg-field"
+              showRoute ? "border-accent-hover bg-accent text-white" : "border-frame bg-card text-ink hover:bg-field"
             }`}
           >
             Parcours affiché

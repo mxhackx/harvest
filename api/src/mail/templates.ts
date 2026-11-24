@@ -39,3 +39,12 @@ export function resetMail(to: string, d: { url: string; minutes: number }): Mail
   );
   return { to, subject: `Réinitialisation de votre mot de passe ${BRAND_NAME}`, html, text };
 }
+
+export function reminderMail(to: string, d: { items: { title: string; when: string }[]; url: string }): Mail {
+  const title = d.items.length === 1 ? "Un rappel pour vous" : `${d.items.length} rappels pour vous`;
+  const outro = "Vous recevez ce message parce que les rappels par e-mail sont activés. Vous pouvez les désactiver dans le menu de votre compte.";
+  const list = d.items.map((i) => `<li style="margin:0 0 6px"><strong>${esc(i.title)}</strong> — ${esc(i.when)}</li>`).join("");
+  const { html } = layout(title, `<ul style="margin:0;padding-left:18px">${list}</ul>`, "Ouvrir mes tâches", d.url, outro);
+  const text = `${title}\n\n${d.items.map((i) => `- ${i.title} — ${i.when}`).join("\n")}\n\nOuvrir mes tâches : ${d.url}\n\n${outro}\n`;
+  return { to, subject: d.items.length === 1 ? `Rappel : ${d.items[0].title}` : `${d.items.length} rappels ${BRAND_NAME}`, html, text };
+}
