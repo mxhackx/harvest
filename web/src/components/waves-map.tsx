@@ -4,6 +4,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { geoGraticule10, geoOrthographic, geoPath } from "d3-geo";
 import type { Map as MLMap } from "maplibre-gl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Lead } from "@/lib/api";
+import { PHASE_LABEL, PHASE_TOKEN, circlePolygon, regionPhase, type Region, type Wave, type WavePhase } from "@/lib/waves";
 import { feature, mesh } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import worldData from "world-atlas/countries-110m.json";
@@ -229,13 +231,23 @@ function Panel({
   );
 }
 
-export function HomeMap() {
+const PHASES: WavePhase[] = ["active", "overdue", "planned", "closed"];
+
+type Located = { id: string; lat: number; lng: number; regionId: string | null };
+
+/** Couleur d'une région ou d'un lead selon la vague de sa région ; gris neutre sans vague. */
+const colorOf = (phase: WavePhase | null) => cssVar(phase ? PHASE_TOKEN[phase] : "--color-neutral");
+
+/** Globe en haut, carte en bas : régions et leads colorés selon le statut de la vague de leur région. */
+export function WavesMap({ regions, waves, leads }: { regions: Region[]; waves: Wave[]; leads: Lead[] }) {
   const [mode, setMode] = useState<Mode>("both");
   const [focus, setFocus] = useState<[number, number] | null>(null);
   const [near, setNear] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
+  const [ready, setReady] = useState(false);
+  const fitted = useRef(false);
 
   // La carte (et ses tuiles) ne se charge que lorsque la section approche de l'écran.
   useEffect(() => {
@@ -289,14 +301,65 @@ export function HomeMap() {
       // le panneau change de hauteur : la carte doit recalculer sa taille
       observer = new ResizeObserver(() => m.resize());
       observer.observe(container.current);
+      m.on("load", () => !cancelled && setReady(true));
     })();
     return () => {
       cancelled = true;
       observer?.disconnect();
       map?.remove();
       mapRef.current = null;
+      setReady(false);
     };
   }, [near]);
+
+  // Régions (cercles) et leads (points) : redessinés quand les données changent.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map) return;
+    const phases = new Map(regions.map((r) => [r.id, regionPhase(waves, r.id)]));
+    const circles = {
+      type: "FeatureCollection" as const,
+      features: regions.map((r) => ({
+        type: "Feature" as const,
+        properties: { color: colorOf(phases.get(r.id) ?? null), name: r.name },
+        geometry: { type: "Polygon" as const, coordinates: [circlePolygon(r.lng, r.lat, r.radiusKm)] },
+      })),
+    };
+    const located = leads.filter((l): l is Lead & Located => l.lat !== null && l.lng !== null);
+    const points = {
+      type: "FeatureCollection" as const,
+      features: located.map((l) => ({
+        type: "Feature" as const,
+        properties: { color: colorOf(l.regionId ? (phases.get(l.regionId) ?? null) : null) },
+        geometry: { type: "Point" as const, coordinates: [l.lng, l.lat] },
+      })),
+    };
+    const set = (id: string, data: typeof circles | typeof points) => {
+      const src = map.getSource(id) as { setData: (d: unknown) => void } | undefined;
+      if (src) src.setData(data);
+      else map.addSource(id, { type: "geojson", data: data as never });
+    };
+    set("regions", circles);
+    set("lead-points", points);
+    if (!map.getLayer("region-fill")) {
+      map.addLayer({ id: "region-fill", type: "fill", source: "regions", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.18 } });
+      map.addLayer({ id: "region-line", type: "line", source: "regions", paint: { "line-color": ["get", "color"], "line-width": 2 } });
+      map.addLayer({
+        id: "lead-dots",
+        type: "circle",
+        source: "lead-points",
+        paint: { "circle-radius": 5, "circle-color": ["get", "color"], "circle-stroke-color": cssVar("--color-page"), "circle-stroke-width": 1.5 },
+      });
+    }
+    // premier affichage : cadrer sur les régions (sinon sur les leads), une seule fois
+    const coords: [number, number][] = regions.length ? regions.flatMap((r) => circlePolygon(r.lng, r.lat, r.radiusKm, 8)) : located.map((l) => [l.lng, l.lat]);
+    if (!fitted.current && coords.length) {
+      fitted.current = true;
+      const lngs = coords.map((c) => c[0]);
+      const lats = coords.map((c) => c[1]);
+      map.fitBounds([[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]], { padding: 60, maxZoom: 12, duration: 0 });
+    }
+  }, [ready, regions, waves, leads]);
 
   const pick = useCallback((lng: number, lat: number) => {
     setFocus([lng, lat]);
@@ -317,6 +380,18 @@ export function HomeMap() {
       </Panel>
       <Panel title="la carte" mode={mode} me="map" setMode={setMode} className="rounded-card border border-border bg-field">
         <div ref={container} className="size-full" />
+        <ul aria-label="Légende" className="absolute left-3 top-3 z-10 flex flex-col gap-1 rounded-control border border-border bg-card/90 px-3 py-2 text-small backdrop-blur">
+          {PHASES.map((p) => (
+            <li key={p} className="flex items-center gap-2">
+              <span aria-hidden className="size-2.5 rounded-full" style={{ background: `var(${PHASE_TOKEN[p]})` }} />
+              {PHASE_LABEL[p]}
+            </li>
+          ))}
+          <li className="flex items-center gap-2 text-muted">
+            <span aria-hidden className="size-2.5 rounded-full" style={{ background: "var(--color-neutral)" }} />
+            Hors vague
+          </li>
+        </ul>
       </Panel>
     </div>
   );

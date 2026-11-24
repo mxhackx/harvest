@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
-import { HomeMap } from "@/components/home-map";
 import { appHref } from "@/lib/hosts";
 import { ROUTES } from "@/lib/routes";
 import { SITE, jsonLd, pageMetadata } from "@/lib/seo";
@@ -23,7 +22,7 @@ const FEATURES: { title: string; text: string }[] = [
 
 const STEPS: { title: string; text: string }[] = [
   { title: "Rassemblez vos leads", text: "Saisissez-les sur le terrain ou importez un fichier CSV ou JSON. Les doublons sont repérés." },
-  { title: "Prospectez par vagues", text: "Une région à la fois : la carte, la liste et le calendrier vous disent où aller et qui relancer." },
+  { title: "Prospectez par vagues", text: "Définissez vos régions, planifiez une vague par semaine avec un objectif de visites : l’outil sait quelle région est faite, laquelle reste, et ce qu’il faut repasser." },
   { title: "Relancez et mesurez", text: "Rien n'est oublié, et les rapports montrent ce qui convertit." },
 ];
 
@@ -69,16 +68,6 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-3 pt-2">
             <Link href={appHref("/login")} className={`${button} bg-accent text-white hover:bg-accent-hover`}>Commencer</Link>
             <Link href="/docs" className={`${button} border border-frame bg-card hover:bg-field`}>Lire la documentation</Link>
-          </div>
-        </section>
-
-        <section aria-labelledby="carte" className="mx-auto w-full max-w-[1080px] px-6 pb-16">
-          <h2 id="carte" className="font-display text-heading font-bold tracking-display">Du globe jusqu’à la rue</h2>
-          <p className="mt-2 max-w-[620px] text-small text-muted">
-            Faites tourner le globe, cliquez sur une région : la carte s’y rend. Chaque panneau peut prendre toute la hauteur.
-          </p>
-          <div className="mt-6">
-            <HomeMap />
           </div>
         </section>
 
