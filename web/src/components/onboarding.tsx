@@ -45,7 +45,7 @@ export function Onboarding() {
       <div className="flex w-full max-w-[400px] flex-col gap-6 rounded-card border border-frame bg-card p-8">
         <header className="flex flex-col items-center gap-2 text-center">
           <Image src="/logo.svg" alt="" width={56} height={56} priority />
-          <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
+          <span className="font-display text-brand font-semibold">{BRAND.name}</span>
           <h1 className="text-title font-semibold">Créez votre entreprise</h1>
           <p className="text-small text-muted">Elle sera votre espace de travail. Vous en serez le CEO.</p>
         </header>

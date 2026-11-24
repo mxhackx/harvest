@@ -140,7 +140,7 @@ export function Shell({ children }: { children: ReactNode }) {
               href={m.href}
               aria-current={m.key === active.key ? "page" : undefined}
               className={`flex h-14 w-16 flex-col items-center justify-center gap-1 rounded-control text-small ${
-                m.key === active.key ? "bg-white font-medium text-accent-press" : "text-[#d6e8fb] hover:bg-white/10"
+                m.key === active.key ? "bg-white font-medium text-accent-press" : "text-on-dark-soft hover:bg-white/10"
               }`}
             >
               <m.icon />
@@ -152,7 +152,7 @@ export function Shell({ children }: { children: ReactNode }) {
         {/* Colonne du module, 232 px */}
         <aside className="sticky top-0 hidden h-dvh w-[232px] shrink-0 flex-col gap-4 border-r border-rule bg-card p-3 md:flex">
           <div className="rounded-control border border-frame px-3 py-2">
-            <p className="font-serif text-brand font-semibold leading-tight">{BRAND.name}</p>
+            <p className="font-display text-brand font-semibold leading-tight">{BRAND.name}</p>
             <p className="truncate text-small text-muted">{session.company.name}</p>
           </div>
           {pinnedPages.length > 0 && (
@@ -197,7 +197,7 @@ export function Shell({ children }: { children: ReactNode }) {
             href={p.href}
             aria-current={p.href === path ? "page" : undefined}
             className={`flex min-w-[76px] flex-1 shrink-0 flex-col items-center justify-center gap-1 text-small ${
-              p.href === path ? "bg-white font-medium text-accent-press" : "text-[#d6e8fb]"
+              p.href === path ? "bg-white font-medium text-accent-press" : "text-on-dark-soft"
             }`}
           >
             <p.icon />

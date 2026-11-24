@@ -1,4 +1,5 @@
 import { BRAND } from "./brand";
+import { THEME } from "./theme";
 import type { Metadata } from "next";
 import { findDoc } from "./docs";
 
@@ -10,7 +11,7 @@ export const SITE = {
   description:
     `${BRAND.name} aide les équipes commerciales à repérer, visiter et suivre leurs leads : carte de tournée, pipeline, calendrier, import et export CSV et JSON.`,
   locale: "fr_FR",
-  themeColor: "#0868c9",
+  themeColor: THEME.accent,
 } as const;
 
 /** Image de partage générée par app/opengraph-image.tsx. */

@@ -199,7 +199,7 @@ export function LeadsPage() {
   return (
     <section className="flex w-full flex-col gap-4 rounded-card border border-border bg-card p-4">
       <header className="flex items-center justify-between gap-4">
-        <h1 className="font-serif text-title font-semibold">Leads</h1>
+        <h1 className="font-display text-title font-semibold">Leads</h1>
         {canCreate && (
           <Button onClick={() => setChooser(true)} className="h-9 w-auto">
             <PlusIcon size={16} />

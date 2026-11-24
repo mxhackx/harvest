@@ -12,7 +12,7 @@ import { TaskModal } from "./task-list";
 import { Button, Menu, MenuItem, Notice, Panel } from "./ui";
 
 // Un type de rendez-vous = une couleur ; un rendez-vous fait = point creux.
-const KIND_COLOR: Record<EventKind, string> = { visit: "#0868c9", call: "#07625a", followup: "#14222e", other: "#8a99a6" };
+const KIND_COLOR: Record<EventKind, string> = { visit: "var(--color-accent)", call: "var(--color-forest)", followup: "var(--color-ink)", other: "var(--color-neutral)" };
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export function Calendar() {
@@ -180,13 +180,13 @@ export function Calendar() {
                         ))}
                       </span>
                       {list.slice(0, 3).map((e) => (
-                        <span key={e.id} className={`hidden min-w-0 items-center gap-1 truncate text-[12px] leading-tight sm:flex ${e.done ? "text-muted line-through" : ""}`}>
+                        <span key={e.id} className={`hidden min-w-0 items-center gap-1 truncate text-caption leading-tight sm:flex ${e.done ? "text-muted line-through" : ""}`}>
                           <span className="size-1.5 shrink-0 rounded-full" style={{ background: KIND_COLOR[e.kind] }} />
                           <span className="font-mono">{formatTime(e.startsAt)}</span>
                           <span className="truncate">{e.title}</span>
                         </span>
                       ))}
-                      {list.length > 3 && <span className="hidden font-mono text-[11px] sm:block">+{list.length - 3} autres</span>}
+                      {list.length > 3 && <span className="hidden font-mono text-micro sm:block">+{list.length - 3} autres</span>}
                     </span>
                   )}
                 </button>

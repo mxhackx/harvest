@@ -1,5 +1,6 @@
 "use client";
 
+import { THEME, cssVar } from "@/lib/theme";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Map as MLMap, Marker } from "maplibre-gl";
 import { useEffect, useRef } from "react";
@@ -55,7 +56,7 @@ export function LocationPicker({ value, onChange }: { value: Coords | null; onCh
       map = m;
       m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
 
-      const marker = new maplibregl.Marker({ draggable: true, color: "#0868c9" });
+      const marker = new maplibregl.Marker({ draggable: true, color: cssVar("--color-accent", THEME.accent) });
       markerRef.current = marker;
       if (start) {
         marker.setLngLat([start.lng, start.lat]).addTo(m);
