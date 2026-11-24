@@ -251,6 +251,8 @@ export const leads = pgTable("leads", {
   deletedBy: uuid("deleted_by").references(() => users.id, { onDelete: "set null" }),
   // région où tombe sa position (déduite des coordonnées, jamais saisie) ; null = hors de toute région ou sans position
   regionId: uuid("region_id").references(() => regions.id, { onDelete: "set null" }),
+  // onsite = prospect à visiter en présentiel (carte, tournées, vagues) ; remote = prospect simple, joint à distance
+  visitMode: text("visit_mode").notNull().default("onsite"),
   // compte (entreprise cliente) dont ce lead est une opportunité ; null = lead sans compte
   accountId: uuid("account_id").references(() => accounts.id, { onDelete: "set null" }),
   // valeurs des champs personnalisés : { identifiant du champ: valeur }

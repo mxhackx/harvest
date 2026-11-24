@@ -93,6 +93,9 @@ function Card({
               Visité le {formatDay(lead.visitedAt)}
             </span>
           )}
+          {lead.visitMode === "remote" && (
+            <span className="inline-flex h-[22px] items-center rounded-md bg-accent-soft px-[9px] text-small font-bold text-accent-press">À distance</span>
+          )}
           {!located && (
             <span className="inline-flex h-[22px] items-center rounded-md bg-field px-[9px] text-small font-bold text-muted">
               Sans position

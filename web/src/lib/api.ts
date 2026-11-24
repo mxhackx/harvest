@@ -117,6 +117,8 @@ export type Lead = {
   id: string;
   /** région où tombe sa position (déduite des coordonnées) */
   regionId: string | null;
+  /** onsite = à visiter en présentiel ; remote = prospect simple, joint à distance */
+  visitMode: "onsite" | "remote";
   /** compte (entreprise cliente) dont ce lead est une opportunité */
   accountId: string | null;
   /** valeurs des champs personnalisés : { identifiant du champ: valeur } */
