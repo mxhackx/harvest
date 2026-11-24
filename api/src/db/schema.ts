@@ -251,6 +251,8 @@ export const events = pgTable("events", {
   title: text("title").notNull(),
   kind: eventKindEnum("kind").notNull().default("visit"),
   startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+  // fin du rendez-vous ; null = durée non précisée (une heure dans le calendrier exporté)
+  endsAt: timestamp("ends_at", { withTimezone: true }),
   notes: text("notes").notNull().default(""),
   done: boolean("done").notNull().default(false),
   remindedAt: timestamp("reminded_at", { withTimezone: true }),

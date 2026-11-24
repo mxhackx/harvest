@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { EVENT_KINDS, EVENT_KIND_LABEL, api, describeError, type CalEvent, type Lead } from "@/lib/api";
-import { fromInputs, toInputs } from "@/lib/calendar";
+import { endFromInputs, fromInputs, toInputs } from "@/lib/calendar";
 import { useSession } from "@/lib/session";
 import { Button, Field, Modal, Notice, Select, TextArea } from "./ui";
 
@@ -39,6 +39,8 @@ export function EventModal({
     const f = new FormData(e.currentTarget);
     const startsAt = fromInputs(String(f.get("date")), String(f.get("time")));
     if (!startsAt) return setNotice("Date ou heure invalide.");
+    const endsAt = endFromInputs(String(f.get("date")), startsAt, String(f.get("endTime") ?? ""));
+    if (endsAt === "invalid") return setNotice("L’heure de fin doit être après l’heure de début.");
     setSaving(true);
     setNotice(null);
     try {
@@ -46,6 +48,7 @@ export function EventModal({
         title: String(f.get("title") ?? "").trim(),
         kind: String(f.get("kind")),
         startsAt: startsAt.toISOString(),
+        endsAt: endsAt ? endsAt.toISOString() : null,
         notes: String(f.get("notes") ?? "").trim(),
         leadId: String(f.get("leadId")) || null,
       };
@@ -83,10 +86,11 @@ export function EventModal({
         {notice && <Notice onClose={() => setNotice(null)}>{notice}</Notice>}
         <fieldset disabled={readOnly} className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0">
           <Field label="Titre" name="title" required maxLength={120} autoFocus={!event} defaultValue={event?.title} placeholder="Visite chez Pharmacie Étoile" />
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-4">
             <Select label="Type" name="kind" defaultValue={event?.kind ?? "visit"} options={EVENT_KINDS.map((k) => ({ value: k, label: EVENT_KIND_LABEL[k] }))} />
             <Field label="Date" name="date" type="date" required defaultValue={initial.date} />
-            <Field label="Heure" name="time" type="time" required defaultValue={initial.time} />
+            <Field label="Début" name="time" type="time" required defaultValue={initial.time} />
+            <Field label="Fin (facultatif)" name="endTime" type="time" defaultValue={event?.endsAt ? toInputs(event.endsAt).time : ""} />
           </div>
           <Select label="Lead concerné" name="leadId" defaultValue={event?.leadId ?? ""} options={options} />
           <TextArea label="Notes" name="notes" maxLength={1000} defaultValue={event?.notes} placeholder="Apporter la maquette, demander le gérant…" />

@@ -7,7 +7,7 @@ afterEach(() => {
   process.env.TZ = TZ;
 });
 
-const ev = (id: string, startsAt: string): CalEvent => ({ id, title: id, kind: "visit", startsAt, notes: "", done: false, leadId: null, leadName: null, ownerId: "u" });
+const ev = (id: string, startsAt: string): CalEvent => ({ id, title: id, kind: "visit", startsAt, endsAt: null, notes: "", done: false, leadId: null, leadName: null, ownerId: "u" });
 
 describe("monthGrid", () => {
   it("novembre 2026 : commence un lundi et couvre 6 semaines entières", () => {
@@ -116,5 +116,17 @@ describe("eventsByDay", () => {
   });
   it("liste vide", () => {
     expect(eventsByDay([]).size).toBe(0);
+  });
+});
+
+describe("endFromInputs", () => {
+  const start = new Date(2026, 10, 24, 9, 0);
+  it("rien si la fin est vide, la fin saisie si elle suit le début, invalide sinon", async () => {
+    const { endFromInputs } = await import("./calendar");
+    expect(endFromInputs("2026-11-24", start, "")).toBeNull();
+    expect(endFromInputs("2026-11-24", start, "10:30")).toEqual(new Date(2026, 10, 24, 10, 30));
+    expect(endFromInputs("2026-11-24", start, "09:00")).toBe("invalid");
+    expect(endFromInputs("2026-11-24", start, "08:00")).toBe("invalid");
+    expect(endFromInputs("2026-11-24", start, "25:99")).toBe("invalid");
   });
 });
