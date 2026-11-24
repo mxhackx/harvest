@@ -12,7 +12,8 @@
     "prebuild": "node scripts/copy-maplibre.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test:e2e:offline": "bash scripts/e2e-offline.sh"
   },
   "dependencies": {
     "d3-geo": "^3.1.2",

@@ -36,6 +36,10 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 
 `POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.
 
+## Mode hors-ligne
+
+Le service worker [web/public/sw.js](web/public/sw.js) garde une copie des pages `/dashboard`, du code de l'application, des fonds de carte vus et des lectures de l'API listées dans [web/src/lib/offline-rules.ts](web/src/lib/offline-rules.ts) (une copie par entreprise). Hors connexion, deux gestes seulement se mettent en attente dans IndexedDB ([web/src/lib/offline.ts](web/src/lib/offline.ts)) : `PATCH /leads/:id` avec `visited` ou `status`, et `POST /leads/:id/activities` ; ils sont rejoués dans l'ordre au retour du réseau (réessai toutes les 5 s). Le reste échoue avec un message. La copie est effacée à la déconnexion. Le test de bout en bout demande le site compilé : `npm --prefix web run test:e2e:offline`.
+
 ## Documentation (centre d'aide)
 
 Les pages `/docs` suivent le modèle d'un centre d'aide : recherche (Ctrl+K), **deux parties** — *Guide utilisateur* (usage) et *API et intégrations* (webhooks, formats de fichiers) —, des **collections**, fil d'Ariane, « Cet article vous a-t-il aidé ? » et articles liés. Le rangement est dans `COLLECTIONS` de [web/src/lib/docs.ts](web/src/lib/docs.ts) : une nouvelle page doit y être ajoutée (un test le vérifie). La bulle de contact en bas à droite envoie `POST /public/contact` ; les avis vont dans `doc_feedback`.
