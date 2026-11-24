@@ -61,6 +61,11 @@ export const DOCS: DocPage[] = [
     description: "Créez des tâches avec échéance, confiez-les à un collègue, repérez les retards et suivez les notifications de la cloche.",
   },
   {
+    href: "/docs/objectives",
+    title: "Objectifs par commercial",
+    description: "Fixez pour chaque commercial un objectif mensuel de visites, de leads gagnés et de valeur gagnée, et suivez l'avancement réel mois par mois.",
+  },
+  {
     href: "/docs/calendar",
     title: "Calendrier et export .ics",
     description: "Planifiez visites, appels et relances avec une heure de début et de fin, puis exportez-les vers Google Agenda, Apple Calendrier ou Outlook.",

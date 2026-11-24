@@ -10,6 +10,7 @@ const PHRASES: Record<string, string> = {
   "POST /leads/assign": "a attribué",
   "POST /leads/import": "a importé des leads",
   "POST /leads/export": "a exporté des leads",
+  "PUT /objectives": "a fixé les objectifs de",
   "POST /leads/merge": "a fusionné des doublons dans",
   "POST /leads/:id/emails": "a envoyé un e-mail pour",
   "GET /contacts/:id/export": "a exporté les données du contact",

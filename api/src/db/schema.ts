@@ -504,3 +504,24 @@ export const emailLog = pgTable(
   },
   (t) => [index("email_log_lead").on(t.leadId, t.createdAt)],
 );
+
+/** Objectifs d'une personne pour un mois : visites, leads gagnés et valeur gagnée. 0 = pas d'objectif sur ce point. */
+export const objectives = pgTable(
+  "objectives",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // premier jour du mois (AAAA-MM-01)
+    month: date("month", { mode: "string" }).notNull(),
+    targetVisits: integer("target_visits").notNull().default(0),
+    targetWon: integer("target_won").notNull().default(0),
+    targetValue: integer("target_value").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("objectives_unique").on(t.companyId, t.userId, t.month)],
+);

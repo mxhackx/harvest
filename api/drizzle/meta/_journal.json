@@ -169,6 +169,13 @@
       "when": 1795547174695,
       "tag": "0023_event_end",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1795547382333,
+      "tag": "0024_objectives",
+      "breakpoints": true
     }
   ]
 }

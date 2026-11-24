@@ -20,6 +20,7 @@ export const ROUTES = {
   reports: `${CRM}/reports`,
   trash: `${CRM}/trash`,
   duplicates: `${CRM}/duplicates`,
+  objectives: `${CRM}/objectives`,
   team: `${ERP}/team`,
   audit: `${ERP}/audit`,
   waves: WAVES,
