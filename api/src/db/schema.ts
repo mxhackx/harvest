@@ -169,6 +169,26 @@ export const pipelineStages = pgTable(
   (t) => [uniqueIndex("pipeline_stages_company_key").on(t.companyId, t.key)],
 );
 
+/**
+ * Compte : une entreprise cliente, qui peut avoir plusieurs opportunités (les leads). Un lead peut exister sans compte :
+ * on en crée un à partir de lui quand on veut suivre plusieurs affaires avec la même entreprise.
+ */
+export const accounts = pgTable(
+  "accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    sector: text("sector").notNull().default(""),
+    website: text("website").notNull().default(""),
+    notes: text("notes").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("accounts_company").on(t.companyId)],
+);
+
 /** Zone de prospection : un centre et un rayon. Un lead appartient à la plus proche région qui le contient. */
 export const regions = pgTable(
   "regions",
@@ -231,6 +251,8 @@ export const leads = pgTable("leads", {
   deletedBy: uuid("deleted_by").references(() => users.id, { onDelete: "set null" }),
   // région où tombe sa position (déduite des coordonnées, jamais saisie) ; null = hors de toute région ou sans position
   regionId: uuid("region_id").references(() => regions.id, { onDelete: "set null" }),
+  // compte (entreprise cliente) dont ce lead est une opportunité ; null = lead sans compte
+  accountId: uuid("account_id").references(() => accounts.id, { onDelete: "set null" }),
   // valeurs des champs personnalisés : { identifiant du champ: valeur }
   custom: jsonb("custom").$type<Record<string, string | number>>().notNull().default({}),
 });

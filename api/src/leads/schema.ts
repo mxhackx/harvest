@@ -23,6 +23,8 @@ export const base = z.object({
   service: z.string().trim().max(150),
   // probabilité propre au lead ; null = on retombe sur celle de l'étape
   probability: z.number().int().min(0).max(100).nullable(),
+  // compte dont ce lead est une opportunité (null = aucun) ; l'existence du compte est vérifiée par les routes
+  accountId: z.string().uuid().nullable(),
   // valeurs des champs personnalisés : { identifiant du champ: valeur } ; null efface la valeur (types vérifiés par les routes)
   custom: z.record(z.string().uuid(), z.union([z.string().max(500), z.number(), z.null()])),
   expectedCloseOn: z
