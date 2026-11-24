@@ -1,5 +1,8 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
+import { BRAND } from "@/lib/brand";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ApiError, api, errorMessage, oauthStartUrl } from "@/lib/api";
@@ -35,7 +38,7 @@ export function AuthCard() {
           ...(mode === "register" ? { name: f.get("name") } : {}),
         },
       });
-      router.replace(safeNext(params.get("next")) ?? "/");
+      router.replace(safeNext(params.get("next")) ?? ROUTES.home);
     } catch (err) {
       setNotice(errorMessage(err instanceof ApiError ? err.code : null));
       setLoading(false);
@@ -46,8 +49,8 @@ export function AuthCard() {
     <div className="grid min-h-dvh place-items-center p-6">
       <div className="flex w-full max-w-[400px] flex-col gap-6 rounded-card border border-frame bg-card p-8">
         <header className="flex flex-col items-center gap-2 text-center">
-          <Image src="/logo.png" alt="" width={52} height={60} priority />
-          <span className="font-serif text-brand font-semibold">Harvest</span>
+          <Image src="/logo.svg" alt="" width={56} height={56} priority />
+          <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
           <h1 className="text-title font-semibold">{mode === "login" ? "Connexion" : "Créer un compte"}</h1>
         </header>
 
@@ -83,9 +86,12 @@ export function AuthCard() {
             />
           </div>
           {mode === "login" && (
-            <label className="flex min-h-9 items-center gap-2 text-small">
-              <input type="checkbox" name="remember" className="size-4 accent-forest" /> Rester connecté
-            </label>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="flex min-h-9 items-center gap-2 text-small">
+                <input type="checkbox" name="remember" className="size-4 accent-forest" /> Rester connecté
+              </label>
+              <Link href="/mot-de-passe-oublie" className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">Mot de passe oublié ?</Link>
+            </div>
           )}
           <Button type="submit" loading={loading}>
             {mode === "login" ? "Se connecter" : "Créer mon compte"}

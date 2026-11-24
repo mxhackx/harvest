@@ -1,22 +1,23 @@
+import { BRAND } from "./brand";
 import type { Metadata } from "next";
 import { findDoc } from "./docs";
 
 export const SITE = {
-  name: "Harvest",
+  name: BRAND.name,
   /** URL publique du site (sert aux liens canoniques, au sitemap et aux aperçus de partage). */
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
-  title: "Harvest — prospection et suivi de leads sur le terrain",
+  title: `${BRAND.name} — prospection et suivi de leads sur le terrain`,
   description:
-    "Harvest aide les équipes commerciales à repérer, visiter et suivre leurs leads : carte de tournée, pipeline, calendrier, import et export CSV et JSON.",
+    `${BRAND.name} aide les équipes commerciales à repérer, visiter et suivre leurs leads : carte de tournée, pipeline, calendrier, import et export CSV et JSON.`,
   locale: "fr_FR",
   themeColor: "#0868c9",
 } as const;
 
 /** Image de partage générée par app/opengraph-image.tsx. */
-export const SHARE_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: "Harvest — prospection et suivi de leads sur le terrain" };
+export const SHARE_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: `${BRAND.name} — prospection et suivi de leads sur le terrain` };
 
 type PageSeo = {
-  /** Titre court de la page ; le modèle du layout ajoute « · Harvest ». */
+  /** Titre court de la page ; le modèle du layout ajoute « · » et le nom de la marque. */
   title: string;
   description: string;
   /** Chemin canonique, ex. « /docs/import ». */

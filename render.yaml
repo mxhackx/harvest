@@ -1,4 +1,4 @@
-# Blueprint Render : l'API Harvest (Fastify).
+# Blueprint Render : l'API Hivation (Fastify).
 # Architecture : site sur Vercel, API ici, base Postgres sur Supabase.
 # Pas à pas : README.md, section « Déploiement ».
 #
@@ -30,13 +30,13 @@ services:
       - key: DATABASE_URL
         sync: false
 
-      # Adresse publique du site (Vercel), ex. https://harvest.vercel.app — origine autorisée par CORS
+      # Adresse publique du site (Vercel), ex. https://hivation.tech — origine autorisée par CORS
       # et destination des redirections après connexion. Plusieurs adresses : séparées par des virgules.
       - key: APP_URLS
         sync: false
 
       # Adresse publique de l'API VUE PAR LE NAVIGATEUR, utilisée pour les retours Google / GitHub.
-      # Avec le relais /api du site : https://harvest.vercel.app/api  (voir README).
+      # Avec le relais /api du site : https://hivation.tech/api  (voir README).
       - key: API_URL
         sync: false
 
@@ -48,4 +48,11 @@ services:
       - key: GITHUB_CLIENT_ID
         sync: false
       - key: GITHUB_CLIENT_SECRET
+        sync: false
+
+      # E-mails (invitations, mot de passe oublié) : clé API Resend. Facultatif : sans elle, les liens s'affichent à l'écran.
+      - key: RESEND_API_KEY
+        sync: false
+      # Expéditeur, ex. « Hivation <noreply@hivation.tech> » (le domaine doit être vérifié chez Resend).
+      - key: MAIL_FROM
         sync: false

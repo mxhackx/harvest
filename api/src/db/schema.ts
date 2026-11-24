@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  date,
   index,
   jsonb,
   doublePrecision,
@@ -51,6 +52,22 @@ export const sessions = pgTable("sessions", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+/** Demande de réinitialisation de mot de passe : jeton haché, valable une heure, à usage unique. */
+export const passwordResets = pgTable(
+  "password_resets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("password_resets_user").on(t.userId)],
+);
 
 export const companies = pgTable("companies", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -182,6 +199,10 @@ export const leads = pgTable("leads", {
   lat: doublePrecision("lat"),
   lng: doublePrecision("lng"),
   estimatedValue: integer("estimated_value"),
+  // opportunité : service demandé, probabilité propre au lead (null = celle de l'étape) et date de conclusion espérée
+  service: text("service").notNull().default(""),
+  probability: integer("probability"),
+  expectedCloseOn: date("expected_close_on", { mode: "string" }),
   // null = pas encore visité (pastille « à visiter » sur la carte)
   visitedAt: timestamp("visited_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -290,6 +311,8 @@ export const tasks = pgTable(
     title: text("title").notNull(),
     dueAt: timestamp("due_at", { withTimezone: true }),
     doneAt: timestamp("done_at", { withTimezone: true }),
+    // low | normal | high
+    priority: text("priority").notNull().default("normal"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },

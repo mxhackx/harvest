@@ -1,5 +1,5 @@
 export type StageRef = { key: string; name: string; color: string; kind: "open" | "won" | "lost"; probability: number };
-export type LeadRow = { id: string; status: string; estimatedValue: number | null };
+export type LeadRow = { id: string; status: string; estimatedValue: number | null; probability?: number | null };
 export type Move = { leadId: string; from: string | null; to: string | null };
 
 const round = (n: number) => Math.round(n);
@@ -14,7 +14,8 @@ export function pipelineByStage(stages: StageRef[], leads: LeadRow[]) {
     const v = l.estimatedValue ?? 0;
     r.count++;
     r.value += v;
-    if (r.kind === "open") r.weighted += (v * r.probability) / 100;
+    // la probabilité propre au lead prime sur celle de l'étape
+    if (r.kind === "open") r.weighted += (v * (l.probability ?? r.probability)) / 100;
   }
   for (const r of rows) r.weighted = round(r.weighted);
   const open = rows.filter((r) => r.kind === "open");

@@ -1,11 +1,12 @@
-import { TemplatesPage } from "@/components/templates-page";
+import { ROUTES } from "@/lib/routes";
+import { CalendarPage } from "@/components/calendar-page";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
-  title: "Modèles de messages",
-  description: "Modèles de messages de votre CRM Harvest.",
-  path: "/modeles",
+  title: "Calendrier",
+  description: "Planifiez vos visites, appels et relances.",
+  path: ROUTES.calendar,
   index: false,
 });
 
@@ -13,5 +14,5 @@ export const metadata = pageMetadata({
 export const instant = false;
 
 export default function Page() {
-  return <TemplatesPage />;
+  return <CalendarPage />;
 }

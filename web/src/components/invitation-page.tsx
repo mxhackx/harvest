@@ -1,5 +1,7 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
+import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -37,7 +39,7 @@ export function InvitationPage() {
     try {
       const r = await api<{ companyId: string }>("/invitations/accept", { method: "POST", body: { token } });
       setActiveCompanyId(r.companyId);
-      router.replace("/");
+      router.replace(ROUTES.home);
     } catch (e) {
       setError(describeError(e));
       setBusy(false);
@@ -75,8 +77,8 @@ export function InvitationPage() {
     <div className="grid min-h-dvh place-items-center p-6">
       <div className="flex w-full max-w-[420px] flex-col gap-5 rounded-card border border-frame bg-card p-8">
         <header className="flex flex-col items-center gap-2 text-center">
-          <Image src="/logo.png" alt="" width={52} height={60} priority />
-          <span className="font-serif text-brand font-semibold">Harvest</span>
+          <Image src="/logo.svg" alt="" width={56} height={56} priority />
+          <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
           <h1 className="text-title font-semibold">Invitation</h1>
         </header>
         {error && <Notice onClose={() => setError(null)}>{error}</Notice>}

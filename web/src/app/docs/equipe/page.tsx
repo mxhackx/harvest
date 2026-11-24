@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -11,11 +12,11 @@ export default function Page() {
       <ol>
         <li>Ouvrez <strong>ERP › Équipe</strong>.</li>
         <li>Dans « Inviter quelqu’un », saisissez son e-mail, choisissez un rôle et une équipe.</li>
-        <li>Cliquez sur <strong>Créer le lien</strong>, copiez-le et transmettez-le (message, WhatsApp…).</li>
+        <li>Cliquez sur <strong>Créer le lien</strong> : l’e-mail part, et vous pouvez aussi copier le lien pour l’envoyer vous-même (message, WhatsApp…).</li>
       </ol>
       <p>
-        Harvest n’envoie pas d’e-mail : le lien est affiché <strong>une seule fois</strong>. Il ne fonctionne que pour
-        l’adresse indiquée et expire au bout de 7 jours. Refaire une invitation pour la même adresse remplace l’ancien
+        Un e-mail avec le lien part vers la personne (voir plus bas), et le lien est aussi affiché{" "}
+        <strong>une seule fois</strong> pour que vous puissiez le copier. Il ne fonctionne que pour l’adresse indiquée et expire au bout de 7 jours. Refaire une invitation pour la même adresse remplace l’ancien
         lien ; vous pouvez aussi annuler une invitation en attente.
       </p>
       <p>
@@ -34,6 +35,22 @@ export default function Page() {
         Une équipe regroupe des membres. Avec la portée « équipe », un droit s’applique aux leads, tâches et rendez-vous
         de toute l’équipe. Changer un membre d’équipe déplace aussi ses leads, tâches et rendez-vous. Supprimer une
         équipe laisse ses membres sans équipe.
+      </p>
+
+      <h2>L’e-mail d’invitation</h2>
+      <p>
+        Quand vous invitez quelqu’un, {BRAND.name} lui envoie un e-mail avec le lien (valable 7 jours, personnel). Si l’envoi
+        échoue, ou si l’e-mail n’est pas configuré, la page vous l’indique et affiche le lien à transmettre vous-même.
+        Une personne qui a oublié son mot de passe le réinitialise depuis « Mot de passe oublié ? » sur la page de
+        connexion : le lien reçu vaut une heure et ne sert qu’une fois, et il la déconnecte de tous ses appareils.
+      </p>
+
+      <h2>Attribuer dès la création</h2>
+      <p>
+        Dans le formulaire « Nouveau lead », le bloc <strong>Responsable</strong> propose « Attribuer à » : choisissez la
+        personne qui suivra ce lead, elle est prévenue tout de suite. Sans choix, le lead vous revient. Le menu n’apparaît
+        que si vous avez le droit d’attribuer ; sinon le lead est toujours à votre nom. On ne peut attribuer qu’à une
+        personne que ses droits vous autorisent à servir : sinon la création est refusée et rien n’est créé.
       </p>
 
       <h2>Réattribuer des leads</h2>

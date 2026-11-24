@@ -1,11 +1,12 @@
-import { TasksPage } from "@/components/tasks-page";
+import { ROUTES } from "@/lib/routes";
+import { LeadsPage } from "@/components/leads-page";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
-  title: "Tâches",
-  description: "Vos tâches et rappels, classés par urgence.",
-  path: "/taches",
+  title: "Leads",
+  description: "Gérez vos leads : board par étape, tableau, import et export.",
+  path: ROUTES.leads,
   index: false,
 });
 
@@ -13,5 +14,5 @@ export const metadata = pageMetadata({
 export const instant = false;
 
 export default function Page() {
-  return <TasksPage />;
+  return <LeadsPage />;
 }

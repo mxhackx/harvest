@@ -6,6 +6,8 @@ import { config } from "../config.js";
 import { db } from "../db/index.js";
 import { companies, invitations, membershipRoles, memberships, roles, teams } from "../db/schema.js";
 import { requirePermission, requireUser } from "../plugins/auth.js";
+import { sendMail } from "../mail/send.js";
+import { invitationMail } from "../mail/templates.js";
 import { resolveRoles } from "./members.js";
 
 const TTL_MS = 7 * 24 * 3600 * 1000;
@@ -59,7 +61,11 @@ export async function invitationRoutes(app: FastifyInstance) {
         .returning({ id: invitations.id, email: invitations.email, expiresAt: invitations.expiresAt });
       return row;
     });
-    return reply.code(201).send({ ...created, token });
+    // L'e-mail est un plus : s'il échoue (ou n'est pas configuré), l'invitation existe et le lien reste affiché à l'écran.
+    const [company] = await db.select({ name: companies.name }).from(companies).where(eq(companies.id, subject.companyId));
+    const url = `${config.appUrls[0]}/invitation?token=${encodeURIComponent(token)}`;
+    const emailSent = await sendMail(invitationMail(created.email, { inviter: req.user!.name, company: company?.name ?? "l'entreprise", url, days: TTL_MS / 86_400_000 }), req.log);
+    return reply.code(201).send({ ...created, token, emailSent });
   });
 
   app.delete<{ Params: { id: string } }>("/invitations/:id", { preHandler: requirePermission("member:create") }, async (req, reply) => {

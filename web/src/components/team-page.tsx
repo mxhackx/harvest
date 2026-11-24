@@ -44,7 +44,7 @@ export function TeamPage() {
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Member | null>(null);
   const [roleDraft, setRoleDraft] = useState<string[]>([]);
-  const [link, setLink] = useState<{ email: string; url: string } | null>(null);
+  const [link, setLink] = useState<{ email: string; url: string; emailSent: boolean } | null>(null);
   const [copied, setCopied] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [invite, setInvite] = useState({ email: "", roleId: "", teamId: "" });
@@ -80,12 +80,12 @@ export function TeamPage() {
   async function createInvite(e: FormEvent) {
     e.preventDefault();
     try {
-      const r = await api<{ email: string; token: string }>("/invitations", {
+      const r = await api<{ email: string; token: string; emailSent?: boolean }>("/invitations", {
         method: "POST",
         body: { email: invite.email, roleIds: [invite.roleId || defaultRoleId], teamId: invite.teamId || null },
         companyId,
       });
-      setLink({ email: r.email, url: inviteUrl(r.token) });
+      setLink({ email: r.email, url: inviteUrl(r.token), emailSent: !!r.emailSent });
       setCopied(false);
       setInvite({ email: "", roleId: "", teamId: "" });
       setError(null);
@@ -169,7 +169,7 @@ export function TeamPage() {
       </Panel>
 
       {can("member:create") && (
-        <Panel title="Inviter quelqu'un" description="Harvest n’envoie pas d'e-mail : copiez le lien et transmettez-le. Il ne marche que pour cette adresse, pendant 7 jours.">
+        <Panel title="Inviter quelqu'un" description="Un e-mail avec le lien part vers la personne invitée ; vous pouvez aussi copier le lien. Il ne marche que pour cette adresse, pendant 7 jours.">
           <form onSubmit={createInvite} className="grid gap-3 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end">
             <Field label="E-mail" type="email" required value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} />
             <Select label="Rôle" value={invite.roleId || defaultRoleId} onChange={(e) => setInvite({ ...invite, roleId: e.target.value })} options={roles.map((r) => ({ value: r.id, label: r.name }))} />
@@ -178,7 +178,9 @@ export function TeamPage() {
           </form>
           {link && (
             <div className="mt-4 flex flex-col gap-2 rounded-card border border-border bg-field/40 p-3">
-              <p className="text-small text-muted">Lien pour {link.email} — affiché une seule fois :</p>
+              <p className="text-small text-muted">
+                {link.emailSent ? <>Un e-mail avec le lien est parti vers {link.email}. Vous pouvez aussi le copier — affiché une seule fois :</> : <>L’e-mail n’a pas pu partir : transmettez ce lien à {link.email} vous-même — affiché une seule fois :</>}
+              </p>
               <div className="flex gap-2">
                 <input readOnly aria-label="Lien d'invitation" value={link.url} onFocus={(e) => e.currentTarget.select()} className="h-10 min-w-0 flex-1 rounded-control border border-border bg-card px-3 font-mono text-small" />
                 <Button type="button" variant="secondary" className="w-auto" onClick={() => navigator.clipboard.writeText(link.url).then(() => setCopied(true)).catch(() => {})}>

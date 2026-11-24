@@ -20,6 +20,14 @@ export const base = z.object({
   lng: z.number().min(-180).max(180).nullable(),
   estimatedValue: z.number().int().min(0).max(2_000_000_000).nullable(),
   visited: z.boolean(),
+  service: z.string().trim().max(150),
+  // probabilité propre au lead ; null = on retombe sur celle de l'étape
+  probability: z.number().int().min(0).max(100).nullable(),
+  expectedCloseOn: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "date attendue : AAAA-MM-JJ")
+    .refine((v) => !Number.isNaN(Date.parse(`${v}T00:00:00Z`)) && new Date(`${v}T00:00:00Z`).toISOString().startsWith(v), "date invalide")
+    .nullable(),
 });
 const coordsTogether = (v: { lat?: number | null; lng?: number | null }) =>
   (v.lat === undefined) === (v.lng === undefined) && (v.lat === null) === (v.lng === null);

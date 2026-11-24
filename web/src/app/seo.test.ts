@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import { describe, expect, it } from "vitest";
 import { flattenDocs } from "@/lib/docs";
 import { SITE, SHARE_IMAGE, docMetadata, jsonLd, pageMetadata } from "@/lib/seo";
@@ -18,8 +19,8 @@ describe("pageMetadata", () => {
     expect(m.title).toBe("Leads");
     expect(m.alternates?.canonical).toBe("/leads");
     expect(m.robots).toEqual({ index: true, follow: true });
-    expect(m.openGraph).toMatchObject({ title: "Leads · Harvest", description: "Gérez vos leads.", url: "/leads", locale: "fr_FR", siteName: "Harvest" });
-    expect(m.twitter).toMatchObject({ card: "summary_large_image", title: "Leads · Harvest" });
+    expect(m.openGraph).toMatchObject({ title: `Leads · ${BRAND.name}`, description: "Gérez vos leads.", url: "/leads", locale: "fr_FR", siteName: BRAND.name });
+    expect(m.twitter).toMatchObject({ card: "summary_large_image", title: `Leads · ${BRAND.name}` });
   });
   it("page privée : jamais indexée ni suivie", () => {
     expect(pageMetadata({ ...base, index: false }).robots).toEqual({ index: false, follow: false });
@@ -59,10 +60,10 @@ describe("jsonLd", () => {
 describe("robots.txt", () => {
   const r = robots();
   const rule = (Array.isArray(r.rules) ? r.rules[0] : r.rules) as { userAgent: string; allow: string[]; disallow: string[] };
-  it("laisse la connexion et la documentation, ferme tout le reste", () => {
+  it("laisse l'accueil, la connexion et la documentation, ferme l'espace connecté", () => {
     expect(rule.userAgent).toBe("*");
-    expect(rule.allow).toEqual(["/login", "/docs"]);
-    expect(rule.disallow).toEqual(["/"]);
+    expect(rule.allow).toEqual(["/", "/login", "/docs"]);
+    expect(rule.disallow).toEqual(["/dashboard"]);
   });
   it("annonce le sitemap", () => {
     expect(r.sitemap).toBe("https://harvest.example/sitemap.xml");
@@ -71,14 +72,14 @@ describe("robots.txt", () => {
 
 describe("sitemap.xml", () => {
   const urls = sitemap().map((e) => e.url);
-  it("contient la connexion et toutes les pages de documentation, en URL absolues", () => {
+  it("contient l'accueil, la connexion et toutes les pages de documentation, en URL absolues", () => {
+    expect(urls).toContain("https://harvest.example");
     expect(urls).toContain("https://harvest.example/login");
     for (const p of flattenDocs()) expect(urls).toContain(`https://harvest.example${p.href}`);
-    expect(urls.every((u) => u.startsWith("https://harvest.example/"))).toBe(true);
+    expect(urls.every((u) => u === "https://harvest.example" || u.startsWith("https://harvest.example/"))).toBe(true);
   });
   it("ne contient jamais une page privée", () => {
-    for (const priv of ["/leads", "/calendrier", "/onboarding", "/templates"]) expect(urls.some((u) => u.includes(priv)), priv).toBe(false);
-    expect(urls).not.toContain("https://harvest.example/");
+    for (const priv of ["/dashboard", "/leads", "/calendrier", "/onboarding", "/templates"]) expect(urls.some((u) => u.includes(priv)), priv).toBe(false);
   });
   it("sans doublon", () => {
     expect(new Set(urls).size).toBe(urls.length);
@@ -88,7 +89,7 @@ describe("sitemap.xml", () => {
 describe("manifest", () => {
   it("décrit l'application installable", () => {
     const m = manifest();
-    expect(m).toMatchObject({ name: "Harvest", short_name: "Harvest", lang: "fr", start_url: "/", display: "standalone", theme_color: "#0868c9", background_color: "#ffffff" });
+    expect(m).toMatchObject({ name: BRAND.name, short_name: BRAND.name, lang: "fr", start_url: "/dashboard", display: "standalone", theme_color: "#0868c9", background_color: "#ffffff" });
     expect(m.icons?.map((i) => i.sizes)).toEqual(["192x192", "512x512"]);
   });
 });

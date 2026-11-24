@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { formatDay, formatValue, type Lead } from "@/lib/api";
 import { PencilIcon } from "./icons";
@@ -67,7 +68,7 @@ export function LeadTable({ leads, selected, onToggle, onToggleAll, onOpen }: Pr
                   />
                 </td>
                 <td className="px-3 py-2 font-medium">
-                  <Link href={`/leads/${l.id}`} className="text-left hover:underline">
+                  <Link href={ROUTES.lead(l.id)} className="text-left hover:underline">
                     {l.name}
                   </Link>
                 </td>

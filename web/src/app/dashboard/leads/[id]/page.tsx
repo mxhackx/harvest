@@ -1,3 +1,4 @@
+import { ROUTES } from "@/lib/routes";
 import { LeadPage } from "@/components/lead-page";
 import { pageMetadata } from "@/lib/seo";
 
@@ -5,7 +6,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata({
   title: "Fiche lead",
   description: "Étape, informations, activité et contacts d'un lead.",
-  path: "/leads",
+  path: ROUTES.leads,
   index: false,
 });
 

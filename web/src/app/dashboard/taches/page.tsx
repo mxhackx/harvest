@@ -1,11 +1,12 @@
-import { PipelineSettings } from "@/components/pipeline-settings";
+import { ROUTES } from "@/lib/routes";
+import { TasksPage } from "@/components/tasks-page";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
-  title: "Pipeline",
-  description: "Configurez les étapes du pipeline : noms, couleurs, probabilités, gagné et perdu.",
-  path: "/pipeline",
+  title: "Tâches",
+  description: "Vos tâches et rappels, classés par urgence.",
+  path: ROUTES.tasks,
   index: false,
 });
 
@@ -13,5 +14,5 @@ export const metadata = pageMetadata({
 export const instant = false;
 
 export default function Page() {
-  return <PipelineSettings />;
+  return <TasksPage />;
 }

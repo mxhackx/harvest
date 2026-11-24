@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { GeoJSONSource, Map as MLMap } from "maplibre-gl";
 import Link from "next/link";
@@ -394,7 +395,7 @@ export function LeadMap({
               <>
                 <p className="text-body font-semibold">Aucun lead sur la carte</p>
                 <p className="mt-1 text-small text-muted">Chaque lead apparaît ici dès qu&apos;il a une position : saisie, adresse ou lien Google Maps.</p>
-                <Link href="/leads" className="mt-3 inline-block text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
+                <Link href={ROUTES.leads} className="mt-3 inline-block text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
                   Ajouter un lead
                 </Link>
               </>

@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api, describeError } from "@/lib/api";
@@ -104,7 +105,7 @@ export function ContactsPage() {
                     </td>
                     <td className="px-3 py-2 text-muted">{c.role || "—"}</td>
                     <td className="px-3 py-2">
-                      <Link href={`/leads/${c.leadId}`} className="hover:underline">{c.leadName}</Link>
+                      <Link href={ROUTES.lead(c.leadId)} className="hover:underline">{c.leadName}</Link>
                     </td>
                     <td className="px-3 py-2 font-mono text-small">{c.whatsapp || c.phone || "—"}</td>
                     <td className="px-3 py-2 text-small">{c.email || "—"}</td>

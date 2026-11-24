@@ -49,7 +49,7 @@ export async function reportRoutes(app: FastifyInstance) {
     const inPeriod = (col: typeof leads.createdAt | typeof leads.closedAt) => and(gte(col, from), lt(col, to));
 
     const all = await db
-      .select({ id: leads.id, status: leads.status, estimatedValue: leads.estimatedValue, ownerId: leads.ownerId, createdAt: leads.createdAt, closedAt: leads.closedAt, lostReason: leads.lostReason })
+      .select({ id: leads.id, status: leads.status, estimatedValue: leads.estimatedValue, probability: leads.probability, ownerId: leads.ownerId, createdAt: leads.createdAt, closedAt: leads.closedAt, lostReason: leads.lostReason })
       .from(leads)
       .where(scope);
     const cohort = all.filter((l) => l.createdAt >= from && l.createdAt < to);

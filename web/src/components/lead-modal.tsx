@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { LOCATION_SOURCE_NOTE, api, describeError, type Lead } from "@/lib/api";
 import { LOST_REASONS, stageOf } from "@/lib/stages";
 import { useStages } from "@/lib/stages-store";
@@ -44,6 +44,20 @@ export function LeadModal({
   // création : le bouton n'est proposé qu'à ceux qui ont le droit ; modification : droit de modifier requis
   const readOnly = !!lead && !perms.includes("lead:update");
   const canDelete = !!lead && perms.includes("lead:delete");
+  // création : celui qui peut attribuer choisit le responsable dès maintenant (par défaut, lui-même)
+  const canChooseOwner = !lead && perms.includes("lead:assign") && perms.includes("member:read");
+  const [members, setMembers] = useState<{ userId: string; name: string }[] | null>(null);
+  const [ownerId, setOwnerId] = useState(me.user.id);
+  useEffect(() => {
+    if (!canChooseOwner) return;
+    let live = true;
+    api<{ userId: string; name: string }[]>("/members", { companyId })
+      .then((m) => live && setMembers(m))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [canChooseOwner, companyId]);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const form = useRef<HTMLFormElement>(null);
@@ -127,6 +141,12 @@ export function LeadModal({
       return setNotice("La valeur estimée doit être un nombre entier positif.");
     }
 
+    const rawProb = text("probability");
+    const probability = rawProb === "" ? null : Number(rawProb);
+    if (probability !== null && (!Number.isInteger(probability) || probability < 0 || probability > 100)) {
+      return setNotice("La probabilité est un nombre entier de 0 à 100.");
+    }
+
     // Création : sans position, l'API localise depuis le lien ou l'adresse. Modification : on n'efface la
     // position que si l'utilisateur l'a vidée.
     const positionPart = position
@@ -154,7 +174,11 @@ export function LeadModal({
         ...(isLost ? { lostReason: text("lostReason") } : {}),
         visited: f.get("visited") === "on",
         estimatedValue,
+        service: text("service"),
+        probability,
+        expectedCloseOn: text("expectedCloseOn") || null,
         ...positionPart,
+        ...(!lead && canChooseOwner && ownerId !== me.user.id ? { ownerId } : {}),
       };
       const saved = lead
         ? await api<Lead>(`/leads/${lead.id}`, { method: "PATCH", body, companyId })
@@ -195,6 +219,24 @@ export function LeadModal({
 
         {/* un fieldset désactivé verrouille d'un coup tous les champs qu'il contient */}
         <fieldset disabled={readOnly} className="m-0 flex min-w-0 flex-col gap-6 border-0 p-0">
+
+        {!lead && (
+          <Group title="Responsable">
+            {canChooseOwner && members ? (
+              <>
+                <Select
+                  label="Attribuer à"
+                  value={ownerId}
+                  onChange={(e) => setOwnerId(e.target.value)}
+                  options={members.map((m) => ({ value: m.userId, label: m.userId === me.user.id ? `${m.name} (moi)` : m.name }))}
+                />
+                <p className="text-small text-muted">La personne choisie est prévenue et suit ce lead. Vous pourrez le réattribuer plus tard.</p>
+              </>
+            ) : (
+              <p className="text-small text-muted">Ce lead vous sera attribué.</p>
+            )}
+          </Group>
+        )}
 
         <Group title="Entreprise">
           <div className="grid gap-3 sm:grid-cols-2">
@@ -255,6 +297,17 @@ export function LeadModal({
               defaultValue={lead?.estimatedValue ?? ""}
               className="font-mono"
             />
+            <Field label="Service demandé" name="service" maxLength={150} placeholder="Ex. : site vitrine, logiciel de caisse" defaultValue={lead?.service} />
+            <Field
+              label="Probabilité de conversion (%)"
+              name="probability"
+              inputMode="numeric"
+              maxLength={3}
+              placeholder={`Étape : ${stageOf(stages, stageKey).probability} %`}
+              defaultValue={lead?.probability ?? ""}
+              className="font-mono"
+            />
+            <Field label="Conclusion espérée" name="expectedCloseOn" type="date" defaultValue={lead?.expectedCloseOn ?? ""} />
             {isLost && (
               <div className="sm:col-span-2">
                 <Field label="Motif de perte" name="lostReason" list="lost-reasons" maxLength={200} defaultValue={lead?.lostReason} placeholder="Pourquoi a-t-on perdu ce lead ?" />

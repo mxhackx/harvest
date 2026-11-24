@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
@@ -60,7 +61,7 @@ export function NotificationsBell() {
       {(close) => (
         <div className="w-[320px] max-w-[calc(100vw-32px)]">
           {overdue > 0 && (
-            <Link href="/taches" onClick={close} className="block border-b border-rule px-3 py-2 text-small font-medium text-fail hover:bg-field">
+            <Link href={ROUTES.tasks} onClick={close} className="block border-b border-rule px-3 py-2 text-small font-medium text-fail hover:bg-field">
               {overdue === 1 ? "1 tâche en retard" : `${overdue} tâches en retard`}
             </Link>
           )}
@@ -72,7 +73,7 @@ export function NotificationsBell() {
                 {inbox.items.map((n) => (
                   <li key={n.id}>
                     <Link
-                      href={n.leadId ? `/leads/${n.leadId}` : "/taches"}
+                      href={n.leadId ? ROUTES.lead(n.leadId) : ROUTES.tasks}
                       onClick={() => {
                         close();
                         api("/notifications/read", { method: "POST", body: { ids: [n.id] }, companyId }).then(load).catch(() => {});

@@ -10,6 +10,15 @@ const stages: StageRef[] = [
 const lead = (id: string, status: string, v: number | null = null) => ({ id, status, estimatedValue: v });
 
 describe("pipelineByStage", () => {
+  it("la probabilité propre au lead prime sur celle de l'étape ; absente (null), on garde celle de l'étape", () => {
+    const p = pipelineByStage(stages, [
+      { id: "1", status: "b", estimatedValue: 1000, probability: 80 },
+      { id: "2", status: "b", estimatedValue: 1000, probability: null },
+      { id: "3", status: "b", estimatedValue: 1000, probability: 0 },
+    ]);
+    expect(p.openWeighted).toBe(800 + 500 + 0);
+  });
+
   it("compte, additionne et pondère seulement les étapes ouvertes", () => {
     const p = pipelineByStage(stages, [lead("1", "a", 1000), lead("2", "b", 2000), lead("3", "b", null), lead("4", "won", 500), lead("5", "lost", 700), lead("6", "inconnue", 99)]);
     expect(p.stages.map((s) => [s.key, s.count, s.value, s.weighted])).toEqual([

@@ -8,7 +8,7 @@ const dialog = (page: Page) => page.getByRole("dialog");
 
 async function openLeads(page: Page, context: Parameters<typeof signIn>[0], user: User) {
   await signIn(context, user);
-  await page.goto("/leads");
+  await page.goto("/dashboard/leads");
   await expect(page.getByRole("heading", { name: "Leads", exact: true })).toBeVisible();
 }
 

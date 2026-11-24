@@ -17,6 +17,7 @@ const fields = z.object({
   leadId: uuid.nullable(),
   assigneeId: uuid,
   done: z.boolean(),
+  priority: z.enum(["low", "normal", "high"]),
 });
 const createBody = fields.partial().required({ title: true });
 const patchBody = fields.partial();
@@ -84,7 +85,7 @@ export async function taskRoutes(app: FastifyInstance) {
       .leftJoin(leads, eq(leads.id, tasks.leadId))
       .where(and(...conds))
       // les plus urgentes d'abord, celles sans échéance en dernier ; les terminées, de la plus récente à la plus ancienne
-      .orderBy(q.data.status === "done" ? desc(tasks.doneAt) : sql`${tasks.dueAt} asc nulls last`, asc(tasks.createdAt))
+      .orderBy(q.data.status === "done" ? desc(tasks.doneAt) : sql`${tasks.dueAt} asc nulls last`, sql`case ${tasks.priority} when 'high' then 0 when 'normal' then 1 else 2 end`, asc(tasks.createdAt))
       .limit(500);
     return rows.map(({ task, assigneeName, lead }) => ({
       ...task,
@@ -112,6 +113,7 @@ export async function taskRoutes(app: FastifyInstance) {
         title: body.data.title,
         dueAt: body.data.dueAt ?? null,
         doneAt: body.data.done ? new Date() : null,
+        priority: body.data.priority ?? "normal",
       })
       .returning();
     if (assignee.userId !== subject.userId) {
@@ -142,6 +144,7 @@ export async function taskRoutes(app: FastifyInstance) {
     if (body.data.title !== undefined) set.title = body.data.title;
     if (body.data.dueAt !== undefined) set.dueAt = body.data.dueAt;
     if (body.data.leadId !== undefined) set.leadId = body.data.leadId;
+    if (body.data.priority !== undefined) set.priority = body.data.priority;
     if (body.data.done !== undefined) set.doneAt = body.data.done ? (task.doneAt ?? new Date()) : null;
     let newAssignee: string | null = null;
     if (body.data.assigneeId !== undefined && body.data.assigneeId !== task.ownerId) {

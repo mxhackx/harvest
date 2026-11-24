@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -88,14 +89,14 @@ export default function Page() {
       <h2>Réimporter un export</h2>
       <p>
         Un fichier exporté se réimporte sans modification avec <Link href="/docs/import">l’import</Link>. Les colonnes
-        calculées par Harvest (<code>id</code>, <code>statusLabel</code>, <code>locationSource</code>,{" "}
+        calculées par {BRAND.name} (<code>id</code>, <code>statusLabel</code>, <code>locationSource</code>,{" "}
         <code>lostReason</code>, <code>closedAt</code>, <code>owner</code>, <code>createdAt</code>, <code>updatedAt</code>) sont ignorées. Réimporter dans la même
         entreprise ne crée rien : tous les leads sont des doublons.
       </p>
 
       <Callout title="Protection contre les formules">
         Une cellule qui commence par <code>=</code>, <code>+</code>, <code>-</code> ou <code>@</code> serait exécutée
-        comme une formule par un tableur. À l’export, Harvest ajoute une apostrophe devant ces valeurs. Les numéros de
+        comme une formule par un tableur. À l’export, {BRAND.name} ajoute une apostrophe devant ces valeurs. Les numéros de
         téléphone comme <code>+22997001122</code> ne sont pas modifiés.
       </Callout>
     </DocArticle>

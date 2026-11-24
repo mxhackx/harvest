@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES } from "@/lib/routes";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { savedMessage, type Lead } from "@/lib/api";
@@ -72,7 +73,7 @@ export function Dashboard() {
           title="Prochaines visites"
           description="Les premiers lieux de votre tournée"
           action={
-            <Link href="/leads" className={linkStyle}>
+            <Link href={ROUTES.leads} className={linkStyle}>
               Tout afficher
             </Link>
           }

@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -23,7 +24,7 @@ const FILE_ERRORS: Row[] = [
 const ROW_ERRORS: Row[] = [
   { message: "champ obligatoire (champ « name »)", cause: "Le nom de l’entreprise est vide.", fix: "Renseignez le nom, ou supprimez la ligne." },
   { message: "trop long (120 caractères au plus)", cause: "Un texte dépasse la longueur maximale du champ.", fix: "Raccourcissez-le. Les longueurs maximales sont indiquées dans les champs acceptés." },
-  { message: "étape inconnue « … »", cause: "La valeur du champ status n’est pas une étape de Harvest.", fix: "Utilisez À visiter, Intéressé, Maquette envoyée ou Acompte payé (ou to_visit, interested, mockup_sent, deposit_paid)." },
+  { message: "étape inconnue « … »", cause: `La valeur du champ status n’est pas une étape de ${BRAND.name}.`, fix: "Utilisez À visiter, Intéressé, Maquette envoyée ou Acompte payé (ou to_visit, interested, mockup_sent, deposit_paid)." },
   { message: "latitude et longitude vont ensemble", cause: "Une seule des deux coordonnées est renseignée.", fix: "Renseignez les deux, ou aucune des deux." },
   { message: "latitude invalide « … » / longitude invalide « … »", cause: "La valeur n’est pas un nombre.", fix: "Écrivez un nombre décimal : 6.3611 ou 6,3611." },
   { message: "latitude hors limites (−90 à 90) / longitude hors limites (−180 à 180)", cause: "Les coordonnées sont inversées ou fausses.", fix: "La latitude vient avant la longitude ; à Cotonou : lat 6.36, lng 2.42." },

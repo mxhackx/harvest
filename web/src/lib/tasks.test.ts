@@ -3,7 +3,7 @@ import { dueLabel, groupOpenTasks, localInputToIso, taskState, type Task } from 
 
 const NOW = new Date(2026, 5, 15, 14, 0);
 const at = (d: number, h = 10) => new Date(2026, 5, 15 + d, h, 0).toISOString();
-const t = (over: Partial<Task>): Task => ({ id: "1", title: "T", ownerId: "u", assigneeName: "A", leadId: null, leadName: null, dueAt: null, doneAt: null, createdAt: at(-5), ...over });
+const t = (over: Partial<Task>): Task => ({ id: "1", title: "T", ownerId: "u", assigneeName: "A", leadId: null, leadName: null, dueAt: null, doneAt: null, priority: "normal", createdAt: at(-5), ...over });
 
 describe("taskState", () => {
   it("terminée, sans échéance, en retard, aujourd'hui, à venir", () => {

@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -25,7 +26,7 @@ export default function Page() {
       <ul>
         <li><strong>En cours</strong> : le lead est encore à travailler. Il compte dans la valeur du pipeline.</li>
         <li><strong>Gagnée</strong> : le lead est signé. Sa date de clôture est enregistrée.</li>
-        <li><strong>Perdue</strong> : le lead est abandonné. Harvest propose d’indiquer le motif de perte.</li>
+        <li><strong>Perdue</strong> : le lead est abandonné. {BRAND.name} propose d’indiquer le motif de perte.</li>
       </ul>
       <p>Il faut toujours garder au moins une étape « en cours ».</p>
 
@@ -38,7 +39,7 @@ export default function Page() {
 
       <h2>Supprimer une étape utilisée</h2>
       <p>
-        Une étape qui contient des leads ne se supprime pas telle quelle : Harvest demande vers quelle autre étape les
+        Une étape qui contient des leads ne se supprime pas telle quelle : {BRAND.name} demande vers quelle autre étape les
         déplacer. Rien n’est perdu en route.
       </p>
 

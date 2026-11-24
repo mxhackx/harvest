@@ -1,3 +1,5 @@
+import { ROUTES } from "@/lib/routes";
+import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -7,12 +9,12 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh bg-card">
       <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-rule bg-card px-6">
-        <Link href="/docs" className="flex items-center gap-3" aria-label="Documentation Harvest">
-          <Image src="/logo.png" alt="" width={24} height={28} />
-          <span className="font-serif text-brand font-semibold">Harvest</span>
+        <Link href="/docs" className="flex items-center gap-3" aria-label={`Documentation ${BRAND.name}`}>
+          <Image src="/logo.svg" alt="" width={26} height={26} />
+          <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
           <span className="text-small text-muted">Documentation</span>
         </Link>
-        <Link href="/" className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
+        <Link href={ROUTES.home} className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">
           Ouvrir l&apos;application
         </Link>
       </header>

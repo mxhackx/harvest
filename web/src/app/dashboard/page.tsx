@@ -1,11 +1,12 @@
-import { TeamPage } from "@/components/team-page";
+import { ROUTES } from "@/lib/routes";
+import { Dashboard } from "@/components/dashboard";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
-  title: "Équipe",
-  description: "Membres, rôles, invitations et équipes de l'entreprise.",
-  path: "/equipe",
+  title: "Tableau de bord",
+  description: "Vos leads sur la carte de tournée et ce qui vous attend aujourd’hui.",
+  path: ROUTES.home,
   index: false,
 });
 
@@ -13,5 +14,5 @@ export const metadata = pageMetadata({
 export const instant = false;
 
 export default function Page() {
-  return <TeamPage />;
+  return <Dashboard />;
 }
