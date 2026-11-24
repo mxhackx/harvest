@@ -232,7 +232,7 @@ export function PipelineSettings() {
   return (
     <div className="flex w-full flex-col gap-4">
       <div>
-        <h1 className="font-serif text-title font-semibold">Pipeline</h1>
+        <h1 className="font-display text-title font-semibold">Pipeline</h1>
         <p className="text-small text-muted">Les étapes que parcourt un lead, de la première visite à la conclusion.</p>
       </div>
       {notice && <Notice onClose={() => setNotice(null)}>{notice}</Notice>}

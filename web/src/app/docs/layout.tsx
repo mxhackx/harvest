@@ -12,7 +12,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-rule bg-card px-6">
         <Link href="/docs" className="flex items-center gap-3" aria-label={`Documentation ${BRAND.name}`}>
           <Image src="/logo.svg" alt="" width={26} height={26} />
-          <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
+          <span className="font-display text-brand font-semibold">{BRAND.name}</span>
           <span className="text-small text-muted">Documentation</span>
         </Link>
         <Link href={appHref(ROUTES.home)} className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">

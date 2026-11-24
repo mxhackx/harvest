@@ -10,7 +10,10 @@ describe("togglePin", () => {
 
 describe("parsePins", () => {
   it("lit une liste valide", () => {
-    expect(parsePins('["/leads","/taches"]')).toEqual(["/leads", "/taches"]);
+    expect(parsePins('["/dashboard/crm/leads","/dashboard/calendar"]')).toEqual(["/dashboard/crm/leads", "/dashboard/calendar"]);
+  });
+  it("met à jour les anciennes adresses épinglées", () => {
+    expect(parsePins('["/leads","/dashboard/taches"]')).toEqual(["/dashboard/crm/leads", "/dashboard/crm/tasks"]);
   });
   it("ignore le contenu corrompu ou hostile", () => {
     expect(parsePins("pas du json")).toEqual([]);

@@ -4,11 +4,11 @@ import { Callout, DocArticle } from "@/components/docs/blocks";
 import { FIELD_DOCS, IGNORED_EXPORT_COLUMNS } from "@/lib/lead-fields";
 import { docMetadata } from "@/lib/seo";
 
-export const metadata = docMetadata("/docs/import/champs");
+export const metadata = docMetadata("/docs/import/fields");
 
 export default function Page() {
   return (
-    <DocArticle href="/docs/import/champs">
+    <DocArticle href="/docs/import/fields">
       <p>
         Le nom de colonne (CSV) ou de clé (JSON) à utiliser est la première colonne du tableau. Les noms alternatifs,
         français ou abrégés, sont acceptés à la place : la casse, les accents, les espaces et les tirets sont ignorés.
@@ -88,7 +88,7 @@ export default function Page() {
       <Callout title="Coordonnées et position">
         <code>lat</code> et <code>lng</code> vont toujours ensemble : l’une sans l’autre est une erreur. Si elles sont
         absentes, {BRAND.name} cherche la position à partir du lien Google Maps ou de l’adresse. Voir{" "}
-        <Link href="/docs/localisation">Position sur la carte</Link>.
+        <Link href="/docs/location">Position sur la carte</Link>.
       </Callout>
     </DocArticle>
   );

@@ -77,7 +77,7 @@ export function DocArticle({ href, children }: { href: string; children: ReactNo
           </span>
         ))}
       </nav>
-      <h1 className="font-serif text-title font-semibold">{page.title}</h1>
+      <h1 className="font-display text-title font-semibold">{page.title}</h1>
       <p className="text-muted">{page.description}</p>
       {children}
       <nav aria-label="Pages voisines" className="mt-10 flex flex-wrap justify-between gap-3 border-t border-rule pt-4 text-small">

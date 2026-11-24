@@ -27,7 +27,7 @@ export default function Page() {
       </ol>
       <p>
         Si le rapport signale des erreurs, vous pouvez soit importer les lignes valides telles quelles, soit corriger
-        votre fichier et recommencer : <Link href="/docs/import/erreurs">les messages d’erreur</Link> indiquent le
+        votre fichier et recommencer : <Link href="/docs/import/errors">les messages d’erreur</Link> indiquent le
         numéro de ligne et le champ concerné.
       </p>
 
@@ -59,7 +59,7 @@ export default function Page() {
         Les leads importés apparaissent sur la carte dès qu’ils ont une position. Si le fichier ne contient pas de
         coordonnées, {BRAND.name} les cherche à partir du lien Google Maps ou de l’adresse. Cette recherche se fait en
         arrière-plan, un lead à la fois : les points arrivent sur la carte au fil de l’eau, sans vous faire attendre.
-        Voir <Link href="/docs/localisation">Position sur la carte</Link>.
+        Voir <Link href="/docs/location">Position sur la carte</Link>.
       </p>
 
       <h2>Modèles à télécharger</h2>

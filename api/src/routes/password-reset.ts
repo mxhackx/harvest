@@ -31,7 +31,7 @@ export async function passwordResetRoutes(app: FastifyInstance) {
       // une seule demande active par compte : la nouvelle annule les précédentes
       await db.delete(passwordResets).where(and(eq(passwordResets.userId, user.id), isNull(passwordResets.usedAt)));
       await db.insert(passwordResets).values({ userId: user.id, tokenHash: hash(token), expiresAt: new Date(Date.now() + TTL_MIN * 60_000) });
-      const url = `${config.appUrls[0]}/reinitialiser?token=${encodeURIComponent(token)}`;
+      const url = `${config.appUrls[0]}/reset-password?token=${encodeURIComponent(token)}`;
       await sendMail(resetMail(user.email, { url, minutes: TTL_MIN }), req.log);
     }
     return reply.code(202).send({ ok: true });

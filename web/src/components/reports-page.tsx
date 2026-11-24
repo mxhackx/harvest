@@ -10,7 +10,7 @@ function Kpi({ label, value, hint }: { label: string; value: string; hint?: stri
   return (
     <div className="rounded-card border border-border bg-card px-[18px] py-4">
       <dt className="text-small text-muted">{label}</dt>
-      <dd className="mt-1 font-mono text-[26px] font-semibold leading-tight">{value}</dd>
+      <dd className="mt-1 font-mono text-stat font-semibold leading-tight">{value}</dd>
       {hint && <p className="mt-1 text-small text-muted">{hint}</p>}
     </div>
   );
@@ -125,7 +125,7 @@ export function ReportsPage() {
                 {report.closed.lostReasons.map((r) => (
                   <li key={r.reason} className="grid grid-cols-[minmax(0,180px)_minmax(0,1fr)_32px] items-center gap-4">
                     <span className="truncate text-body">{r.reason}</span>
-                    <Bar width={barWidth(r.count, report.closed.lostReasons[0].count)} color="#8a99a6" />
+                    <Bar width={barWidth(r.count, report.closed.lostReasons[0].count)} color="var(--color-neutral)" />
                     <span className="text-right font-mono text-small">{r.count}</span>
                   </li>
                 ))}

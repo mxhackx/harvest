@@ -1,6 +1,7 @@
 "use client";
 
 import { ROUTES } from "@/lib/routes";
+import { cssVar } from "@/lib/theme";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { GeoJSONSource, Map as MLMap } from "maplibre-gl";
 import Link from "next/link";
@@ -19,7 +20,6 @@ import { Notice } from "./ui";
 type Filter = string;
 type Located = Lead & { lat: number; lng: number };
 
-const ROUTE_COLOR = "#e5484d"; // rouge, trait plein
 const DEFAULT_CENTER: [number, number] = [2.42, 6.37];
 
 const isLocated = (l: Lead): l is Located => l.lat !== null && l.lng !== null;
@@ -125,7 +125,7 @@ export function LeadMap({
           type: "line",
           source: "route",
           layout: { "line-cap": "round", "line-join": "round" },
-          paint: { "line-color": ROUTE_COLOR, "line-width": 3, "line-opacity": 1 },
+          paint: { "line-color": cssVar("--color-route"), "line-width": 3, "line-opacity": 1 },
         });
         // anneau autour du lead sélectionné
         m.addLayer({
@@ -133,7 +133,7 @@ export function LeadMap({
           type: "circle",
           source: "leads",
           filter: ["==", ["get", "id"], ""],
-          paint: { "circle-radius": 11, "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": "#14222e", "circle-stroke-width": 1.5 },
+          paint: { "circle-radius": 11, "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": cssVar("--color-ink"), "circle-stroke-width": 1.5 },
         });
         // petits points : un par lead, dès sa création
         m.addLayer({
@@ -141,7 +141,7 @@ export function LeadMap({
           type: "circle",
           source: "leads",
           paint: { "circle-radius": 6, // la couleur vient de l'étape du lead (propriété `color` de chaque point)
-            "circle-color": ["to-color", ["get", "color"]] as never, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.5 },
+            "circle-color": ["to-color", ["get", "color"]] as never, "circle-stroke-color": cssVar("--color-page"), "circle-stroke-width": 1.5 },
         });
         m.on("mouseenter", "leads-circle", () => (m.getCanvas().style.cursor = "pointer"));
         m.on("mouseleave", "leads-circle", () => (m.getCanvas().style.cursor = ""));

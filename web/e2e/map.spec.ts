@@ -84,7 +84,7 @@ test.describe("carte : leads de la journée", () => {
   test("sans aucun lead, la carte invite à en ajouter un", async ({ page, context, request }) => {
     await openDashboard(page, context, await newUser(request));
     await expect(page.getByText("Aucun lead sur la carte")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Ajouter un lead" })).toHaveAttribute("href", "/dashboard/leads");
+    await expect(page.getByRole("link", { name: "Ajouter un lead" })).toHaveAttribute("href", "/dashboard/crm/leads");
   });
 });
 

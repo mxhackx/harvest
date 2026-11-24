@@ -18,10 +18,10 @@ export default function Page() {
       <ol>
         <li>
           Réglez votre <Link href="/docs/pipeline">pipeline</Link>, puis suivez chaque lead depuis sa{" "}
-          <Link href="/docs/fiche-lead">fiche</Link> : activité, contacts, <Link href="/docs/taches">tâches</Link>.
+          <Link href="/docs/lead">fiche</Link> : activité, contacts, <Link href="/docs/tasks">tâches</Link>.
         </li>
         <li>
-          <Link href="/docs/equipe">Invitez votre équipe</Link> et répartissez les leads.
+          <Link href="/docs/team">Invitez votre équipe</Link> et répartissez les leads.
         </li>
         <li>
           <Link href="/docs/import">Importer des leads</Link> depuis un tableur ou un autre outil : un fichier CSV ou
@@ -32,8 +32,8 @@ export default function Page() {
           <Link href="/docs/import/json">format JSON</Link>.
         </li>
         <li>
-          Vérifiez les <Link href="/docs/import/champs">champs acceptés</Link> et, si l’analyse signale des problèmes,
-          consultez les <Link href="/docs/import/erreurs">messages d’erreur</Link>.
+          Vérifiez les <Link href="/docs/import/fields">champs acceptés</Link> et, si l’analyse signale des problèmes,
+          consultez les <Link href="/docs/import/errors">messages d’erreur</Link>.
         </li>
       </ol>
       <Callout title="Un seul champ est obligatoire">

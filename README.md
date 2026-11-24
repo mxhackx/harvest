@@ -17,8 +17,15 @@ cd web && npm run dev          # http://localhost:3000
 
 ## Adresses du site
 
-- Publiques : `/` (présentation), `/login`, `/docs`, `/invitation`, `/mot-de-passe-oublie`, `/reinitialiser`.
-- Espace connecté : tout est sous `/dashboard` (`/dashboard/leads`, `/dashboard/taches`…), non référencé par les moteurs de recherche. Les adresses sont écrites une seule fois dans [web/src/lib/routes.ts](web/src/lib/routes.ts). Les anciennes adresses (`/leads`, `/taches`…) redirigent vers les nouvelles.
+- Publiques : `/` (présentation), `/login`, `/docs`, `/invitation`, `/forgot-password`, `/reset-password`.
+- Espace connecté : tout est sous `/dashboard`, non référencé par les moteurs de recherche. Chaque module a son préfixe : `/dashboard/crm/…` (`leads`, `contacts`, `tasks`, `templates`, `pipeline`, `reports`) et `/dashboard/erp/…` (`team`). Seuls l'accueil (`/dashboard`) et le calendrier (`/dashboard/calendar`) n'en ont pas. Taper `/dashboard/crm` ou `/dashboard/erp` seul mène à la première page du module. Toutes les adresses sont en anglais et écrites une seule fois dans [web/src/lib/routes.ts](web/src/lib/routes.ts).
+- Anciennes adresses (françaises, ou sans `/crm`, comme `/taches`, `/dashboard/leads`, `/reinitialiser`, `/docs/equipe`…) : elles redirigent vers les nouvelles, sous-pages et paramètres compris (les e-mails déjà envoyés restent valides), et les pages épinglées dans le navigateur sont réécrites à la lecture. La liste est dans [web/src/lib/legacy-routes.ts](web/src/lib/legacy-routes.ts).
+
+## Styles
+
+Polices, tailles et couleurs sont définies une seule fois, dans [web/src/app/globals.css](web/src/app/globals.css) (bloc `@theme`). Les composants utilisent les classes qui en découlent (`font-display`, `text-heading`, `bg-accent`…) ou `var(--…)` : aucune valeur de style écrite en dur. Exceptions : le code qui ne lit pas le CSS (cartes MapLibre via `cssVar()`, aperçu de partage et `themeColor` via `THEME`) passe par [web/src/lib/theme.ts](web/src/lib/theme.ts), et un test vérifie que ces copies suivent `globals.css`. Les couleurs d'étapes du pipeline et du logo Google sont des données, pas du style.
+
+Police des titres : Plus Jakarta Sans (`font-display`), texte : Inter.
 
 ## Hooks Git (Husky)
 
@@ -89,7 +96,7 @@ Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok
 | `NEXT_PUBLIC_SITE_URL` | l'adresse de la vitrine : `https://www.hivation.tech` (`hivation.tech` redirige vers `www` dans Vercel) |
 | `NEXT_PUBLIC_APP_URL` | l'adresse de l'application, ex. `https://app.hivation.tech` |
 
-Ajoutez les domaines `www.hivation.tech` (principal, `hivation.tech` y redirige) et `app.hivation.tech` au **même** projet Vercel. Le proxy ([web/src/proxy.ts](web/src/proxy.ts)) envoie `/dashboard`, `/login`, `/invitation`, `/mot-de-passe-oublie`, `/reinitialiser` et `/onboarding` vers `app.`, et la racine de `app.` (ainsi que `/docs`) vers le bon endroit. On se connecte sur `app.`, et le navigateur reste sur `app.hivation.tech` (jamais sur `www`). Sans `NEXT_PUBLIC_APP_URL`, tout reste sur un seul domaine.
+Ajoutez les domaines `www.hivation.tech` (principal, `hivation.tech` y redirige) et `app.hivation.tech` au **même** projet Vercel. Le proxy ([web/src/proxy.ts](web/src/proxy.ts)) envoie `/dashboard`, `/login`, `/invitation`, `/forgot-password`, `/reset-password` et `/onboarding` vers `app.`, et la racine de `app.` (ainsi que `/docs`) vers le bon endroit. On se connecte sur `app.`, et le navigateur reste sur `app.hivation.tech` (jamais sur `www`). Sans `NEXT_PUBLIC_APP_URL`, tout reste sur un seul domaine.
 
 Redéployez : ces variables sont lues à la compilation.
 

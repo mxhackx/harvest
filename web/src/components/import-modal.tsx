@@ -141,7 +141,7 @@ export function ImportModal({ onClose, onImported }: { onClose: () => void; onIm
             {report.ignoredColumns.length > 0 && (
               <p className="text-small text-muted">
                 Colonnes non reconnues, ignorées : <span className="font-mono">{report.ignoredColumns.join(", ")}</span>.{" "}
-                <Link href="/docs/import/champs" target="_blank" className={link}>
+                <Link href="/docs/import/fields" target="_blank" className={link}>
                   Colonnes acceptées
                 </Link>
               </p>

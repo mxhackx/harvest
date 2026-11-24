@@ -9,7 +9,7 @@ export function CalendarPage() {
   return (
     <div className="flex w-full flex-col gap-4">
       <div>
-        <h1 className="font-serif text-title font-semibold">Calendrier</h1>
+        <h1 className="font-display text-title font-semibold">Calendrier</h1>
         <p className="text-small text-muted">Planifiez vos visites, appels et relances.</p>
       </div>
       {canSee ? (

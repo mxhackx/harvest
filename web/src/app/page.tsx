@@ -48,7 +48,7 @@ export default function HomePage() {
       <header className="mx-auto flex h-16 w-full max-w-[1080px] items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-3" aria-label={BRAND.name}>
           <Image src="/logo.svg" alt="" width={32} height={32} priority />
-          <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
+          <span className="font-display text-brand font-semibold">{BRAND.name}</span>
         </Link>
         <nav aria-label="Navigation principale" className="flex items-center gap-5 text-small font-medium">
           <Link href="/docs" className="hover:underline">Documentation</Link>
@@ -60,10 +60,10 @@ export default function HomePage() {
       <main>
         <section className="mx-auto flex w-full max-w-[1080px] flex-col items-start gap-6 px-6 pb-16 pt-14 md:pt-20">
           <p className="rounded-full bg-accent-soft px-3 py-1 text-small font-medium text-accent-press">Le CRM de terrain pour prospecter par vagues</p>
-          <h1 className="max-w-[760px] font-serif text-[40px] font-semibold leading-[1.1] md:text-[56px]">
+          <h1 className="max-w-[760px] font-display text-hero-sm font-bold leading-hero tracking-display md:text-hero">
             Prospectez une région à la fois. N’oubliez plus aucun lead.
           </h1>
-          <p className="max-w-[640px] text-[18px] leading-relaxed text-muted">
+          <p className="max-w-[640px] text-lead leading-relaxed text-muted">
             {BRAND.name} réunit la carte de tournée, le pipeline, les relances et les rapports. Vous savez où aller, qui rappeler et ce qui rapporte.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
@@ -84,7 +84,7 @@ export default function HomePage() {
 
         <section aria-labelledby="fonctions" className="border-t border-rule bg-field">
           <div className="mx-auto w-full max-w-[1080px] px-6 py-16">
-            <h2 id="fonctions" className="font-serif text-[28px] font-semibold">Tout ce qu’il faut pour suivre vos prospects</h2>
+            <h2 id="fonctions" className="font-display text-heading font-bold tracking-display">Tout ce qu’il faut pour suivre vos prospects</h2>
             <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {FEATURES.map((f) => (
                 <li key={f.title} className="rounded-card border border-border bg-card p-5">
@@ -97,7 +97,7 @@ export default function HomePage() {
         </section>
 
         <section aria-labelledby="methode" className="mx-auto w-full max-w-[1080px] px-6 py-16">
-          <h2 id="methode" className="font-serif text-[28px] font-semibold">Une méthode en trois temps</h2>
+          <h2 id="methode" className="font-display text-heading font-bold tracking-display">Une méthode en trois temps</h2>
           <ol className="mt-8 grid gap-6 md:grid-cols-3">
             {STEPS.map((s, i) => (
               <li key={s.title} className="flex flex-col gap-2">
@@ -111,7 +111,7 @@ export default function HomePage() {
 
         <section aria-labelledby="bientot" className="border-t border-rule">
           <div className="mx-auto w-full max-w-[1080px] px-6 py-16">
-            <h2 id="bientot" className="font-serif text-[28px] font-semibold">En préparation</h2>
+            <h2 id="bientot" className="font-display text-heading font-bold tracking-display">En préparation</h2>
             <p className="mt-2 max-w-[620px] text-small text-muted">
               {BRAND.name} grandit au-delà de la prospection. Ces modules ne sont pas encore disponibles.
             </p>
@@ -125,7 +125,7 @@ export default function HomePage() {
 
         <section className="bg-ink text-white">
           <div className="mx-auto flex w-full max-w-[1080px] flex-col items-start gap-4 px-6 py-14">
-            <h2 className="font-serif text-[28px] font-semibold">Prêt pour votre prochaine vague ?</h2>
+            <h2 className="font-display text-heading font-bold tracking-display">Prêt pour votre prochaine vague ?</h2>
             <Link href={appHref("/login")} className={`${button} bg-white text-ink hover:bg-field`}>Créer mon espace</Link>
           </div>
         </section>
