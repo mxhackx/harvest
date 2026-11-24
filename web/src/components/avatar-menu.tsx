@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { setActiveCompanyId } from "@/lib/active-company";
 import { BookIcon } from "./icons";
+import { siteHref } from "@/lib/hosts";
 
 const initials = (name: string) =>
   name
@@ -134,7 +135,7 @@ export function AvatarMenu() {
           <hr className="my-2 border-rule" />
           <Link
             role="menuitem"
-            href="/docs"
+            href={siteHref("/docs")}
             onClick={() => setOpen(false)}
             className="flex h-10 w-full items-center gap-2 rounded-control px-2 text-body hover:bg-field"
           >

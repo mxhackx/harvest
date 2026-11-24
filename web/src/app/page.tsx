@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
+import { appHref } from "@/lib/hosts";
 import { ROUTES } from "@/lib/routes";
 import { SITE, jsonLd, pageMetadata } from "@/lib/seo";
 
@@ -50,8 +51,8 @@ export default function HomePage() {
         </Link>
         <nav aria-label="Navigation principale" className="flex items-center gap-5 text-small font-medium">
           <Link href="/docs" className="hover:underline">Documentation</Link>
-          <Link href="/login" className="hover:underline">Se connecter</Link>
-          <Link href={ROUTES.home} className={`${button} hidden h-10 bg-accent text-white hover:bg-accent-press sm:inline-flex`}>Ouvrir l’application</Link>
+          <Link href={appHref("/login")} className="hover:underline">Se connecter</Link>
+          <Link href={appHref(ROUTES.home)} className={`${button} hidden h-10 bg-accent text-white hover:bg-accent-press sm:inline-flex`}>Ouvrir l’application</Link>
         </nav>
       </header>
 
@@ -65,7 +66,7 @@ export default function HomePage() {
             {BRAND.name} réunit la carte de tournée, le pipeline, les relances et les rapports. Vous savez où aller, qui rappeler et ce qui rapporte.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link href="/login" className={`${button} bg-accent text-white hover:bg-accent-press`}>Commencer</Link>
+            <Link href={appHref("/login")} className={`${button} bg-accent text-white hover:bg-accent-press`}>Commencer</Link>
             <Link href="/docs" className={`${button} border border-frame bg-card hover:bg-field`}>Lire la documentation</Link>
           </div>
         </section>
@@ -114,7 +115,7 @@ export default function HomePage() {
         <section className="bg-ink text-white">
           <div className="mx-auto flex w-full max-w-[1080px] flex-col items-start gap-4 px-6 py-14">
             <h2 className="font-serif text-[28px] font-semibold">Prêt pour votre prochaine vague ?</h2>
-            <Link href="/login" className={`${button} bg-white text-ink hover:bg-field`}>Créer mon espace</Link>
+            <Link href={appHref("/login")} className={`${button} bg-white text-ink hover:bg-field`}>Créer mon espace</Link>
           </div>
         </section>
       </main>
@@ -123,7 +124,7 @@ export default function HomePage() {
         <span>© {BRAND.name}</span>
         <nav aria-label="Pied de page" className="flex gap-5">
           <Link href="/docs" className="hover:underline">Documentation</Link>
-          <Link href="/login" className="hover:underline">Connexion</Link>
+          <Link href={appHref("/login")} className="hover:underline">Connexion</Link>
         </nav>
       </footer>
     </div>
