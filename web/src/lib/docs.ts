@@ -71,6 +71,11 @@ export const DOCS: DocPage[] = [
     description: "Prévenez un autre outil dès qu'un lead est créé, modifié ou supprimé, avec un envoi JSON signé que votre serveur peut vérifier.",
   },
   {
+    href: "/docs/offline",
+    title: "Mode hors connexion",
+    description: "Continuez à lire vos leads sur le terrain sans réseau, marquez des visites et ajoutez des notes : tout part au retour de la connexion.",
+  },
+  {
     href: "/docs/calendar",
     title: "Calendrier et export .ics",
     description: "Planifiez visites, appels et relances avec une heure de début et de fin, puis exportez-les vers Google Agenda, Apple Calendrier ou Outlook.",
@@ -114,7 +119,7 @@ export const SECTIONS: Record<DocSection, { title: string; description: string }
 
 /** Chaque page de documentation appartient à exactement une collection (un test le vérifie). */
 export const COLLECTIONS: Collection[] = [
-  { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/location", "/docs/calendar", "/docs/tasks"] },
+  { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/location", "/docs/calendar", "/docs/tasks", "/docs/offline"] },
   { id: "leads", section: "guide", title: "Leads et clients", description: "La fiche d'un lead, le pipeline, les contacts et les messages.", hrefs: ["/docs/lead", "/docs/pipeline", "/docs/messages"] },
   { id: "donnees", section: "guide", title: "Importer et exporter", description: "Faire entrer vos leads existants, et en sortir vos données.", hrefs: ["/docs/import", "/docs/export"] },
   { id: "equipe", section: "guide", title: "Équipe et suivi", description: "Inviter, répartir, fixer des objectifs et lire les rapports.", hrefs: ["/docs/team", "/docs/objectives", "/docs/reports"] },

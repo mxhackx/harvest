@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { ApiError, api, errorMessage, type Lead } from "./api";
+import { QUEUE_EVENT, pending, type QueueEventDetail } from "./offline";
+import { applyOptimistic, applyPending, leadIdOf } from "./offline-rules";
 import { useSession } from "./session";
 
 type LeadsState = {
@@ -33,6 +35,8 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
     () =>
       canRead
         ? api<Lead[]>("/leads", { companyId })
+            // les gestes faits hors connexion et pas encore envoyés restent visibles, même si la copie lue ne les connaît pas
+            .then(async (l) => applyPending(l, await pending().catch(() => [])))
             .then((l) => {
               setLeads(l);
               setError(null);
@@ -41,6 +45,19 @@ export function LeadsProvider({ children }: { children: ReactNode }) {
         : Promise.resolve(),
     [companyId, canRead],
   );
+
+  // Gestes faits hors connexion : on les voit tout de suite à l'écran ; au retour du réseau, on recharge la vraie donnée.
+  useEffect(() => {
+    const onQueue = (e: Event) => {
+      const d = (e as CustomEvent<QueueEventDetail>).detail;
+      if (d.type === "queued") {
+        const id = leadIdOf(d.entry.path);
+        if (id) setLeads((cur) => cur && cur.map((l) => (l.id === id ? applyOptimistic(l, d.entry) : l)));
+      } else reload();
+    };
+    window.addEventListener(QUEUE_EVENT, onQueue);
+    return () => window.removeEventListener(QUEUE_EVENT, onQueue);
+  }, [reload]);
 
   useEffect(() => {
     reload();

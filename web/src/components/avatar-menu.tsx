@@ -9,6 +9,7 @@ import { useSession } from "@/lib/session";
 import { setActiveCompanyId } from "@/lib/active-company";
 import { BookIcon } from "./icons";
 import { siteHref } from "@/lib/hosts";
+import { forgetOfflineData } from "@/lib/offline";
 import { ThemeToggle } from "./theme-toggle";
 
 const initials = (name: string) =>
@@ -87,6 +88,7 @@ export function AvatarMenu() {
 
   async function logout() {
     await api("/auth/logout", { method: "POST", body: {} }).catch(() => {});
+    await forgetOfflineData(); // rien de l'entreprise ne reste sur l'appareil après la déconnexion
     router.replace("/login");
   }
 

@@ -1,5 +1,8 @@
 import { defineConfig } from "@playwright/test";
 
+// Permet à context.route() d'intercepter aussi les requêtes du service worker (test du mode hors-ligne).
+process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = "1";
+
 // Les tests tournent sur leurs propres ports et leur propre base : jamais sur le serveur de développement.
 const API = "http://localhost:4100";
 const WEB = "http://localhost:3100";
