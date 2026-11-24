@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { api, describeError } from "@/lib/api";
 import { money, opportunitiesLabel, type AccountDetail } from "@/lib/accounts";
 import { ROUTES } from "@/lib/routes";
+import { useCrumb } from "@/lib/crumb";
 import { useSession } from "@/lib/session";
 import { stageOf } from "@/lib/stages";
 import { useStages } from "@/lib/stages-store";
@@ -22,6 +23,7 @@ export function AccountPage() {
   const [account, setAccount] = useState<AccountDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  useCrumb(account?.name);
 
   const [version, setVersion] = useState(0);
   const reload = () => setVersion((v) => v + 1);
