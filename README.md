@@ -25,6 +25,13 @@ cd web && npm run dev          # http://localhost:3000
 
 Le serveur lance des tâches périodiques ([api/src/jobs.ts](api/src/jobs.ts)), jamais pendant les tests : la **purge de la corbeille** toutes les 6 h (les leads supprimés depuis plus de 30 jours sont effacés pour de bon) la **purge du journal d'audit** (conservé un an) et les **rappels** toutes les 5 min (notification et e-mail Resend, une heure avant l'échéance d'une tâche ou d'un rendez-vous ; chaque échéance n'est rappelée qu'une fois, `reminded_at`). Une erreur est journalisée sans arrêter l'API.
 
+## Vagues et régions
+
+Le produit tourne autour des **vagues** : une région couverte pendant une période, avec un objectif de visites et un bilan.
+- **Régions** (`regions`) : un centre et un rayon. `leads.region_id` est *déduit* de la position du lead ([api/src/waves/geo.ts](api/src/waves/geo.ts), haversine) à la création, à la modification, à l'import, à la localisation en arrière-plan, et recalculé pour toute l'entreprise quand une région change.
+- **Vagues** (`waves`) : région, période, objectif. Phase calculée (à venir, en cours, en retard, clôturée) ; bilan (visités, convertis, à repasser) calculé en direct par [api/src/waves/stats.ts](api/src/waves/stats.ts), figé à la clôture.
+- Droits `wave:create|update|delete` (CEO et Manager) ; tout membre lit. Interface : section *Vagues* du menu (vagues, régions, carte). Documentation utilisateur : `/docs/waves`.
+
 ## Journal d'audit
 
 Chaque action réussie qui modifie des données (POST, PATCH, PUT, DELETE d'un membre connecté) ajoute une ligne à `audit_log` : qui, quelle route, quel objet (nom conservé même après suppression). Jamais le contenu des requêtes (mots de passe, jetons). Le hook est dans [api/src/audit/record.ts](api/src/audit/record.ts) ; pour qu'une route garde le nom de l'objet touché, elle pose `req.auditLabel`. Lecture : `GET /audit` (droit `audit:read`, réservé au CEO) et page *ERP › Journal d'audit*. La phrase affichée pour chaque route est dans [web/src/lib/audit.ts](web/src/lib/audit.ts) : à compléter quand on ajoute une route.
