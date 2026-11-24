@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
+import { HomeMap } from "@/components/home-map";
 import { appHref } from "@/lib/hosts";
 import { ROUTES } from "@/lib/routes";
 import { SITE, jsonLd, pageMetadata } from "@/lib/seo";
@@ -68,6 +69,16 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-3 pt-2">
             <Link href={appHref("/login")} className={`${button} bg-accent text-white hover:bg-accent-press`}>Commencer</Link>
             <Link href="/docs" className={`${button} border border-frame bg-card hover:bg-field`}>Lire la documentation</Link>
+          </div>
+        </section>
+
+        <section aria-labelledby="carte" className="mx-auto w-full max-w-[1080px] px-6 pb-16">
+          <h2 id="carte" className="font-serif text-[28px] font-semibold">Du globe jusqu’à la rue</h2>
+          <p className="mt-2 max-w-[620px] text-small text-muted">
+            Faites tourner le globe, cliquez sur une région : la carte s’y rend. Chaque panneau peut prendre toute la hauteur.
+          </p>
+          <div className="mt-6">
+            <HomeMap />
           </div>
         </section>
 
