@@ -19,6 +19,7 @@ export const ROUTES = {
   pipeline: `${CRM}/pipeline`,
   reports: `${CRM}/reports`,
   trash: `${CRM}/trash`,
+  duplicates: `${CRM}/duplicates`,
   team: `${ERP}/team`,
   audit: `${ERP}/audit`,
   waves: WAVES,

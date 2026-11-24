@@ -15,6 +15,7 @@ import { regionRoutes } from "./routes/regions.js";
 import { waveRoutes } from "./routes/waves.js";
 import { emailRoutes } from "./routes/emails.js";
 import { searchRoutes } from "./routes/search.js";
+import { duplicateRoutes } from "./routes/duplicates.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -70,5 +71,6 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(waveRoutes);
   await app.register(emailRoutes);
   await app.register(searchRoutes);
+  await app.register(duplicateRoutes);
   return app;
 }
