@@ -13,6 +13,7 @@ import { useLeads } from "@/lib/leads";
 import { useSession } from "@/lib/session";
 import { stageOf } from "@/lib/stages";
 import { useStages } from "@/lib/stages-store";
+import { LeadQuotes } from "./lead-quotes";
 import { LeadActivity } from "./lead-activity";
 import { LeadContacts } from "./lead-contacts";
 import { LeadLinks } from "./lead-links";
@@ -24,7 +25,7 @@ import { LostReasonModal } from "./lost-reason-modal";
 import { PencilIcon } from "./icons";
 import { Button, Notice, Panel } from "./ui";
 
-type Tab = "activity" | "contacts" | "tasks";
+type Tab = "activity" | "contacts" | "tasks" | "quotes";
 
 /** Charge les contacts du lead puis ouvre l'envoi de message : chaque contact, plus le numéro de l'entreprise. */
 function MessageLauncher({ lead, onClose, onSent }: { lead: Lead; onClose: () => void; onSent: () => void }) {
@@ -223,6 +224,7 @@ export function LeadPage() {
                 ["activity", "Activité"],
                 ["contacts", "Contacts"],
                 ["tasks", "Tâches"],
+                ["quotes", "Devis"],
               ] as const
             ).map(([key, label]) => (
               <button
@@ -242,6 +244,8 @@ export function LeadPage() {
               <LeadActivity leadId={lead.id} canWrite={canUpdate} version={version} />
             ) : tab === "tasks" ? (
               <TaskList leadId={lead.id} onChanged={reload} />
+            ) : tab === "quotes" ? (
+              <LeadQuotes leadId={lead.id} canWrite={canUpdate} />
             ) : (
               <LeadContacts leadId={lead.id} canWrite={canUpdate} onChanged={reload} />
             )}

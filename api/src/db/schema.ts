@@ -169,6 +169,26 @@ export const pipelineStages = pgTable(
   (t) => [uniqueIndex("pipeline_stages_company_key").on(t.companyId, t.key)],
 );
 
+/**
+ * Compte : une entreprise cliente, qui peut avoir plusieurs opportunités (les leads). Un lead peut exister sans compte :
+ * on en crée un à partir de lui quand on veut suivre plusieurs affaires avec la même entreprise.
+ */
+export const accounts = pgTable(
+  "accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    sector: text("sector").notNull().default(""),
+    website: text("website").notNull().default(""),
+    notes: text("notes").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("accounts_company").on(t.companyId)],
+);
+
 /** Zone de prospection : un centre et un rayon. Un lead appartient à la plus proche région qui le contient. */
 export const regions = pgTable(
   "regions",
@@ -231,6 +251,8 @@ export const leads = pgTable("leads", {
   deletedBy: uuid("deleted_by").references(() => users.id, { onDelete: "set null" }),
   // région où tombe sa position (déduite des coordonnées, jamais saisie) ; null = hors de toute région ou sans position
   regionId: uuid("region_id").references(() => regions.id, { onDelete: "set null" }),
+  // compte (entreprise cliente) dont ce lead est une opportunité ; null = lead sans compte
+  accountId: uuid("account_id").references(() => accounts.id, { onDelete: "set null" }),
   // valeurs des champs personnalisés : { identifiant du champ: valeur }
   custom: jsonb("custom").$type<Record<string, string | number>>().notNull().default({}),
 });
@@ -591,4 +613,36 @@ export const docFeedback = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [index("doc_feedback_page").on(t.page)],
+);
+
+/**
+ * Devis d'une opportunité (un lead). Numéro unique par entreprise (D-2026-0001). Les lignes et le taux de taxe sont
+ * figés dès l'envoi : un devis envoyé ne se modifie plus, il se refuse ou s'accepte.
+ */
+export const quotes = pgTable(
+  "quotes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    number: text("number").notNull(),
+    title: text("title").notNull(),
+    // draft | sent | accepted | declined
+    status: text("status").notNull().default("draft"),
+    lines: jsonb("lines").$type<{ label: string; quantity: number; unitPrice: number }[]>().notNull().default([]),
+    // pourcentage de taxe (TVA) appliqué au sous-total
+    taxRate: integer("tax_rate").notNull().default(0),
+    validUntil: date("valid_until", { mode: "string" }),
+    notes: text("notes").notNull().default(""),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("quotes_number").on(t.companyId, t.number), index("quotes_lead").on(t.leadId)],
 );

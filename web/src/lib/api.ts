@@ -2,6 +2,9 @@
  * Adresse de l'API : absolue en développement (http://localhost:4000), ou relative (« /api ») quand le site relaie
  * l'API sous son propre domaine (voir next.config.ts).
  */
+import { queueGesture } from "./offline";
+import { isQueueable } from "./offline-rules";
+
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/$/, "");
 
 /** Adresse de démarrage d'une connexion Google / GitHub, que l'API soit sur un autre domaine ou relayée par le site. */
@@ -25,15 +28,26 @@ export class ApiError extends Error {
 }
 
 export async function api<T = unknown>(path: string, init: { method?: string; body?: unknown; companyId?: string } = {}): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    method: init.method ?? (init.body ? "POST" : "GET"),
-    credentials: "include",
-    headers: {
-      ...(init.body ? { "content-type": "application/json" } : {}),
-      ...(init.companyId ? { "x-company-id": init.companyId } : {}),
-    },
-    body: init.body ? JSON.stringify(init.body) : undefined,
-  });
+  const method = init.method ?? (init.body ? "POST" : "GET");
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method,
+      credentials: "include",
+      headers: {
+        ...(init.body ? { "content-type": "application/json" } : {}),
+        ...(init.companyId ? { "x-company-id": init.companyId } : {}),
+      },
+      body: init.body ? JSON.stringify(init.body) : undefined,
+    });
+  } catch (e) {
+    // Pas de réseau : « visité », l'étape et les notes attendent le retour de la connexion au lieu d'échouer
+    if (e instanceof TypeError && isQueueable({ method, path, body: init.body })) {
+      await queueGesture({ method, path, body: init.body, companyId: init.companyId ?? "" });
+      return { queued: true } as T;
+    }
+    throw e;
+  }
   if (res.status === 204) return undefined as T;
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(res.status, (data as { error?: string }).error ?? "unknown", (data as { issues?: ApiIssue[] }).issues ?? []);
@@ -61,6 +75,11 @@ export const ERROR_MESSAGES: Record<string, string> = {
   invalid_body: "Vérifiez les champs saisis.",
   forbidden: "Vous n'avez pas le droit de faire cela.",
   stage_exists: "Une étape porte déjà ce nom.",
+  quote_locked: "Ce devis est envoyé : il ne peut plus être modifié ni supprimé.",
+  quote_transition: "Ce changement de statut n'est pas possible.",
+  quote_empty: "Ajoutez au moins une ligne avant d'envoyer le devis.",
+  account_exists: "Un compte porte déjà ce nom.",
+  lead_has_account: "Ce lead est déjà rattaché à un compte.",
   field_exists: "Un champ porte déjà ce nom.",
   too_many_fields: "Vingt champs personnalisés au plus.",
   region_exists: "Une région porte déjà ce nom.",
@@ -98,6 +117,8 @@ export type Lead = {
   id: string;
   /** région où tombe sa position (déduite des coordonnées) */
   regionId: string | null;
+  /** compte (entreprise cliente) dont ce lead est une opportunité */
+  accountId: string | null;
   /** valeurs des champs personnalisés : { identifiant du champ: valeur } */
   custom: Record<string, string | number>;
   ownerId: string;

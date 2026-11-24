@@ -16,6 +16,7 @@ import { AvatarMenu } from "./avatar-menu";
 import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
 import { GlobalSearch } from "./global-search";
 import { NotificationsBell } from "./notifications-bell";
+import { OfflineSupport } from "./offline-support";
 import { Notice } from "./ui";
 
 type Icon = ComponentType<{ size?: number }>;
@@ -51,6 +52,7 @@ const MODULES: Module[] = [
     href: ROUTES.leads,
     icon: UsersIcon,
     pages: [
+      { label: "Comptes", short: "Comptes", href: ROUTES.accounts, icon: BriefcaseIcon },
       { label: "Leads", short: "Leads", href: ROUTES.leads, icon: UsersIcon },
       { label: "Contacts", short: "Contacts", href: ROUTES.contacts, icon: UserIcon },
       { label: "Tâches", short: "Tâches", href: ROUTES.tasks, icon: CheckIcon },
@@ -150,7 +152,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <LeadsProvider>
       <div className="flex min-h-dvh">
         {/* Rail de modules, 80 px */}
-        <nav aria-label="Modules" className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 border-r border-rule bg-field py-3 md:flex">
+        <nav aria-label="Modules" className="sticky top-0 print:!hidden hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 border-r border-rule bg-field py-3 md:flex">
           <Link href={ROUTES.home} aria-label={BRAND.name} className="mb-2 flex size-11 items-center justify-center">
             <Image src="/logo.svg" alt="" width={38} height={38} priority />
           </Link>
@@ -170,7 +172,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Colonne du module, 232 px */}
-        <aside className="sticky top-0 hidden h-dvh w-[232px] shrink-0 flex-col gap-4 border-r border-rule bg-card p-3 md:flex">
+        <aside className="sticky top-0 print:!hidden hidden h-dvh w-[232px] shrink-0 flex-col gap-4 border-r border-rule bg-card p-3 md:flex">
           <div className="rounded-control border border-frame px-3 py-2">
             <p className="font-display text-brand font-semibold leading-tight">{BRAND.name}</p>
             <p className="truncate text-small text-muted">{session.company.name}</p>
@@ -187,7 +189,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-rule bg-card px-6">
+          <header className="sticky top-0 z-20 print:hidden flex h-14 items-center justify-between border-b border-rule bg-card px-6">
             <div className="flex items-center gap-3">
               <Link href={ROUTES.home} aria-label={BRAND.name} className="md:hidden">
                 <Image src="/logo.svg" alt="" width={26} height={26} />
@@ -206,12 +208,15 @@ export function Shell({ children }: { children: ReactNode }) {
               <AvatarMenu />
             </div>
           </header>
-          <main className="flex-1 p-6 pb-24 md:pb-6">{children}</main>
+          <main className="flex-1 p-6 pb-24 md:pb-6">
+            <OfflineSupport />
+            {children}
+          </main>
         </div>
       </div>
 
       {/* Navigation basse sur mobile : le gérant est en tournée */}
-      <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 flex h-16 overflow-x-auto border-t border-rule bg-card md:hidden">
+      <nav aria-label="Modules" className="fixed inset-x-0 bottom-0 z-20 print:!hidden flex h-16 overflow-x-auto border-t border-rule bg-card md:hidden">
         {mobilePages.map((p) => (
           <Link
             key={p.href}
