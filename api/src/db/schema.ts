@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   date,
   index,
   jsonb,
@@ -303,6 +304,18 @@ export const contacts = pgTable(
     whatsapp: text("whatsapp").notNull().default(""),
     email: text("email").notNull().default(""),
     notes: text("notes").notNull().default(""),
+    // à la façon d'une fiche de CRM : civilité, prénom et nom (name = « prénom nom », gardé pour les listes), supérieur,
+    // propriétaire et adresse postale
+    salutation: text("salutation").notNull().default(""),
+    firstName: text("first_name").notNull().default(""),
+    lastName: text("last_name").notNull().default(""),
+    reportsToId: uuid("reports_to_id").references((): AnyPgColumn => contacts.id, { onDelete: "set null" }),
+    ownerId: uuid("owner_id").references(() => users.id, { onDelete: "set null" }),
+    country: text("country").notNull().default(""),
+    street: text("street").notNull().default(""),
+    city: text("city").notNull().default(""),
+    region: text("region").notNull().default(""),
+    postalCode: text("postal_code").notNull().default(""),
     isPrimary: boolean("is_primary").notNull().default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
