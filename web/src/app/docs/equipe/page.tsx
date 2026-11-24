@@ -36,6 +36,14 @@ export default function Page() {
         équipe laisse ses membres sans équipe.
       </p>
 
+      <h2>L’e-mail d’invitation</h2>
+      <p>
+        Quand vous invitez quelqu’un, Harvest lui envoie un e-mail avec le lien (valable 7 jours, personnel). Si l’envoi
+        échoue, ou si l’e-mail n’est pas configuré, la page vous l’indique et affiche le lien à transmettre vous-même.
+        Une personne qui a oublié son mot de passe le réinitialise depuis « Mot de passe oublié ? » sur la page de
+        connexion : le lien reçu vaut une heure et ne sert qu’une fois, et il la déconnecte de tous ses appareils.
+      </p>
+
       <h2>Attribuer dès la création</h2>
       <p>
         Dans le formulaire « Nouveau lead », le bloc <strong>Responsable</strong> propose « Attribuer à » : choisissez la

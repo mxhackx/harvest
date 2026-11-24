@@ -55,6 +55,7 @@ export type Me = {
 
 /** Messages affichés à l'utilisateur pour les codes d'erreur de l'API. */
 export const ERROR_MESSAGES: Record<string, string> = {
+  invalid_reset: "Ce lien est invalide, expiré ou déjà utilisé. Redemandez un e-mail.",
   invalid_credentials: "E-mail ou mot de passe incorrect.",
   email_taken: "Un compte existe déjà avec cet e-mail.",
   invalid_body: "Vérifiez les champs saisis.",

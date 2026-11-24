@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ApiError, api, errorMessage, oauthStartUrl } from "@/lib/api";
@@ -83,9 +84,12 @@ export function AuthCard() {
             />
           </div>
           {mode === "login" && (
-            <label className="flex min-h-9 items-center gap-2 text-small">
-              <input type="checkbox" name="remember" className="size-4 accent-forest" /> Rester connecté
-            </label>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="flex min-h-9 items-center gap-2 text-small">
+                <input type="checkbox" name="remember" className="size-4 accent-forest" /> Rester connecté
+              </label>
+              <Link href="/mot-de-passe-oublie" className="text-small font-medium text-link underline decoration-dotted decoration-2 underline-offset-4">Mot de passe oublié ?</Link>
+            </div>
           )}
           <Button type="submit" loading={loading}>
             {mode === "login" ? "Se connecter" : "Créer mon compte"}

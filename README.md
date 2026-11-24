@@ -69,6 +69,8 @@ démarrage de l'API (`npm run start:prod`).
 | `APP_URLS` | l'adresse du site, ex. `https://harvest.vercel.app` |
 | `API_URL` | `https://harvest.vercel.app/api` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
 | `GOOGLE_*`, `GITHUB_*` | vos clés OAuth, ou vides |
+| `RESEND_API_KEY` | clé API [Resend](https://resend.com) pour les e-mails (invitations, mot de passe oublié) ; vide : aucun e-mail, les liens s'affichent à l'écran |
+| `MAIL_FROM` | expéditeur, ex. `Harvest <noreply@mondomaine.com>`. Le domaine doit être vérifié chez Resend ; sans domaine, l'expéditeur par défaut (`onboarding@resend.dev`) n'écrit qu'à l'adresse de votre compte Resend |
 
 Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok"}`.
 
