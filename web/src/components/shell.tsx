@@ -14,6 +14,7 @@ import { usePins } from "@/lib/pins";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
 import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
+import { GlobalSearch } from "./global-search";
 import { NotificationsBell } from "./notifications-bell";
 import { Notice } from "./ui";
 
@@ -195,7 +196,8 @@ export function Shell({ children }: { children: ReactNode }) {
                 <span aria-current="page" className="font-medium text-ink">{page.label}</span>
               </nav>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+              <GlobalSearch />
               <NotificationsBell />
               <AvatarMenu />
             </div>
