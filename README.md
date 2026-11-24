@@ -36,6 +36,10 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 
 `POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.
 
+## Tournées (itinéraires)
+
+`POST /tours/plan` calcule une tournée (ordre optimisé ou donné, tronçons, horaires, tracé) ; `/tours` enregistre les tournées personnelles. Les itinéraires routiers viennent d'**OSRM** ([api/src/routing/plan.ts](api/src/routing/plan.ts)) : `ROUTING_URL` (par défaut le serveur de démonstration public, à usage léger — **hébergez le vôtre en production** ; `off` coupe tout appel). Les coordonnées des prospects d'une tournée sont envoyées à ce service. Sans réponse, l'itinéraire est estimé en ligne droite (+30 %, 35 km/h) et marqué `approximate`. Seuls les prospects en présentiel (`visit_mode = onsite`) et localisés peuvent être des étapes.
+
 ## Mode hors-ligne
 
 Le service worker [web/public/sw.js](web/public/sw.js) garde une copie des pages `/dashboard`, du code de l'application, des fonds de carte vus et des lectures de l'API listées dans [web/src/lib/offline-rules.ts](web/src/lib/offline-rules.ts) (une copie par entreprise). Hors connexion, deux gestes seulement se mettent en attente dans IndexedDB ([web/src/lib/offline.ts](web/src/lib/offline.ts)) : `PATCH /leads/:id` avec `visited` ou `status`, et `POST /leads/:id/activities` ; ils sont rejoués dans l'ordre au retour du réseau (réessai toutes les 5 s). Le reste échoue avec un message. La copie est effacée à la déconnexion. Le test de bout en bout demande le site compilé : `npm --prefix web run test:e2e:offline`.
