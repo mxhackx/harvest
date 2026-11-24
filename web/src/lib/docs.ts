@@ -46,6 +46,11 @@ export const DOCS: DocPage[] = [
     description: "Regroupez plusieurs opportunités d'une même entreprise cliente dans un compte, avec la valeur en cours et la valeur gagnée.",
   },
   {
+    href: "/docs/quotes",
+    title: "Devis",
+    description: "Préparez un devis pour une opportunité : lignes, taxe, validité, envoi, acceptation et impression en PDF.",
+  },
+  {
     href: "/docs/pipeline",
     title: "Pipeline et étapes",
     description: "Personnalisez les étapes de votre pipeline : noms, couleurs, probabilités, étapes gagnées et perdues, motif de perte et valeur pondérée.",
@@ -125,7 +130,7 @@ export const SECTIONS: Record<DocSection, { title: string; description: string }
 /** Chaque page de documentation appartient à exactement une collection (un test le vérifie). */
 export const COLLECTIONS: Collection[] = [
   { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/location", "/docs/calendar", "/docs/tasks", "/docs/offline"] },
-  { id: "leads", section: "guide", title: "Leads et clients", description: "La fiche d'un lead, le pipeline, les contacts et les messages.", hrefs: ["/docs/accounts", "/docs/lead", "/docs/pipeline", "/docs/messages"] },
+  { id: "leads", section: "guide", title: "Leads et clients", description: "La fiche d'un lead, le pipeline, les contacts et les messages.", hrefs: ["/docs/accounts", "/docs/lead", "/docs/quotes", "/docs/pipeline", "/docs/messages"] },
   { id: "donnees", section: "guide", title: "Importer et exporter", description: "Faire entrer vos leads existants, et en sortir vos données.", hrefs: ["/docs/import", "/docs/export"] },
   { id: "equipe", section: "guide", title: "Équipe et suivi", description: "Inviter, répartir, fixer des objectifs et lire les rapports.", hrefs: ["/docs/team", "/docs/objectives", "/docs/reports"] },
   { id: "webhooks", section: "api", title: "Webhooks", description: "Être prévenu en temps réel quand un lead change.", hrefs: ["/docs/webhooks"] },
