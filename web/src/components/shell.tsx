@@ -54,6 +54,7 @@ const MODULES: Module[] = [
     href: ROUTES.leads,
     icon: UsersIcon,
     pages: [
+      { label: "Factures", short: "Factures", href: ROUTES.invoices, icon: CoinIcon, also: ["/dashboard/crm/invoices"] },
       { label: "Segments", short: "Segments", href: ROUTES.segments, icon: BoardIcon },
       { label: "Comptes", short: "Comptes", href: ROUTES.accounts, icon: BriefcaseIcon },
       { label: "Leads", short: "Leads", href: ROUTES.leads, icon: UsersIcon, also: ["/dashboard/crm/quotes"] },

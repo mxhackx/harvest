@@ -15,6 +15,7 @@ import { useSession } from "@/lib/session";
 import { stageOf } from "@/lib/stages";
 import { useStages } from "@/lib/stages-store";
 import { LeadQuotes } from "./lead-quotes";
+import { LeadInvoices } from "./lead-invoices";
 import { LeadActivity } from "./lead-activity";
 import { LeadContacts } from "./lead-contacts";
 import { LeadLinks } from "./lead-links";
@@ -287,6 +288,9 @@ export function LeadPage() {
           </Panel>
           <Panel title="Devis">
             <LeadQuotes leadId={lead.id} canWrite={canUpdate} />
+          </Panel>
+          <Panel title="Factures">
+            <LeadInvoices leadId={lead.id} />
           </Panel>
         </div>
       </div>
