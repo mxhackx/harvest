@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LOCATION_SOURCE_NOTE, api, describeError, formatValue, type Lead } from "@/lib/api";
+import { closeDateLate, effectiveProbability, formatCloseDate, weightedValue } from "@/lib/opportunity";
+import { dueLabel } from "@/lib/tasks";
 import type { Contact } from "@/lib/activity";
 import type { Recipient } from "@/lib/messages";
 import { useLeads } from "@/lib/leads";
@@ -153,7 +155,39 @@ export function LeadPage() {
             <dt className="text-muted">Adresse</dt>
             <dd>{[lead.address, lead.city].filter(Boolean).join(", ") || "—"}</dd>
             {lead.landmark && (<><dt className="text-muted">Repère</dt><dd>{lead.landmark}</dd></>)}
+            {lead.service && (<><dt className="text-muted">Service</dt><dd>{lead.service}</dd></>)}
             {lead.estimatedValue !== null && (<><dt className="text-muted">Valeur</dt><dd className="font-mono">{formatValue(lead.estimatedValue)}</dd></>)}
+            {current.kind === "open" && (
+              <>
+                <dt className="text-muted">Probabilité</dt>
+                <dd>
+                  <span className="font-mono">{effectiveProbability(lead, stages)} %</span>
+                  {lead.probability === null && <span className="text-muted"> (selon l’étape)</span>}
+                  {weightedValue(lead, stages) !== null && <span className="text-muted"> · pondéré <span className="font-mono">{formatValue(weightedValue(lead, stages)!)}</span></span>}
+                </dd>
+              </>
+            )}
+            {lead.expectedCloseOn && (
+              <>
+                <dt className="text-muted">Conclusion</dt>
+                <dd className={closeDateLate(lead.expectedCloseOn, current.kind === "open") ? "font-medium text-fail" : ""}>
+                  {formatCloseDate(lead.expectedCloseOn)}
+                  {closeDateLate(lead.expectedCloseOn, current.kind === "open") && " · dépassée"}
+                </dd>
+              </>
+            )}
+            {current.kind === "open" && (
+              <>
+                <dt className="text-muted">Prochain suivi</dt>
+                <dd>
+                  {lead.nextFollowUpAt ? (
+                    <button type="button" onClick={() => setTab("tasks")} className="text-left hover:underline">{dueLabel({ dueAt: lead.nextFollowUpAt, doneAt: null })}</button>
+                  ) : (
+                    <button type="button" onClick={() => setTab("tasks")} className="text-left font-medium text-fail hover:underline">Aucun suivi prévu</button>
+                  )}
+                </dd>
+              </>
+            )}
             <dt className="text-muted">Visite</dt>
             <dd>{lead.visitedAt ? new Date(lead.visitedAt).toLocaleDateString("fr-FR") : "Pas encore visité"}</dd>
             {owner && (<><dt className="text-muted">Responsable</dt><dd>{owner}</dd></>)}
@@ -206,7 +240,7 @@ export function LeadPage() {
             {tab === "activity" ? (
               <LeadActivity leadId={lead.id} canWrite={canUpdate} version={version} />
             ) : tab === "tasks" ? (
-              <TaskList leadId={lead.id} />
+              <TaskList leadId={lead.id} onChanged={reload} />
             ) : (
               <LeadContacts leadId={lead.id} canWrite={canUpdate} onChanged={reload} />
             )}

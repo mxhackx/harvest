@@ -5,6 +5,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { api, describeError } from "@/lib/api";
 import { useLeads } from "@/lib/leads";
 import { useSession } from "@/lib/session";
+import { PRIORITIES, type Priority } from "@/lib/opportunity";
 import { dueLabel, groupOpenTasks, localInputToIso, taskState, type Task } from "@/lib/tasks";
 import { PencilIcon, PlusIcon, TrashIcon } from "./icons";
 import { Button, Field, Modal, Notice, Select } from "./ui";
@@ -28,6 +29,7 @@ export function TaskModal({ task, leadId, defaultDay, onClose, onSaved }: { task
   const [title, setTitle] = useState(task?.title ?? "");
   const [due, setDue] = useState(toLocalInput(task?.dueAt ?? (defaultDay ? new Date(defaultDay.getFullYear(), defaultDay.getMonth(), defaultDay.getDate(), 9).toISOString() : null)));
   const [lead, setLead] = useState(task?.leadId ?? leadId ?? "");
+  const [priority, setPriority] = useState<Priority>(task?.priority ?? "normal");
   const [assignee, setAssignee] = useState(task?.ownerId ?? me.user.id);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -40,7 +42,7 @@ export function TaskModal({ task, leadId, defaultDay, onClose, onSaved }: { task
   async function submit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
-    const body = { title: title.trim(), dueAt: localInputToIso(due), leadId: lead || null, ...(canAssign ? { assigneeId: assignee } : {}) };
+    const body = { title: title.trim(), dueAt: localInputToIso(due), leadId: lead || null, priority, ...(canAssign ? { assigneeId: assignee } : {}) };
     try {
       if (task) await api(`/tasks/${task.id}`, { method: "PATCH", body, companyId });
       else await api("/tasks", { method: "POST", body, companyId });
@@ -56,7 +58,10 @@ export function TaskModal({ task, leadId, defaultDay, onClose, onSaved }: { task
       <form onSubmit={submit} className="flex flex-col gap-4">
         {error && <Notice onClose={() => setError(null)}>{error}</Notice>}
         <Field label="Quoi faire" value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={200} placeholder="Ex. : rappeler pour le devis" autoFocus />
-        <Field label="Échéance" type="datetime-local" value={due} onChange={(e) => setDue(e.target.value)} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Échéance" type="datetime-local" value={due} onChange={(e) => setDue(e.target.value)} />
+          <Select label="Priorité" value={priority} onChange={(e) => setPriority(e.target.value as Priority)} options={PRIORITIES.map((p) => ({ value: p.value, label: p.label }))} />
+        </div>
         {!leadId && (
           <Select
             label="Lead concerné"
@@ -109,6 +114,8 @@ function TaskRow({ task, showLead, showAssignee, canEdit, onChanged, onEdit, onE
             <Link href={`/leads/${task.leadId}`} className="hover:underline">{task.leadName}</Link>
           )}
           {showAssignee && <span>{task.assigneeName}</span>}
+          {state !== "done" && task.priority === "high" && <span className="font-medium text-fail">Priorité haute</span>}
+          {state !== "done" && task.priority === "low" && <span>Priorité basse</span>}
         </p>
       </div>
       {canEdit && (

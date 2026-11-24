@@ -7,6 +7,7 @@ export type Task = {
   leadName: string | null;
   dueAt: string | null;
   doneAt: string | null;
+  priority: "low" | "normal" | "high";
   createdAt: string;
 };
 

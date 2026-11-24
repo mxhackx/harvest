@@ -141,6 +141,12 @@ export function LeadModal({
       return setNotice("La valeur estimée doit être un nombre entier positif.");
     }
 
+    const rawProb = text("probability");
+    const probability = rawProb === "" ? null : Number(rawProb);
+    if (probability !== null && (!Number.isInteger(probability) || probability < 0 || probability > 100)) {
+      return setNotice("La probabilité est un nombre entier de 0 à 100.");
+    }
+
     // Création : sans position, l'API localise depuis le lien ou l'adresse. Modification : on n'efface la
     // position que si l'utilisateur l'a vidée.
     const positionPart = position
@@ -168,6 +174,9 @@ export function LeadModal({
         ...(isLost ? { lostReason: text("lostReason") } : {}),
         visited: f.get("visited") === "on",
         estimatedValue,
+        service: text("service"),
+        probability,
+        expectedCloseOn: text("expectedCloseOn") || null,
         ...positionPart,
         ...(!lead && canChooseOwner && ownerId !== me.user.id ? { ownerId } : {}),
       };
@@ -288,6 +297,17 @@ export function LeadModal({
               defaultValue={lead?.estimatedValue ?? ""}
               className="font-mono"
             />
+            <Field label="Service demandé" name="service" maxLength={150} placeholder="Ex. : site vitrine, logiciel de caisse" defaultValue={lead?.service} />
+            <Field
+              label="Probabilité de conversion (%)"
+              name="probability"
+              inputMode="numeric"
+              maxLength={3}
+              placeholder={`Étape : ${stageOf(stages, stageKey).probability} %`}
+              defaultValue={lead?.probability ?? ""}
+              className="font-mono"
+            />
+            <Field label="Conclusion espérée" name="expectedCloseOn" type="date" defaultValue={lead?.expectedCloseOn ?? ""} />
             {isLost && (
               <div className="sm:col-span-2">
                 <Field label="Motif de perte" name="lostReason" list="lost-reasons" maxLength={200} defaultValue={lead?.lostReason} placeholder="Pourquoi a-t-on perdu ce lead ?" />

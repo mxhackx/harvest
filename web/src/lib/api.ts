@@ -110,6 +110,14 @@ export type Lead = {
   lat: number | null;
   lng: number | null;
   estimatedValue: number | null;
+  /** service demandé (texte libre) */
+  service: string;
+  /** probabilité propre au lead, 0–100 ; null = celle de l'étape */
+  probability: number | null;
+  /** date de conclusion espérée, « AAAA-MM-JJ » */
+  expectedCloseOn: string | null;
+  /** échéance la plus proche des tâches ouvertes du lead (liste des leads seulement) */
+  nextFollowUpAt?: string | null;
   visitedAt: string | null;
   createdAt: string;
 };

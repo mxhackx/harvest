@@ -19,6 +19,25 @@ export default function Page() {
         Harvest demande le motif. Chaque changement est inscrit dans le fil d’activité.
       </p>
 
+      <h2>L’opportunité</h2>
+      <p>Dans « Modifier le lead », la partie <strong>Suivi</strong> décrit l’opportunité :</p>
+      <ul>
+        <li><strong>Valeur estimée</strong> : le montant espéré.</li>
+        <li><strong>Service demandé</strong> : ce que le prospect veut (texte libre).</li>
+        <li>
+          <strong>Probabilité de conversion</strong> : de 0 à 100 %. Laissée vide, c’est la probabilité de l’étape qui
+          s’applique. Elle sert à la valeur pondérée (valeur × probabilité) des{" "}
+          <Link href="/docs/rapports">rapports</Link>.
+        </li>
+        <li><strong>Conclusion espérée</strong> : la date où vous comptez signer. Elle s’affiche en rouge une fois dépassée, tant que le lead est ouvert.</li>
+        <li><strong>Responsable</strong> : choisi à la création (voir <Link href="/docs/equipe">Équipe</Link>), modifiable avec « Attribuer à… ».</li>
+        <li>
+          <strong>Prochain suivi</strong> : calculé tout seul, c’est l’échéance la plus proche des tâches ouvertes du
+          lead. Sans tâche à venir, la fiche affiche « Aucun suivi prévu » en rouge : un lead sans suivi risque d’être
+          oublié.
+        </li>
+      </ul>
+
       <h2>Le fil d’activité</h2>
       <p>
         Le fil raconte l’histoire du lead, du plus récent au plus ancien. Il mélange deux sortes d’entrées :

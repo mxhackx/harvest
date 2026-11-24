@@ -14,6 +14,13 @@ export default function Page() {
         qu’il y a à faire, une échéance (facultative) et le lead concerné.
       </p>
 
+      <h2>Priorité</h2>
+      <p>
+        Chaque tâche est de priorité <strong>normale</strong> par défaut ; choisissez <strong>haute</strong> ou{" "}
+        <strong>basse</strong> à la création ou en la modifiant. À échéance égale, les tâches de priorité haute passent
+        devant, et la mention « Priorité haute » reste visible tant qu’elles ne sont pas terminées.
+      </p>
+
       <h2>Classées par urgence</h2>
       <ul>
         <li><strong>En retard</strong> : l’échéance est passée.</li>
