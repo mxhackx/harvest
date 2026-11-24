@@ -51,6 +51,14 @@ export default function Page() {
         Les noms d’étape du fil sont ceux de l’époque : renommer une étape plus tard ne réécrit pas l’histoire.
       </p>
 
+      <h2>Champs personnalisés</h2>
+      <p>
+        <strong>CRM › Champs</strong> (réservé aux responsables) ajoute des informations propres à votre métier sur chaque
+        lead : texte, nombre, date ou liste de choix, jusqu’à 20 champs. Ils apparaissent dans la fiche du lead, section
+        « Champs personnalisés ». Le type d’un champ ne change pas une fois créé ; supprimer un champ retire ses valeurs de
+        tous les leads. Ils ne sont pas encore inclus dans l’import et l’export CSV.
+      </p>
+
       <h2>Mentionner un collègue</h2>
       <p>
         Dans une note du fil, tapez <strong>@</strong> puis les premières lettres d’un prénom ou d’un nom : choisissez le

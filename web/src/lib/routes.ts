@@ -21,6 +21,7 @@ export const ROUTES = {
   trash: `${CRM}/trash`,
   duplicates: `${CRM}/duplicates`,
   objectives: `${CRM}/objectives`,
+  fields: `${CRM}/fields`,
   team: `${ERP}/team`,
   audit: `${ERP}/audit`,
   waves: WAVES,
