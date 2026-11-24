@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -47,6 +48,14 @@ export default function Page() {
         Comme pour les leads : un Prospecteur ne voit que les siennes, un Manager celles de l’entreprise. Le nom du lead
         lié n’apparaît que si vous avez le droit de lire ce lead.
       </Callout>
+
+      <h2>Rappels</h2>
+      <p>
+        Une heure avant l’échéance d’une tâche ou le début d’un rendez-vous, {BRAND.name} vous envoie une notification (la
+        cloche) et un e-mail. Une tâche n’est rappelée qu’une fois, et si vous changez son échéance, un nouveau rappel
+        part. Les tâches terminées et celles d’un lead à la corbeille ne sont pas rappelées. Vous pouvez désactiver les
+        e-mails dans le menu de votre compte (« Rappels par e-mail ») ; les notifications restent.
+      </p>
     </DocArticle>
   );
 }

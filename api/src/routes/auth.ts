@@ -120,6 +120,14 @@ export async function authRoutes(app: FastifyInstance) {
     return { user, memberships: list };
   });
 
+  // Préférences personnelles : pour l'instant, recevoir ou non les rappels par e-mail.
+  app.patch("/me/preferences", { preHandler: requireUser }, async (req, reply) => {
+    const body = z.object({ emailReminders: z.boolean() }).safeParse(req.body);
+    if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
+    await db.update(users).set({ emailReminders: body.data.emailReminders }).where(eq(users.id, req.user!.id));
+    return reply.code(204).send();
+  });
+
   app.get("/auth/providers", async () => ({
     email: true,
     google: isConfigured("google"),

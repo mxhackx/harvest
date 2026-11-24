@@ -101,7 +101,7 @@ export async function eventRoutes(app: FastifyInstance) {
     }
     const [updated] = await db
       .update(events)
-      .set({ ...body.data, updatedAt: new Date() })
+      .set({ ...body.data, ...(body.data.startsAt && body.data.startsAt.getTime() !== event.startsAt.getTime() ? { remindedAt: null } : {}), updatedAt: new Date() })
       .where(eq(events.id, event.id))
       .returning();
     return updated;

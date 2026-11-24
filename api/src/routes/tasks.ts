@@ -143,7 +143,10 @@ export async function taskRoutes(app: FastifyInstance) {
 
     const set: Partial<typeof tasks.$inferInsert> = { updatedAt: new Date() };
     if (body.data.title !== undefined) set.title = body.data.title;
-    if (body.data.dueAt !== undefined) set.dueAt = body.data.dueAt;
+    if (body.data.dueAt !== undefined) {
+      set.dueAt = body.data.dueAt;
+      if (body.data.dueAt?.getTime() !== task.dueAt?.getTime()) set.remindedAt = null; // nouvelle échéance : nouveau rappel
+    }
     if (body.data.leadId !== undefined) set.leadId = body.data.leadId;
     if (body.data.priority !== undefined) set.priority = body.data.priority;
     if (body.data.done !== undefined) set.doneAt = body.data.done ? (task.doneAt ?? new Date()) : null;

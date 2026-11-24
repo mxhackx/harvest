@@ -23,7 +23,7 @@ cd web && npm run dev          # http://localhost:3000
 
 ## Tâches de fond (API)
 
-Le serveur lance des tâches périodiques ([api/src/jobs.ts](api/src/jobs.ts)), jamais pendant les tests : pour l'instant, la **purge de la corbeille** toutes les 6 h (les leads supprimés depuis plus de 30 jours sont effacés pour de bon). Une erreur est journalisée sans arrêter l'API.
+Le serveur lance des tâches périodiques ([api/src/jobs.ts](api/src/jobs.ts)), jamais pendant les tests : la **purge de la corbeille** toutes les 6 h (les leads supprimés depuis plus de 30 jours sont effacés pour de bon) et les **rappels** toutes les 5 min (notification et e-mail Resend, une heure avant l'échéance d'une tâche ou d'un rendez-vous ; chaque échéance n'est rappelée qu'une fois, `reminded_at`). Une erreur est journalisée sans arrêter l'API.
 
 ## Styles
 

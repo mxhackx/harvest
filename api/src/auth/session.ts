@@ -21,7 +21,7 @@ export async function createSession(db: Db, userId: string, remember: boolean) {
 
 export async function resolveSession(db: Db, token: string) {
   const [row] = await db
-    .select({ id: users.id, email: users.email, name: users.name, image: users.image })
+    .select({ id: users.id, email: users.email, name: users.name, image: users.image, emailReminders: users.emailReminders })
     .from(sessions)
     .innerJoin(users, eq(users.id, sessions.userId))
     .where(and(eq(sessions.id, sha256(token)), gt(sessions.expiresAt, new Date())))
