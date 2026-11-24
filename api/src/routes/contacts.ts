@@ -37,6 +37,12 @@ const listQuery = z.object({
 /** « 50% » doit chercher « 50% », pas « 50 suivi de n'importe quoi » : on neutralise les jokers LIKE. */
 const likeEscape = (s: string) => s.replace(/[\\%_]/g, (m) => `\\${m}`);
 
+/**
+ * Efface les données d'une personne gardées ailleurs que dans sa fiche contact (point d'extension : e-mails envoyés…).
+ * Le texte libre des notes du fil n'est pas analysé : il se relit à la main.
+ */
+export async function eraseContactData(_contact: typeof contacts.$inferSelect): Promise<void> {}
+
 /** `leads.contactName` reste le nom du contact principal : listes, import et export continuent de s'en servir. */
 export async function syncLeadContactName(leadId: string) {
   const [primary] = await db.select({ name: contacts.name }).from(contacts).where(and(eq(contacts.leadId, leadId), eq(contacts.isPrimary, true)));
@@ -138,6 +144,40 @@ export async function contactRoutes(app: FastifyInstance) {
       if (next) await makePrimary(found.lead.id, next.id);
     }
     await syncLeadContactName(found.lead.id);
+    return reply.code(204).send();
+  });
+
+  // RGPD — droit d'accès : toutes les données gardées sur une personne, en JSON.
+  app.get<{ Params: { id: string } }>("/contacts/:id/export", { preHandler: requirePermission("lead:export") }, async (req, reply) => {
+    const { subject } = req.member!;
+    const found = await findContact(subject, req.params.id);
+    if (!found) return reply.code(404).send({ error: "not_found" });
+    if (!can(subject, "lead:export", leadAttrs(found.lead))) return reply.code(403).send({ error: "forbidden" });
+    const { contact, lead } = found;
+    req.auditLabel = contact.name;
+    reply.header("content-disposition", `attachment; filename="contact-${contact.id}.json"`);
+    return {
+      exportedAt: new Date().toISOString(),
+      contact: { name: contact.name, role: contact.role, phone: contact.phone, whatsapp: contact.whatsapp, email: contact.email, notes: contact.notes, isPrimary: contact.isPrimary, createdAt: contact.createdAt },
+      lead: { id: lead.id, name: lead.name, city: lead.city },
+    };
+  });
+
+  // RGPD — droit à l'effacement : la personne disparaît (et son nom du lead). Irréversible, donc une confirmation explicite.
+  app.post<{ Params: { id: string } }>("/contacts/:id/erase", { preHandler: requirePermission("lead:delete") }, async (req, reply) => {
+    if ((req.body as { confirm?: unknown } | null)?.confirm !== true) return reply.code(400).send({ error: "invalid_body", issues: [{ message: "confirmation requise", path: ["confirm"] }] });
+    const { subject } = req.member!;
+    const found = await findContact(subject, req.params.id);
+    if (!found) return reply.code(404).send({ error: "not_found" });
+    if (!can(subject, "lead:delete", leadAttrs(found.lead))) return reply.code(403).send({ error: "forbidden" });
+    await eraseContactData(found.contact);
+    await db.delete(contacts).where(eq(contacts.id, found.contact.id));
+    if (found.contact.isPrimary) {
+      const [next] = await db.select().from(contacts).where(eq(contacts.leadId, found.lead.id)).orderBy(asc(contacts.createdAt)).limit(1);
+      if (next) await makePrimary(found.lead.id, next.id);
+    }
+    await syncLeadContactName(found.lead.id);
+    req.auditLabel = "contact effacé (RGPD)"; // le nom n'est volontairement pas gardé dans le journal
     return reply.code(204).send();
   });
 
