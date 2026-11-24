@@ -14,7 +14,7 @@ export default async function Image() {
   return new ImageResponse(
     (
       <div style={{ display: "flex", width: "100%", height: "100%", background: "#ffffff", alignItems: "center", padding: 90, gap: 70 }}>
-        <img src={src} width={260} height={300} alt="" />
+        <img src={src} width={300} height={300} alt="" />
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 110, fontWeight: 700, color: "#14222e" }}>{BRAND.name}</div>
           <div style={{ fontSize: 42, color: "#5a6b78", marginTop: 12, maxWidth: 640 }}>Prospection et suivi de leads sur le terrain</div>

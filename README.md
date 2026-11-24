@@ -1,6 +1,6 @@
 # Hivation
 
-> **Changer le nom du produit** : une seule ligne par application. Site : `name` dans [web/src/lib/brand.ts](web/src/lib/brand.ts) (interface, titres, référencement, documentation). API : `BRAND_NAME` dans [api/src/brand.ts](api/src/brand.ts) (e-mails, expéditeur par défaut). Le logo (`web/public/logo.png`, `web/src/app/opengraph-image.tsx`) se remplace à part. Les identifiants techniques (`harvest_session`, clés `harvest.*` du navigateur, noms de base) gardent leur nom : les changer déconnecterait les utilisateurs.
+> **Changer le nom du produit** : une seule ligne par application. Site : `name` dans [web/src/lib/brand.ts](web/src/lib/brand.ts) (interface, titres, référencement, documentation). API : `BRAND_NAME` dans [api/src/brand.ts](api/src/brand.ts) (e-mails, expéditeur par défaut). Le logo se remplace à part : `web/public/logo.svg`, `logo-on-blue.svg`, `logo.png`, `icon-192.png`, `icon-512.png`, `web/src/app/icon.svg` et `apple-icon.png`. Les identifiants techniques (`harvest_session`, clés `harvest.*` du navigateur, noms de base) gardent leur nom : les changer déconnecterait les utilisateurs.
 
 Prospection et suivi de leads sur le terrain. Deux projets indépendants :
 

@@ -131,7 +131,7 @@ export function Shell({ children }: { children: ReactNode }) {
         {/* Rail de modules, 80 px */}
         <nav aria-label="Modules" className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 bg-accent py-3 md:flex">
           <Link href="/" aria-label={BRAND.name} className="mb-2 flex size-11 items-center justify-center">
-            <Image src="/logo.png" alt="" width={34} height={39} priority />
+            <Image src="/logo-on-blue.svg" alt="" width={38} height={38} priority />
           </Link>
           {modules.map((m) => (
             <Link
@@ -169,7 +169,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-rule bg-card px-6">
             <div className="flex items-center gap-3">
               <Link href="/" aria-label={BRAND.name} className="md:hidden">
-                <Image src="/logo.png" alt="" width={24} height={28} />
+                <Image src="/logo.svg" alt="" width={26} height={26} />
               </Link>
               <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-small">
                 <Link href="/" className="hidden text-muted hover:text-ink hover:underline sm:inline">Admin</Link>
