@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { FIELD_DOCS, IGNORED_EXPORT_COLUMNS } from "@/lib/lead-fields";
@@ -71,10 +72,10 @@ export default function Page() {
         </section>
       ))}
 
-      <h2>Colonnes d’un export Harvest</h2>
+      <h2>Colonnes d’un export {BRAND.name}</h2>
       <p>
         Ces colonnes sont reconnues dans un fichier issu de <Link href="/docs/export">l’export</Link> mais ne sont pas
-        importées, car Harvest les calcule lui-même :{" "}
+        importées, car {BRAND.name} les calcule lui-même :{" "}
         {IGNORED_EXPORT_COLUMNS.map((c, i) => (
           <span key={c}>
             {i > 0 && ", "}
@@ -86,7 +87,7 @@ export default function Page() {
 
       <Callout title="Coordonnées et position">
         <code>lat</code> et <code>lng</code> vont toujours ensemble : l’une sans l’autre est une erreur. Si elles sont
-        absentes, Harvest cherche la position à partir du lien Google Maps ou de l’adresse. Voir{" "}
+        absentes, {BRAND.name} cherche la position à partir du lien Google Maps ou de l’adresse. Voir{" "}
         <Link href="/docs/localisation">Position sur la carte</Link>.
       </Callout>
     </DocArticle>

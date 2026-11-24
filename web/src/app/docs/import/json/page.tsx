@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, CodeBlock, DocArticle } from "@/components/docs/blocks";
 import { EXAMPLE_FRENCH_JSON, EXAMPLE_WRAPPED_JSON, MINIMAL_JSON, SAMPLE_JSON } from "@/lib/lead-fields";
@@ -47,7 +48,7 @@ export default function Page() {
       <CodeBlock lang="json" label="exemple en français" code={EXAMPLE_FRENCH_JSON} />
 
       <Callout title="Clés inconnues">
-        Une clé que Harvest ne connaît pas est ignorée et signalée dans le rapport d’analyse. Une entrée qui n’est pas un
+        Une clé que {BRAND.name} ne connaît pas est ignorée et signalée dans le rapport d’analyse. Une entrée qui n’est pas un
         objet (un nombre, une liste, <code>null</code>) est rejetée avec son numéro d’ordre dans le tableau.
       </Callout>
 

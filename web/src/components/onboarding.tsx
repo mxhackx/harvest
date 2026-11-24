@@ -1,5 +1,6 @@
 "use client";
 
+import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
@@ -43,7 +44,7 @@ export function Onboarding() {
       <div className="flex w-full max-w-[400px] flex-col gap-6 rounded-card border border-frame bg-card p-8">
         <header className="flex flex-col items-center gap-2 text-center">
           <Image src="/logo.png" alt="" width={52} height={60} priority />
-          <span className="font-serif text-brand font-semibold">Harvest</span>
+          <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
           <h1 className="text-title font-semibold">Créez votre entreprise</h1>
           <p className="text-small text-muted">Elle sera votre espace de travail. Vous en serez le CEO.</p>
         </header>

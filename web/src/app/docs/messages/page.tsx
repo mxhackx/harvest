@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -34,8 +35,8 @@ export default function Page() {
         <li>Relisez et retouchez le texte, puis cliquez sur <strong>Ouvrir WhatsApp</strong> (ou l’e-mail).</li>
       </ol>
       <p>
-        Harvest ouvre WhatsApp ou votre messagerie avec le texte prérempli : <strong>c’est vous qui appuyez sur
-        envoyer</strong>. Harvest ne peut pas savoir si le message est parti ; il inscrit l’envoi dans le{" "}
+        {BRAND.name} ouvre WhatsApp ou votre messagerie avec le texte prérempli : <strong>c’est vous qui appuyez sur
+        envoyer</strong>. {BRAND.name} ne peut pas savoir si le message est parti ; il inscrit l’envoi dans le{" "}
         fil d’activité du lead, ce qui garde la trace de ce que vous avez préparé.
       </p>
       <Callout title="Numéro manquant">

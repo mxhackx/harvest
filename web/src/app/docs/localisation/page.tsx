@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -20,7 +21,7 @@ export default function Page() {
       </ul>
 
       <h2>Comment la position est trouvée</h2>
-      <p>Harvest utilise la première source disponible, dans cet ordre :</p>
+      <p>{BRAND.name} utilise la première source disponible, dans cet ordre :</p>
       <ol>
         <li>
           <strong>Les coordonnées</strong> saisies ou importées (<code>lat</code> et <code>lng</code>), ou le point
@@ -36,7 +37,7 @@ export default function Page() {
         </li>
       </ol>
       <p>
-        Sans coordonnées, sans lien et sans adresse, le lead reste « sans position » : Harvest ne le place jamais au
+        Sans coordonnées, sans lien et sans adresse, le lead reste « sans position » : {BRAND.name} ne le place jamais au
         centre d’une ville au hasard. La carte indique combien de leads sont dans ce cas, et un clic sur « les placer »
         relance la recherche pour ceux qui ont une adresse ou un lien.
       </p>
@@ -69,7 +70,7 @@ export default function Page() {
       </p>
 
       <Callout title="Confidentialité de la recherche d’adresse">
-        Pour placer un lead à partir de son adresse, Harvest envoie cette adresse à un service de recherche
+        Pour placer un lead à partir de son adresse, {BRAND.name} envoie cette adresse à un service de recherche
         d’adresses (Nominatim, d’OpenStreetMap). Aucun autre renseignement sur le lead n’est transmis. Cette recherche
         peut être désactivée par l’administrateur de l’installation ; il reste alors possible de coller un lien Google
         Maps ou de placer le lead sur la carte.

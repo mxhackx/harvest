@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -20,7 +21,7 @@ export default function Page() {
       <ol>
         <li>Ouvrez <strong>CRM › Leads</strong>, puis cliquez sur <strong>Importer</strong>.</li>
         <li>Choisissez votre fichier, ou collez son contenu dans la zone de texte.</li>
-        <li>Cliquez sur <strong>Analyser</strong>. Harvest lit le fichier et prépare un rapport, sans rien créer.</li>
+        <li>Cliquez sur <strong>Analyser</strong>. {BRAND.name} lit le fichier et prépare un rapport, sans rien créer.</li>
         <li>Lisez le rapport : nombre de leads à importer, doublons, lignes invalides et aperçu des premiers leads.</li>
         <li>Cliquez sur <strong>Importer N leads</strong> pour confirmer.</li>
       </ol>
@@ -35,7 +36,7 @@ export default function Page() {
         <li><strong>À importer</strong> : les leads qui seront créés.</li>
         <li><strong>Invalides ignorées</strong> : les lignes qui ne respectent pas le format, avec leur numéro de ligne.</li>
         <li><strong>Doublons ignorés</strong> : voir ci-dessous.</li>
-        <li><strong>Colonnes non reconnues</strong> : les colonnes de votre fichier que Harvest ne connaît pas. Elles sont ignorées.</li>
+        <li><strong>Colonnes non reconnues</strong> : les colonnes de votre fichier que {BRAND.name} ne connaît pas. Elles sont ignorées.</li>
         <li><strong>Aperçu</strong> : les cinq premiers leads tels qu’ils seront créés.</li>
       </ul>
 
@@ -56,7 +57,7 @@ export default function Page() {
       <h2>Position sur la carte</h2>
       <p>
         Les leads importés apparaissent sur la carte dès qu’ils ont une position. Si le fichier ne contient pas de
-        coordonnées, Harvest les cherche à partir du lien Google Maps ou de l’adresse. Cette recherche se fait en
+        coordonnées, {BRAND.name} les cherche à partir du lien Google Maps ou de l’adresse. Cette recherche se fait en
         arrière-plan, un lead à la fois : les points arrivent sur la carte au fil de l’eau, sans vous faire attendre.
         Voir <Link href="/docs/localisation">Position sur la carte</Link>.
       </p>
@@ -73,7 +74,7 @@ export default function Page() {
         ))}
       </ul>
 
-      <Callout title="Un export Harvest se réimporte tel quel">
+      <Callout title={`Un export ${BRAND.name} se réimporte tel quel`}>
         Les fichiers produits par <Link href="/docs/export">l’export</Link> peuvent être importés sans modification,
         par exemple pour copier des leads d’une entreprise à une autre. Les colonnes propres à l’export (identifiant,
         propriétaire, dates) sont reconnues et ignorées.

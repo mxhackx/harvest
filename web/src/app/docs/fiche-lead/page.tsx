@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
@@ -16,7 +17,7 @@ export default function Page() {
       <h2>Changer l’étape</h2>
       <p>
         La rangée d’étapes en haut de la fiche permet de faire avancer le lead en un clic. Pour une étape « perdue »,
-        Harvest demande le motif. Chaque changement est inscrit dans le fil d’activité.
+        {BRAND.name} demande le motif. Chaque changement est inscrit dans le fil d’activité.
       </p>
 
       <h2>L’opportunité</h2>

@@ -1,5 +1,6 @@
 "use client";
 
+import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -76,7 +77,7 @@ export function InvitationPage() {
       <div className="flex w-full max-w-[420px] flex-col gap-5 rounded-card border border-frame bg-card p-8">
         <header className="flex flex-col items-center gap-2 text-center">
           <Image src="/logo.png" alt="" width={52} height={60} priority />
-          <span className="font-serif text-brand font-semibold">Harvest</span>
+          <span className="font-serif text-brand font-semibold">{BRAND.name}</span>
           <h1 className="text-title font-semibold">Invitation</h1>
         </header>
         {error && <Notice onClose={() => setError(null)}>{error}</Notice>}

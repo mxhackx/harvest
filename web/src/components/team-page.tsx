@@ -169,7 +169,7 @@ export function TeamPage() {
       </Panel>
 
       {can("member:create") && (
-        <Panel title="Inviter quelqu'un" description="Harvest n’envoie pas d'e-mail : copiez le lien et transmettez-le. Il ne marche que pour cette adresse, pendant 7 jours.">
+        <Panel title="Inviter quelqu'un" description="Un e-mail avec le lien part vers la personne invitée ; vous pouvez aussi copier le lien. Il ne marche que pour cette adresse, pendant 7 jours.">
           <form onSubmit={createInvite} className="grid gap-3 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end">
             <Field label="E-mail" type="email" required value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} />
             <Select label="Rôle" value={invite.roleId || defaultRoleId} onChange={(e) => setInvite({ ...invite, roleId: e.target.value })} options={roles.map((r) => ({ value: r.id, label: r.name }))} />

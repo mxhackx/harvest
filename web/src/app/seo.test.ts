@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import { describe, expect, it } from "vitest";
 import { flattenDocs } from "@/lib/docs";
 import { SITE, SHARE_IMAGE, docMetadata, jsonLd, pageMetadata } from "@/lib/seo";
@@ -18,8 +19,8 @@ describe("pageMetadata", () => {
     expect(m.title).toBe("Leads");
     expect(m.alternates?.canonical).toBe("/leads");
     expect(m.robots).toEqual({ index: true, follow: true });
-    expect(m.openGraph).toMatchObject({ title: "Leads · Harvest", description: "Gérez vos leads.", url: "/leads", locale: "fr_FR", siteName: "Harvest" });
-    expect(m.twitter).toMatchObject({ card: "summary_large_image", title: "Leads · Harvest" });
+    expect(m.openGraph).toMatchObject({ title: `Leads · ${BRAND.name}`, description: "Gérez vos leads.", url: "/leads", locale: "fr_FR", siteName: BRAND.name });
+    expect(m.twitter).toMatchObject({ card: "summary_large_image", title: `Leads · ${BRAND.name}` });
   });
   it("page privée : jamais indexée ni suivie", () => {
     expect(pageMetadata({ ...base, index: false }).robots).toEqual({ index: false, follow: false });
@@ -88,7 +89,7 @@ describe("sitemap.xml", () => {
 describe("manifest", () => {
   it("décrit l'application installable", () => {
     const m = manifest();
-    expect(m).toMatchObject({ name: "Harvest", short_name: "Harvest", lang: "fr", start_url: "/", display: "standalone", theme_color: "#0868c9", background_color: "#ffffff" });
+    expect(m).toMatchObject({ name: BRAND.name, short_name: BRAND.name, lang: "fr", start_url: "/", display: "standalone", theme_color: "#0868c9", background_color: "#ffffff" });
     expect(m.icons?.map((i) => i.sizes)).toEqual(["192x192", "512x512"]);
   });
 });

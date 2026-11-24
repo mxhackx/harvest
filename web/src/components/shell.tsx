@@ -1,5 +1,6 @@
 "use client";
 
+import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -129,7 +130,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <div className="flex min-h-dvh">
         {/* Rail de modules, 80 px */}
         <nav aria-label="Modules" className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col items-center gap-2 bg-accent py-3 md:flex">
-          <Link href="/" aria-label="Harvest" className="mb-2 flex size-11 items-center justify-center">
+          <Link href="/" aria-label={BRAND.name} className="mb-2 flex size-11 items-center justify-center">
             <Image src="/logo.png" alt="" width={34} height={39} priority />
           </Link>
           {modules.map((m) => (
@@ -150,7 +151,7 @@ export function Shell({ children }: { children: ReactNode }) {
         {/* Colonne du module, 232 px */}
         <aside className="sticky top-0 hidden h-dvh w-[232px] shrink-0 flex-col gap-4 border-r border-rule bg-card p-3 md:flex">
           <div className="rounded-control border border-frame px-3 py-2">
-            <p className="font-serif text-brand font-semibold leading-tight">Harvest</p>
+            <p className="font-serif text-brand font-semibold leading-tight">{BRAND.name}</p>
             <p className="truncate text-small text-muted">{session.company.name}</p>
           </div>
           {pinnedPages.length > 0 && (
@@ -167,7 +168,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-rule bg-card px-6">
             <div className="flex items-center gap-3">
-              <Link href="/" aria-label="Harvest" className="md:hidden">
+              <Link href="/" aria-label={BRAND.name} className="md:hidden">
                 <Image src="/logo.png" alt="" width={24} height={28} />
               </Link>
               <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-small">

@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, CodeBlock, DocArticle } from "@/components/docs/blocks";
 import { EXAMPLE_SEMICOLON_CSV, MINIMAL_CSV, SAMPLE_CSV } from "@/lib/lead-fields";
@@ -11,7 +12,7 @@ export default function Page() {
       <h2>Les règles</h2>
       <ul>
         <li><strong>Première ligne = en-têtes.</strong> Chaque colonne porte le nom d’un <Link href="/docs/import/champs">champ</Link>.</li>
-        <li><strong>Séparateur</strong> : virgule, point-virgule ou tabulation. Harvest le devine d’après la première ligne.</li>
+        <li><strong>Séparateur</strong> : virgule, point-virgule ou tabulation. {BRAND.name} le devine d’après la première ligne.</li>
         <li><strong>Encodage</strong> : UTF-8 (avec ou sans BOM). Les accents sont conservés.</li>
         <li><strong>Une colonne <code>name</code> est obligatoire</strong> (ou <code>nom</code>). Les autres colonnes sont facultatives.</li>
         <li><strong>Ordre libre</strong> : les colonnes peuvent être dans n’importe quel ordre.</li>
@@ -66,7 +67,7 @@ export default function Page() {
 
       <Callout title="Avertissement : formules">
         Un nom qui commence par <code>=</code>, <code>+</code>, <code>-</code> ou <code>@</code> est importé tel quel
-        comme du texte. À l’export, Harvest ajoute une apostrophe devant pour qu’un tableur ne l’exécute jamais comme
+        comme du texte. À l’export, {BRAND.name} ajoute une apostrophe devant pour qu’un tableur ne l’exécute jamais comme
         une formule.
       </Callout>
     </DocArticle>

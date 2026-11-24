@@ -1,10 +1,11 @@
+import { BRAND } from "@/lib/brand";
 import { TemplatesPage } from "@/components/templates-page";
 import { pageMetadata } from "@/lib/seo";
 
 // Page privée : jamais indexée par les moteurs de recherche.
 export const metadata = pageMetadata({
   title: "Modèles de messages",
-  description: "Modèles de messages de votre CRM Harvest.",
+  description: `Modèles de messages de votre CRM ${BRAND.name}.`,
   path: "/modeles",
   index: false,
 });

@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { DOCS } from "@/lib/docs";
@@ -10,8 +11,8 @@ export default function Page() {
     <DocArticle href="/docs">
       <h2>Par où commencer</h2>
       <p>
-        Harvest vous aide à repérer, visiter et suivre vos leads sur le terrain. Cette documentation explique comment
-        faire entrer vos leads existants dans Harvest, comment en sortir vos données, et comment chaque lead est placé
+        {BRAND.name} vous aide à repérer, visiter et suivre vos leads sur le terrain. Cette documentation explique comment
+        faire entrer vos leads existants dans {BRAND.name}, comment en sortir vos données, et comment chaque lead est placé
         sur la carte.
       </p>
       <ol>

@@ -1,3 +1,4 @@
+import { BRAND } from "./brand";
 export type DocPage = { href: string; title: string; description: string; children?: DocPage[] };
 
 /** Arborescence de la documentation : source unique pour le menu, le sitemap, les liens précédent/suivant. */
@@ -5,7 +6,7 @@ export const DOCS: DocPage[] = [
   {
     href: "/docs",
     title: "Présentation",
-    description: "Ce que fait Harvest et où trouver chaque guide : import, export et localisation des leads.",
+    description: `Ce que fait ${BRAND.name} et où trouver chaque guide : import, export et localisation des leads.`,
   },
   {
     href: "/docs/import",
