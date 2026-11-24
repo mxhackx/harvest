@@ -20,9 +20,9 @@ import { Button, Menu, MenuItem, Modal, Notice, Select } from "./ui";
 type Tab = "all" | "mine";
 type View = "board" | "table";
 type SortKey = "recent" | "name" | "value";
-type Filters = { visit: "all" | "to_visit" | "visited"; position: "all" | "with" | "without"; sector: string };
+type Filters = { mode: "all" | "onsite" | "remote"; visit: "all" | "to_visit" | "visited"; position: "all" | "with" | "without"; sector: string };
 
-const NO_FILTERS: Filters = { visit: "all", position: "all", sector: "all" };
+const NO_FILTERS: Filters = { mode: "all", visit: "all", position: "all", sector: "all" };
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "recent", label: "Plus récents" },
   { key: "name", label: "Nom (A → Z)" },
@@ -69,6 +69,7 @@ export function LeadsPage() {
     const q = query.trim().toLowerCase();
     const list = (leads ?? []).filter((l) => {
       if (tab === "mine" && l.ownerId !== me.user.id) return false;
+      if (filters.mode !== "all" && l.visitMode !== filters.mode) return false;
       if (filters.visit === "visited" && !l.visitedAt) return false;
       if (filters.visit === "to_visit" && l.visitedAt) return false;
       const located = l.lat !== null && l.lng !== null;
@@ -93,7 +94,7 @@ export function LeadsPage() {
     return new Set([...selected].filter((id) => visible.has(id)));
   }, [selected, shown]);
 
-  const activeFilters = (filters.visit !== "all" ? 1 : 0) + (filters.position !== "all" ? 1 : 0) + (filters.sector !== "all" ? 1 : 0);
+  const activeFilters = (filters.mode !== "all" ? 1 : 0) + (filters.visit !== "all" ? 1 : 0) + (filters.position !== "all" ? 1 : 0) + (filters.sector !== "all" ? 1 : 0);
   const mineCount = (leads ?? []).filter((l) => l.ownerId === me.user.id).length;
 
   const toggle = (id: string) =>
@@ -328,6 +329,16 @@ export function LeadsPage() {
             {() => (
               <div className="flex w-72 flex-col gap-3 p-2">
                 <Select
+                  label="Type de prospect"
+                  value={filters.mode}
+                  onChange={(e) => setFilters((f) => ({ ...f, mode: e.target.value as Filters["mode"] }))}
+                  options={[
+                    { value: "all", label: "Tous" },
+                    { value: "onsite", label: "À visiter en présentiel" },
+                    { value: "remote", label: "Simples (à distance)" },
+                  ]}
+                />
+                <Select
                   label="Visite"
                   value={filters.visit}
                   onChange={(e) => setFilters((f) => ({ ...f, visit: e.target.value as Filters["visit"] }))}
@@ -397,7 +408,7 @@ export function LeadsPage() {
               setTab(c.tab);
               setQuery(c.query);
               setSort(c.sort);
-              setFilters(c.filters);
+              setFilters({ ...NO_FILTERS, ...c.filters }); // une vue enregistrée avant le type de prospect n'a pas ce filtre
             }}
           />
 

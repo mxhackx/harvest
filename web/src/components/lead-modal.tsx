@@ -69,6 +69,7 @@ export function LeadModal({
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
   const [accountList, setAccountList] = useState<{ id: string; name: string }[]>([]);
   const [accountId, setAccountId] = useState(lead?.accountId ?? "");
+  const [visitMode, setVisitMode] = useState<"onsite" | "remote">(lead?.visitMode ?? "onsite");
   useEffect(() => {
     api<CustomField[]>("/custom-fields", { companyId }).then(setCustomFields).catch(() => {});
     api<{ id: string; name: string }[]>("/accounts", { companyId }).then(setAccountList).catch(() => {});
@@ -186,6 +187,7 @@ export function LeadModal({
         probability,
         expectedCloseOn: text("expectedCloseOn") || null,
         accountId: accountId || null,
+        visitMode,
         // champs personnalisés : une valeur vide efface
         custom: Object.fromEntries(customFields.map((cf) => [cf.id, parseCustomInput(cf.type, String(f.get(`custom:${cf.id}`) ?? ""))])),
         ...positionPart,
@@ -305,6 +307,18 @@ export function LeadModal({
             </div>
           </Group>
         )}
+
+        <Group title="Type de prospect">
+          <Select
+            label="Comment ce prospect est-il suivi ?"
+            value={visitMode}
+            onChange={(e) => setVisitMode(e.target.value as "onsite" | "remote")}
+            options={[
+              { value: "onsite", label: "À visiter en présentiel (carte, tournées, vagues)" },
+              { value: "remote", label: "Prospect simple : joint à distance (téléphone, WhatsApp, e-mail)" },
+            ]}
+          />
+        </Group>
 
         <Group title="Compte">
           <Select label="Entreprise cliente (compte)" value={accountId} onChange={(e) => setAccountId(e.target.value)} options={[{ value: "", label: "Aucun compte" }, ...accountList.map((a) => ({ value: a.id, label: a.name }))]} />

@@ -59,11 +59,13 @@ export function LeadMap({
   const toggleButton = useRef<HTMLButtonElement>(null);
 
   const { stages } = useStages();
-  const todayLeads = useMemo(() => leadsOfTheDay(leads, todayIds), [leads, todayIds]);
-  const scoped = scope === "today" ? todayLeads : leads;
+  // la carte sert aux visites : seuls les prospects à visiter en présentiel y figurent (les prospects simples n'ont pas de visite)
+  const onsiteLeads = useMemo(() => leads.filter((l) => l.visitMode === "onsite"), [leads]);
+  const todayLeads = useMemo(() => leadsOfTheDay(onsiteLeads, todayIds), [onsiteLeads, todayIds]);
+  const scoped = scope === "today" ? todayLeads : onsiteLeads;
   const located = useMemo(() => scoped.filter(isLocated), [scoped]);
   const locatedToday = useMemo(() => todayLeads.filter(isLocated).length, [todayLeads]);
-  const locatedAll = useMemo(() => leads.filter(isLocated).length, [leads]);
+  const locatedAll = useMemo(() => onsiteLeads.filter(isLocated).length, [onsiteLeads]);
   // « Toutes étapes » laisse de côté les leads perdus : on ne va pas les visiter. Le filtre « Perdu » les montre.
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: 0 };
