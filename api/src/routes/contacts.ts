@@ -3,7 +3,7 @@ import { and, asc, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
 import { contacts, leads } from "../db/schema.js";
-import { findReadableLead, leadAttrs } from "../leads/access.js";
+import { alive, findReadableLead, leadAttrs } from "../leads/access.js";
 import { whatsappField } from "../leads/fields.js";
 import { can } from "../rbac/policy.js";
 import { scopeCondition } from "../rbac/sql.js";
@@ -68,6 +68,7 @@ export async function contactRoutes(app: FastifyInstance) {
     const term = q.data.q ? `%${likeEscape(q.data.q)}%` : null;
     const where = and(
       scopeCondition(leads, subject, "lead:read")!,
+      alive,
       term ? or(ilike(contacts.name, term), ilike(contacts.role, term), ilike(contacts.phone, term), ilike(contacts.whatsapp, term), ilike(contacts.email, term), ilike(leads.name, term)) : undefined,
     );
     const [items, [{ total }]] = await Promise.all([

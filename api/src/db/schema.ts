@@ -207,6 +207,9 @@ export const leads = pgTable("leads", {
   visitedAt: timestamp("visited_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  // corbeille : un lead supprimé est seulement masqué (deletedAt) ; il est effacé pour de bon après 30 jours ou à la demande
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  deletedBy: uuid("deleted_by").references(() => users.id, { onDelete: "set null" }),
 });
 
 export const eventKindEnum = pgEnum("event_kind", ["visit", "call", "followup", "other"]);

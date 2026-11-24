@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { and, desc, eq, getTableColumns, inArray, isNull, ne, or, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
 import { companies, contacts, leads, memberships, notifications, users } from "../db/schema.js";
@@ -16,13 +16,18 @@ import { requireMember, requirePermission } from "../plugins/auth.js";
 
 import { createBody, patchBody } from "../leads/schema.js";
 import { logActivities } from "../activities/log.js";
-import { findReadableLead, leadAttrs } from "../leads/access.js";
+import { alive, findReadableLead, leadAttrs } from "../leads/access.js";
+import { TRASH_DAYS, trashLeads } from "../leads/trash.js";
 import { ensurePrimaryContact } from "./contacts.js";
 import { closingFields, defaultStage, listStages } from "../stages/store.js";
 
 const uuid = z.string().uuid();
 
-const scopeWhere = (subject: Subject, permission: string) => scopeCondition(leads, subject, permission);
+/** Portée de lecture ou d'action, hors corbeille (la corbeille a ses propres routes). */
+const scopeWhere = (subject: Subject, permission: string) => {
+  const scope = scopeCondition(leads, subject, permission);
+  return scope && and(scope, alive);
+};
 
 const attrs = leadAttrs;
 const findLead = findReadableLead;
@@ -64,11 +69,11 @@ const bulkUpdateBody = z
 const bulkDeleteBody = z.object({ ids: bulkIds });
 
 /** Leads demandés, restreints à l'entreprise ; chacun doit ensuite passer `can()` pour l'action voulue. */
-async function loadAllowed(subject: Subject, ids: string[], permission: string) {
+async function loadAllowed(subject: Subject, ids: string[], permission: string, opts: { trashed?: boolean } = {}) {
   const rows = await db
     .select()
     .from(leads)
-    .where(and(eq(leads.companyId, subject.companyId), inArray(leads.id, [...new Set(ids)])));
+    .where(and(eq(leads.companyId, subject.companyId), opts.trashed ? isNotNull(leads.deletedAt) : alive, inArray(leads.id, [...new Set(ids)])));
   return rows.filter((l) => can(subject, "lead:read", attrs(l)) && can(subject, permission, attrs(l)));
 }
 
@@ -387,7 +392,7 @@ export async function leadRoutes(app: FastifyInstance) {
     if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
     const { subject } = req.member!;
     const allowed = await loadAllowed(subject, body.data.ids, "lead:delete");
-    if (allowed.length) await db.delete(leads).where(inArray(leads.id, allowed.map((l) => l.id)));
+    if (allowed.length) await trashLeads(allowed.map((l) => l.id), subject.userId);
     return { affected: allowed.length, skipped: new Set(body.data.ids).size - allowed.length };
   });
 
@@ -467,7 +472,44 @@ export async function leadRoutes(app: FastifyInstance) {
     const lead = await findLead(subject, req.params.id);
     if (!lead) return reply.code(404).send({ error: "not_found" });
     if (!can(subject, "lead:delete", attrs(lead))) return reply.code(403).send({ error: "forbidden" });
-    await db.delete(leads).where(eq(leads.id, lead.id));
+    await trashLeads([lead.id], subject.userId);
     return reply.code(204).send();
+  });
+
+  // --- Corbeille : on y retrouve ce qu'on a supprimé, pendant 30 jours. Seuls ceux qui peuvent supprimer ces leads la voient.
+  app.get("/leads/trash", { preHandler: requirePermission("lead:delete") }, async (req) => {
+    const { subject } = req.member!;
+    const scope = scopeCondition(leads, subject, "lead:delete")!;
+    const rows = await db
+      .select({ lead: leads, deletedByName: users.name })
+      .from(leads)
+      .leftJoin(users, eq(users.id, leads.deletedBy))
+      .where(and(scope, isNotNull(leads.deletedAt)))
+      .orderBy(desc(leads.deletedAt))
+      .limit(500);
+    return rows.map(({ lead, deletedByName }) => ({ ...lead, deletedByName, purgeAt: new Date(lead.deletedAt!.getTime() + TRASH_DAYS * 86_400_000) }));
+  });
+
+  app.post("/leads/trash/restore", { preHandler: requirePermission("lead:delete") }, async (req, reply) => {
+    const body = bulkDeleteBody.safeParse(req.body);
+    if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
+    const { subject } = req.member!;
+    const allowed = await loadAllowed(subject, body.data.ids, "lead:delete", { trashed: true });
+    for (const l of allowed) {
+      // le nom a pu être repris depuis la suppression : on renumérote plutôt que de créer un doublon
+      const name = pickUniqueName(l.name, await takenNames(subject.companyId, l.name, l.id));
+      await db.update(leads).set({ name, deletedAt: null, deletedBy: null, updatedAt: new Date() }).where(eq(leads.id, l.id));
+    }
+    return { affected: allowed.length, skipped: new Set(body.data.ids).size - allowed.length };
+  });
+
+  // Effacement définitif d'une sélection de la corbeille (irréversible : contacts, historique, tâches et événements partent avec).
+  app.post("/leads/trash/purge", { preHandler: requirePermission("lead:delete") }, async (req, reply) => {
+    const body = bulkDeleteBody.safeParse(req.body);
+    if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
+    const { subject } = req.member!;
+    const allowed = await loadAllowed(subject, body.data.ids, "lead:delete", { trashed: true });
+    if (allowed.length) await db.delete(leads).where(inArray(leads.id, allowed.map((l) => l.id)));
+    return { affected: allowed.length, skipped: new Set(body.data.ids).size - allowed.length };
   });
 }
