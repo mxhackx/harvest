@@ -52,6 +52,7 @@ const MODULES: Module[] = [
     href: ROUTES.leads,
     icon: UsersIcon,
     pages: [
+      { label: "Comptes", short: "Comptes", href: ROUTES.accounts, icon: BriefcaseIcon },
       { label: "Leads", short: "Leads", href: ROUTES.leads, icon: UsersIcon },
       { label: "Contacts", short: "Contacts", href: ROUTES.contacts, icon: UserIcon },
       { label: "Tâches", short: "Tâches", href: ROUTES.tasks, icon: CheckIcon },

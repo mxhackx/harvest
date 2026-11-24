@@ -75,6 +75,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   invalid_body: "Vérifiez les champs saisis.",
   forbidden: "Vous n'avez pas le droit de faire cela.",
   stage_exists: "Une étape porte déjà ce nom.",
+  account_exists: "Un compte porte déjà ce nom.",
+  lead_has_account: "Ce lead est déjà rattaché à un compte.",
   field_exists: "Un champ porte déjà ce nom.",
   too_many_fields: "Vingt champs personnalisés au plus.",
   region_exists: "Une région porte déjà ce nom.",
@@ -112,6 +114,8 @@ export type Lead = {
   id: string;
   /** région où tombe sa position (déduite des coordonnées) */
   regionId: string | null;
+  /** compte (entreprise cliente) dont ce lead est une opportunité */
+  accountId: string | null;
   /** valeurs des champs personnalisés : { identifiant du champ: valeur } */
   custom: Record<string, string | number>;
   ownerId: string;

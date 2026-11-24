@@ -22,6 +22,8 @@ export const ROUTES = {
   duplicates: `${CRM}/duplicates`,
   objectives: `${CRM}/objectives`,
   fields: `${CRM}/fields`,
+  accounts: `${CRM}/accounts`,
+  account: (id: string) => `${CRM}/accounts/${id}`,
   team: `${ERP}/team`,
   audit: `${ERP}/audit`,
   webhooks: `${ERP}/webhooks`,
