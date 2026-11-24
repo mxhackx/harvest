@@ -73,8 +73,8 @@ démarrage de l'API (`npm run start:prod`).
 | Variable | Valeur |
 | --- | --- |
 | `DATABASE_URL` | l'URL du Session pooler de Supabase |
-| `APP_URLS` | l'adresse du site, ex. `https://hivation.tech` |
-| `API_URL` | `https://hivation.tech/api` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
+| `APP_URLS` | les adresses du site, **l'application en premier** : `https://app.hivation.tech,https://hivation.tech` (la première sert aux liens des e-mails et à la redirection après connexion ; toutes sont autorisées par CORS) |
+| `API_URL` | `https://app.hivation.tech/api` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
 | `GOOGLE_*`, `GITHUB_*` | vos clés OAuth, ou vides |
 | `RESEND_API_KEY` | clé API [Resend](https://resend.com) pour les e-mails (invitations, mot de passe oublié) ; vide : aucun e-mail, les liens s'affichent à l'écran |
 | `MAIL_FROM` | expéditeur, ex. `Hivation <noreply@hivation.tech>`. Le domaine doit être vérifié chez Resend ; sans domaine, l'expéditeur par défaut (`onboarding@resend.dev`) n'écrit qu'à l'adresse de votre compte Resend |
@@ -87,7 +87,10 @@ Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok
 | --- | --- |
 | `NEXT_PUBLIC_API_URL` | `/api` |
 | `API_PROXY_TARGET` | `https://<votre-service>.onrender.com` |
-| `NEXT_PUBLIC_SITE_URL` | l'adresse du site, ex. `https://hivation.tech` |
+| `NEXT_PUBLIC_SITE_URL` | l'adresse de la vitrine, ex. `https://hivation.tech` |
+| `NEXT_PUBLIC_APP_URL` | l'adresse de l'application, ex. `https://app.hivation.tech` |
+
+Ajoutez les deux domaines (`hivation.tech` et `app.hivation.tech`) au **même** projet Vercel. Le proxy ([web/src/proxy.ts](web/src/proxy.ts)) envoie `/dashboard`, `/login`, `/invitation`, `/mot-de-passe-oublie`, `/reinitialiser` et `/onboarding` vers `app.`, et la racine de `app.` (ainsi que `/docs`) vers le bon endroit. Chaque domaine relaie `/api` pour son propre cookie de session : on se connecte sur `app.`. Sans `NEXT_PUBLIC_APP_URL`, tout reste sur un seul domaine.
 
 Redéployez : ces variables sont lues à la compilation.
 
@@ -101,8 +104,8 @@ parle qu'à un seul domaine et le cookie reste un cookie du site. Si vous préf�
 
 Dans les consoles, déclarez comme adresse de retour :
 
-- `https://hivation.tech/api/auth/google/callback`
-- `https://hivation.tech/api/auth/github/callback`
+- `https://app.hivation.tech/api/auth/google/callback`
+- `https://app.hivation.tech/api/auth/github/callback`
 
 ### À savoir
 

@@ -72,9 +72,8 @@ describe("robots.txt", () => {
 
 describe("sitemap.xml", () => {
   const urls = sitemap().map((e) => e.url);
-  it("contient l'accueil, la connexion et toutes les pages de documentation, en URL absolues", () => {
+  it("contient l'accueil et toutes les pages de documentation, en URL absolues", () => {
     expect(urls).toContain("https://harvest.example");
-    expect(urls).toContain("https://harvest.example/login");
     for (const p of flattenDocs()) expect(urls).toContain(`https://harvest.example${p.href}`);
     expect(urls.every((u) => u === "https://harvest.example" || u.startsWith("https://harvest.example/"))).toBe(true);
   });
