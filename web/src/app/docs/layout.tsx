@@ -12,7 +12,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-card">
       <header className="sticky top-0 z-20 border-b border-rule bg-card">
-        <div className="mx-auto flex h-14 max-w-[1100px] items-center gap-4 px-6">
+        <div className="flex h-14 w-full items-center gap-4 px-6">
           <Link href="/docs" className="flex shrink-0 items-center gap-3" aria-label={`Documentation ${BRAND.name}`}>
             <Image src="/logo.svg" alt="" width={26} height={26} />
             <span className="font-display text-brand font-semibold">{BRAND.name}</span>
@@ -30,7 +30,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <div className="mx-auto flex w-full max-w-[1100px] flex-1 gap-10 px-6 py-8">
+      <div className="flex w-full flex-1 gap-10 px-6 py-8">
         <aside className="sticky top-20 hidden h-fit max-h-[calc(100dvh-6rem)] w-60 shrink-0 overflow-y-auto md:block">
           <DocNav />
         </aside>
@@ -41,11 +41,11 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
               <DocNav />
             </div>
           </details>
-          <main className="max-w-3xl">{children}</main>
+          <main>{children}</main>
         </div>
       </div>
       <footer className="border-t border-rule bg-field">
-        <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-3 px-6 py-6 text-small text-muted">
+        <div className="flex w-full flex-wrap items-center justify-between gap-3 px-6 py-6 text-small text-muted">
           <span>© {BRAND.name}</span>
           <nav aria-label="Pied de page" className="flex gap-5">
             <Link href="/" className="hover:underline">Accueil</Link>
