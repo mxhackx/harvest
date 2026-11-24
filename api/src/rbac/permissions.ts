@@ -16,6 +16,8 @@ export const CATALOG = {
   verification: { actions: ["read", "create", "update"], scoped: true },
   workflow: { actions: ["read", "create", "update", "delete"], scoped: true },
   finance: { actions: ["read", "create", "update", "delete"], scoped: true },
+  // tout membre lit les régions et les vagues ; les gérer est un droit
+  wave: { actions: ["create", "update", "delete"], scoped: false },
   // journal des actions de l'entreprise : réservé au CEO
   audit: { actions: ["read"], scoped: false },
 } as const;

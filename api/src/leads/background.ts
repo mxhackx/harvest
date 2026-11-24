@@ -2,6 +2,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { leads } from "../db/schema.js";
 import { locate } from "./locate.js";
+import { assignRegions } from "../waves/geo.js";
 
 const MAX_PER_BATCH = 300;
 const pending = new Set<Promise<void>>();
@@ -24,6 +25,7 @@ export function locateInBackground(leadIds: string[], region: string, onError?: 
             .update(leads)
             .set({ lat: found.lat, lng: found.lng, locationSource: found.source, updatedAt: new Date() })
             .where(and(eq(leads.id, id), isNull(leads.lat)));
+          await assignRegions(l.companyId, [id]);
         }
       } catch (e) {
         onError?.(e);

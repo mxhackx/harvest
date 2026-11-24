@@ -61,6 +61,9 @@ export const ERROR_MESSAGES: Record<string, string> = {
   invalid_body: "Vérifiez les champs saisis.",
   forbidden: "Vous n'avez pas le droit de faire cela.",
   stage_exists: "Une étape porte déjà ce nom.",
+  region_exists: "Une région porte déjà ce nom.",
+  region_in_use: "Cette région a des vagues : elle garde leur historique et ne peut pas être supprimée.",
+  wave_closed: "Cette vague est clôturée : elle ne peut plus être modifiée.",
   too_many_stages: "Vingt étapes au plus.",
   last_open_stage: "Il faut garder au moins une étape ouverte.",
   not_found: "Introuvable ou hors de votre périmètre.",
@@ -89,6 +92,8 @@ export const errorMessage = (code?: string | null) =>
 
 export type Lead = {
   id: string;
+  /** région où tombe sa position (déduite des coordonnées) */
+  regionId: string | null;
   ownerId: string;
   teamId: string | null;
   name: string;

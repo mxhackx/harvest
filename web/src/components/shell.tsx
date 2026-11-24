@@ -13,7 +13,7 @@ import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
 import { usePins } from "@/lib/pins";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
+import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
 import { NotificationsBell } from "./notifications-bell";
 import { Notice } from "./ui";
 
@@ -31,6 +31,17 @@ const MODULES: Module[] = [
     pages: [
       { label: "Tableau de bord", short: "Accueil", href: ROUTES.home, icon: HomeIcon },
       { label: "Calendrier", short: "Calendrier", href: ROUTES.calendar, icon: CalendarIcon },
+    ],
+  },
+  {
+    key: "waves",
+    label: "Vagues",
+    href: ROUTES.waves,
+    icon: MapIcon,
+    pages: [
+      { label: "Vagues", short: "Vagues", href: ROUTES.waves, icon: BoardIcon },
+      { label: "Régions", short: "Régions", href: ROUTES.regions, icon: PinIcon },
+      { label: "Carte", short: "Carte", href: ROUTES.map, icon: MapIcon },
     ],
   },
   {

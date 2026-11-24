@@ -169,6 +169,23 @@ export const pipelineStages = pgTable(
   (t) => [uniqueIndex("pipeline_stages_company_key").on(t.companyId, t.key)],
 );
 
+/** Zone de prospection : un centre et un rayon. Un lead appartient à la plus proche région qui le contient. */
+export const regions = pgTable(
+  "regions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    lat: doublePrecision("lat").notNull(),
+    lng: doublePrecision("lng").notNull(),
+    radiusKm: doublePrecision("radius_km").notNull().default(5),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("regions_company").on(t.companyId)],
+);
+
 export const leads = pgTable("leads", {
   id: uuid("id").primaryKey().defaultRandom(),
   companyId: uuid("company_id")
@@ -212,6 +229,8 @@ export const leads = pgTable("leads", {
   // corbeille : un lead supprimé est seulement masqué (deletedAt) ; il est effacé pour de bon après 30 jours ou à la demande
   deletedAt: timestamp("deleted_at", { withTimezone: true }),
   deletedBy: uuid("deleted_by").references(() => users.id, { onDelete: "set null" }),
+  // région où tombe sa position (déduite des coordonnées, jamais saisie) ; null = hors de toute région ou sans position
+  regionId: uuid("region_id").references(() => regions.id, { onDelete: "set null" }),
 });
 
 export const eventKindEnum = pgEnum("event_kind", ["visit", "call", "followup", "other"]);
@@ -430,4 +449,30 @@ export const auditLog = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [index("audit_company_time").on(t.companyId, t.createdAt)],
+);
+
+/**
+ * Vague : une région couverte pendant une période, avec un objectif de visites. Clôturée, elle garde son bilan
+ * (visités, convertis, à repasser) tel qu'il était ce jour-là.
+ */
+export const waves = pgTable(
+  "waves",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    regionId: uuid("region_id")
+      .notNull()
+      .references(() => regions.id),
+    name: text("name").notNull(),
+    startsOn: date("starts_on", { mode: "string" }).notNull(),
+    endsOn: date("ends_on", { mode: "string" }).notNull(),
+    targetVisits: integer("target_visits").notNull().default(0),
+    closedAt: timestamp("closed_at", { withTimezone: true }),
+    bilan: jsonb("bilan").$type<{ total: number; visited: number; converted: number; toRevisit: number; targetVisits: number }>(),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("waves_company").on(t.companyId, t.startsOn)],
 );

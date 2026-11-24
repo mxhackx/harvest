@@ -18,6 +18,7 @@ import { createBody, patchBody } from "../leads/schema.js";
 import { logActivities } from "../activities/log.js";
 import { alive, findReadableLead, leadAttrs } from "../leads/access.js";
 import { TRASH_DAYS, trashLeads } from "../leads/trash.js";
+import { assignRegions } from "../waves/geo.js";
 import { ensurePrimaryContact } from "./contacts.js";
 import { closingFields, defaultStage, listStages } from "../stages/store.js";
 
@@ -147,6 +148,7 @@ export async function leadRoutes(app: FastifyInstance) {
       })
       .returning();
     req.auditLabel = lead.name;
+    await assignRegions(subject.companyId, [lead.id]);
     if (lead.contactName) await ensurePrimaryContact(lead.id, subject.companyId, lead.contactName);
     await logActivities([{ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "created", meta: { source: "manual", stage: stage.name } }], logError(req));
     if (owner.userId !== subject.userId) {
@@ -316,6 +318,7 @@ export async function leadRoutes(app: FastifyInstance) {
         return out;
       });
       report.imported = created.length;
+      await assignRegions(subject.companyId, created.map((l) => l.id));
       const withContact = created.filter((l) => l.contactName);
       if (withContact.length) {
         await db.insert(contacts).values(withContact.map((l) => ({ leadId: l.id, companyId: subject.companyId, name: l.contactName, isPrimary: true })));
@@ -468,6 +471,7 @@ export async function leadRoutes(app: FastifyInstance) {
     if ((updated.visitedAt === null) !== (lead.visitedAt === null)) {
       events.push({ companyId: subject.companyId, leadId: lead.id, authorId: subject.userId, kind: "visited", meta: { visited: updated.visitedAt !== null } });
     }
+    if (hasCoords(data) || data.lat === null || position.lat !== undefined) await assignRegions(subject.companyId, [updated.id]);
     await logActivities(events, logError(req));
     req.auditLabel = updated.name;
     return updated;

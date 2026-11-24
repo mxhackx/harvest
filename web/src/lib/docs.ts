@@ -36,6 +36,11 @@ export const DOCS: DocPage[] = [
     ],
   },
   {
+    href: "/docs/waves",
+    title: "Vagues et régions",
+    description: "Couvrez une région à la fois : définissez vos régions, planifiez des vagues avec un objectif de visites, suivez l'avancement et clôturez avec un bilan.",
+  },
+  {
     href: "/docs/pipeline",
     title: "Pipeline et étapes",
     description: "Personnalisez les étapes de votre pipeline : noms, couleurs, probabilités, étapes gagnées et perdues, motif de perte et valeur pondérée.",

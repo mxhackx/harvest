@@ -17,6 +17,9 @@ export default function Page() {
       </p>
       <ol>
         <li>
+          Définissez vos <Link href="/docs/waves">régions et vos vagues</Link> : une région à la fois, avec un objectif et un bilan.
+        </li>
+        <li>
           Réglez votre <Link href="/docs/pipeline">pipeline</Link>, puis suivez chaque lead depuis sa{" "}
           <Link href="/docs/lead">fiche</Link> : activité, contacts, <Link href="/docs/tasks">tâches</Link>.
         </li>

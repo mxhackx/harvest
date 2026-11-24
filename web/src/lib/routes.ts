@@ -3,9 +3,10 @@
  * le jour où l'on déplace une page. Les pages publiques (/, /login, /docs…) restent hors de ce préfixe.
  */
 export const DASHBOARD = "/dashboard";
-/** Chaque module a son préfixe ; seul l'accueil (tableau de bord, calendrier) reste à la racine de /dashboard. */
+/** Chaque module a son préfixe (crm, erp, waves) ; seul l'accueil (tableau de bord, calendrier) reste à la racine de /dashboard. */
 const CRM = `${DASHBOARD}/crm`;
 const ERP = `${DASHBOARD}/erp`;
+const WAVES = `${DASHBOARD}/waves`;
 
 export const ROUTES = {
   home: DASHBOARD,
@@ -20,4 +21,7 @@ export const ROUTES = {
   trash: `${CRM}/trash`,
   team: `${ERP}/team`,
   audit: `${ERP}/audit`,
+  waves: WAVES,
+  regions: `${WAVES}/regions`,
+  map: `${WAVES}/map`,
 } as const;
