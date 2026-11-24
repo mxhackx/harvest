@@ -32,6 +32,10 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 - **Vagues** (`waves`) : région, période, objectif. Phase calculée (à venir, en cours, en retard, clôturée) ; bilan (visités, convertis, à repasser) calculé en direct par [api/src/waves/stats.ts](api/src/waves/stats.ts), figé à la clôture.
 - Droits `wave:create|update|delete` (CEO et Manager) ; tout membre lit. Interface : section *Vagues* du menu (vagues, régions, carte). Documentation utilisateur : `/docs/waves`.
 
+## E-mails depuis le CRM
+
+`POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.
+
 ## Journal d'audit
 
 Chaque action réussie qui modifie des données (POST, PATCH, PUT, DELETE d'un membre connecté) ajoute une ligne à `audit_log` : qui, quelle route, quel objet (nom conservé même après suppression). Jamais le contenu des requêtes (mots de passe, jetons). Le hook est dans [api/src/audit/record.ts](api/src/audit/record.ts) ; pour qu'une route garde le nom de l'objet touché, elle pose `req.auditLabel`. Lecture : `GET /audit` (droit `audit:read`, réservé au CEO) et page *ERP › Journal d'audit*. La phrase affichée pour chaque route est dans [web/src/lib/audit.ts](web/src/lib/audit.ts) : à compléter quand on ajoute une route.
