@@ -34,7 +34,7 @@ Installés par `npm install` à la racine (script `prepare`).
 | Hook | Ce qu'il fait |
 | --- | --- |
 | `pre-commit` | refuse tout secret ou fichier `.env` (`scripts/check-secrets.mjs`), lance ESLint sur les fichiers web indexés, puis le contrôle de types de `api/` et `web/` |
-| `pre-push` | dépend de la branche poussée (`scripts/pre-push.sh`) : **vers `main`**, types + tests unitaires du web + tests de l'API (la base de test est obligatoire) ; **vers toute autre branche**, types seulement |
+| `pre-push` | dépend de la branche poussée (`scripts/pre-push.sh`) : **vers `main` ou `staging`**, types + tests unitaires du web + tests de l'API (la base de test est obligatoire) ; **vers toute autre branche**, types seulement |
 
 ### Intégration continue
 
@@ -44,9 +44,10 @@ Pour rendre `main` inviolable, activez dans GitHub (Settings › Branches › r�
 
 ### Branches
 
-- `main` : toujours vert, déployé.
+- `main` : toujours vert, déployé. On n'y pousse jamais directement.
+- `staging` : branche d'intégration. Chaque fonctionnalité (une branche = une fonctionnalité) y est fusionnée, testée par la CI et le contrôle complet du push ; une seule pull request `staging` vers `main` met ensuite le tout en ligne.
 - `feat/<sujet>` : nouvelle fonctionnalité. `test/<sujet>` : ajout ou réparation de tests. `fix/`, `chore/` et `docs/` sont aussi acceptés.
-- Tout autre nom est refusé au push. On fusionne dans `main` par pull request ; le push vers `main` déclenche le contrôle complet.
+- Tout autre nom est refusé au push. Les branches de fonctionnalité sont fusionnées dans `staging`, puis `staging` dans `main` par pull request ; le push vers `staging` déclenche le contrôle complet.
 
 Passer outre exceptionnellement : `git commit --no-verify`, ou `SKIP_PREPUSH=1 git push`.
 
