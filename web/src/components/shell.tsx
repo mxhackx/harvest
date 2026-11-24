@@ -16,6 +16,7 @@ import { AvatarMenu } from "./avatar-menu";
 import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
 import { GlobalSearch } from "./global-search";
 import { NotificationsBell } from "./notifications-bell";
+import { OfflineSupport } from "./offline-support";
 import { Notice } from "./ui";
 
 type Icon = ComponentType<{ size?: number }>;
@@ -206,7 +207,10 @@ export function Shell({ children }: { children: ReactNode }) {
               <AvatarMenu />
             </div>
           </header>
-          <main className="flex-1 p-6 pb-24 md:pb-6">{children}</main>
+          <main className="flex-1 p-6 pb-24 md:pb-6">
+            <OfflineSupport />
+            {children}
+          </main>
         </div>
       </div>
 

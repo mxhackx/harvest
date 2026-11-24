@@ -2,6 +2,9 @@
  * Adresse de l'API : absolue en développement (http://localhost:4000), ou relative (« /api ») quand le site relaie
  * l'API sous son propre domaine (voir next.config.ts).
  */
+import { queueGesture } from "./offline";
+import { isQueueable } from "./offline-rules";
+
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/$/, "");
 
 /** Adresse de démarrage d'une connexion Google / GitHub, que l'API soit sur un autre domaine ou relayée par le site. */
@@ -25,15 +28,26 @@ export class ApiError extends Error {
 }
 
 export async function api<T = unknown>(path: string, init: { method?: string; body?: unknown; companyId?: string } = {}): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    method: init.method ?? (init.body ? "POST" : "GET"),
-    credentials: "include",
-    headers: {
-      ...(init.body ? { "content-type": "application/json" } : {}),
-      ...(init.companyId ? { "x-company-id": init.companyId } : {}),
-    },
-    body: init.body ? JSON.stringify(init.body) : undefined,
-  });
+  const method = init.method ?? (init.body ? "POST" : "GET");
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method,
+      credentials: "include",
+      headers: {
+        ...(init.body ? { "content-type": "application/json" } : {}),
+        ...(init.companyId ? { "x-company-id": init.companyId } : {}),
+      },
+      body: init.body ? JSON.stringify(init.body) : undefined,
+    });
+  } catch (e) {
+    // Pas de réseau : « visité », l'étape et les notes attendent le retour de la connexion au lieu d'échouer
+    if (e instanceof TypeError && isQueueable({ method, path, body: init.body })) {
+      await queueGesture({ method, path, body: init.body, companyId: init.companyId ?? "" });
+      return { queued: true } as T;
+    }
+    throw e;
+  }
   if (res.status === 204) return undefined as T;
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(res.status, (data as { error?: string }).error ?? "unknown", (data as { issues?: ApiIssue[] }).issues ?? []);
