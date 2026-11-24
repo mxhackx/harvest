@@ -75,6 +75,15 @@ export default function Page() {
         supprimer des leads.
       </p>
 
+      <h2>Doublons et fusion</h2>
+      <p>
+        <strong>CRM › Doublons</strong> liste les leads qui semblent être la même entreprise : même numéro de téléphone
+        (au moins 7 chiffres), ou même nom dans la même ville (« Salon (2) » compte comme « Salon »). Choisissez le lead à
+        garder et cliquez sur <strong>Fusionner</strong> : contacts, historique, tâches, rendez-vous et e-mails passent au
+        lead gardé, ses champs vides sont complétés par ceux du doublon, et une note « Fusion » est ajoutée au fil. La
+        fusion est irréversible ; elle demande le droit de modifier et de supprimer les leads concernés.
+      </p>
+
       <h2>Données personnelles (RGPD)</h2>
       <p>
         Chaque contact de l’onglet <strong>Contacts</strong> a deux actions pour répondre à une demande d’une personne :
