@@ -5,6 +5,9 @@ import { db } from "../db/index.js";
 import { activities, leads, quotes } from "../db/schema.js";
 import { findReadableLead, leadAttrs } from "../leads/access.js";
 import { canTransition, computeTotals, nextNumber, type Status } from "../quotes/compute.js";
+import { parseQuotesCsv, parseQuotesJson, quotesToCsv, quotesToJson, type ExportQuote } from "../quotes/io.js";
+import { scopeCondition } from "../rbac/sql.js";
+import { alive } from "../leads/access.js";
 import { can } from "../rbac/policy.js";
 import { requirePermission } from "../plugins/auth.js";
 
@@ -69,6 +72,52 @@ export async function quoteRoutes(app: FastifyInstance) {
     });
     req.auditLabel = `${created.number} · ${found.lead.name}`;
     return reply.code(201).send(present(created));
+  });
+
+  // Export des devis que la personne peut lire (tous, ou ceux d'un lead) en CSV ou en JSON.
+  app.get<{ Querystring: { format?: string; leadId?: string; delimiter?: string } }>("/quotes/export", { preHandler: requirePermission("lead:export") }, async (req, reply) => {
+    const q = z.object({ format: z.enum(["csv", "json"]).default("csv"), leadId: uuid.optional(), delimiter: z.enum([",", ";"]).default(",") }).safeParse(req.query);
+    if (!q.success) return reply.code(400).send({ error: "invalid_query", issues: q.error.issues });
+    const { subject } = req.member!;
+    const scope = scopeCondition(leads, subject, "lead:export");
+    if (!scope) return reply.code(403).send({ error: "forbidden" });
+    const rows = await db
+      .select({ quote: quotes, lead: leads.name })
+      .from(quotes)
+      .innerJoin(leads, eq(leads.id, quotes.leadId))
+      .where(and(scope, alive, eq(quotes.companyId, subject.companyId), q.data.leadId ? eq(quotes.leadId, q.data.leadId) : undefined))
+      .orderBy(desc(quotes.createdAt))
+      .limit(5000);
+    const data: ExportQuote[] = rows.map(({ quote, lead }) => ({ number: quote.number, lead, title: quote.title, status: quote.status, validUntil: quote.validUntil, taxRate: quote.taxRate, notes: quote.notes, lines: quote.lines }));
+    const day = new Date().toISOString().slice(0, 10);
+    reply.header("content-type", q.data.format === "csv" ? "text/csv; charset=utf-8" : "application/json; charset=utf-8");
+    reply.header("content-disposition", `attachment; filename="devis-${day}.${q.data.format}"`);
+    req.auditLabel = `${data.length} devis`;
+    return q.data.format === "csv" ? quotesToCsv(data, q.data.delimiter) : quotesToJson(data);
+  });
+
+  // Import : crée des brouillons à partir d'un fichier JSON ou CSV (les numéros sont attribués ici). `dryRun` : analyse seulement.
+  app.post<{ Params: { id: string } }>("/leads/:id/quotes/import", { preHandler: requirePermission("lead:update") }, async (req, reply) => {
+    const body = z.object({ format: z.enum(["csv", "json"]), content: z.string().max(2_000_000), dryRun: z.boolean().default(true) }).safeParse(req.body);
+    if (!body.success) return reply.code(400).send({ error: "invalid_body", issues: body.error.issues });
+    const { subject } = req.member!;
+    const found = await leadFor(subject, req.params.id, true);
+    if (!found.ok) return reply.code(found.fail).send({ error: found.fail === 404 ? "not_found" : "forbidden" });
+    const parsed = body.data.format === "json" ? parseQuotesJson(body.data.content) : parseQuotesCsv(body.data.content);
+    const report = { dryRun: body.data.dryRun, valid: parsed.quotes.length, errors: parsed.errors, created: [] as { number: string; title: string }[] };
+    if (body.data.dryRun || parsed.quotes.length === 0) return report;
+    await db.transaction(async (tx) => {
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`quote:${subject.companyId}`}))`);
+      const numbers = (await tx.select({ n: quotes.number }).from(quotes).where(eq(quotes.companyId, subject.companyId))).map((r) => r.n);
+      for (const input of parsed.quotes) {
+        const number = nextNumber(numbers);
+        numbers.push(number);
+        await tx.insert(quotes).values({ ...input, companyId: subject.companyId, leadId: found.lead.id, number, createdBy: subject.userId });
+        report.created.push({ number, title: input.title });
+      }
+    });
+    req.auditLabel = `${found.lead.name} · ${report.created.length} devis importés`;
+    return report;
   });
 
   app.get<{ Params: { id: string } }>("/quotes/:id", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
