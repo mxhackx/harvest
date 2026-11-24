@@ -697,3 +697,35 @@ export const tours = pgTable(
   },
   (t) => [index("tours_owner").on(t.companyId, t.ownerId, t.plannedOn)],
 );
+
+/**
+ * Facture d'une opportunité (un lead), le plus souvent tirée d'un devis accepté. Numéro unique par entreprise
+ * (F-2026-0001). Brouillon modifiable ; envoyée, elle est figée ; payée ou annulée, c'est terminé.
+ */
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    quoteId: uuid("quote_id").references(() => quotes.id, { onDelete: "set null" }),
+    number: text("number").notNull(),
+    title: text("title").notNull(),
+    // draft | sent | paid | cancelled
+    status: text("status").notNull().default("draft"),
+    lines: jsonb("lines").$type<{ label: string; quantity: number; unitPrice: number }[]>().notNull().default([]),
+    taxRate: integer("tax_rate").notNull().default(0),
+    dueOn: date("due_on", { mode: "string" }),
+    notes: text("notes").notNull().default(""),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("invoices_number").on(t.companyId, t.number), index("invoices_lead").on(t.leadId)],
+);
