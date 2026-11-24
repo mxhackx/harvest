@@ -54,7 +54,10 @@ const MODULES: Module[] = [
     href: ROUTES.team,
     icon: BriefcaseIcon,
     needs: "member:read",
-    pages: [{ label: "Équipe", short: "Équipe", href: ROUTES.team, icon: UsersIcon }],
+    pages: [
+      { label: "Équipe", short: "Équipe", href: ROUTES.team, icon: UsersIcon },
+      { label: "Journal d'audit", short: "Audit", href: ROUTES.audit, icon: FormIcon, needs: "audit:read" },
+    ],
   },
 ];
 

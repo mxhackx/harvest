@@ -19,4 +19,5 @@ export const ROUTES = {
   reports: `${CRM}/reports`,
   trash: `${CRM}/trash`,
   team: `${ERP}/team`,
+  audit: `${ERP}/audit`,
 } as const;

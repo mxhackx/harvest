@@ -1,0 +1,48 @@
+export type AuditEntry = { id: string; action: string; entityId: string | null; entityLabel: string; createdAt: string; actorName: string | null };
+
+/** Phrase lisible pour chaque route journalisée par l'API (« MÉTHODE /route »). */
+const PHRASES: Record<string, string> = {
+  "POST /leads": "a créé le lead",
+  "PATCH /leads/:id": "a modifié le lead",
+  "DELETE /leads/:id": "a mis à la corbeille le lead",
+  "POST /leads/bulk-delete": "a mis à la corbeille",
+  "POST /leads/bulk-update": "a modifié en série",
+  "POST /leads/assign": "a attribué",
+  "POST /leads/import": "a importé des leads",
+  "POST /leads/export": "a exporté des leads",
+  "POST /leads/trash/restore": "a restauré",
+  "POST /leads/trash/purge": "a effacé définitivement",
+  "POST /tasks": "a créé la tâche",
+  "PATCH /tasks/:id": "a modifié la tâche",
+  "DELETE /tasks/:id": "a supprimé la tâche",
+  "POST /events": "a créé le rendez-vous",
+  "PATCH /events/:id": "a modifié le rendez-vous",
+  "DELETE /events/:id": "a supprimé le rendez-vous",
+  "POST /leads/:id/contacts": "a ajouté un contact au lead",
+  "PATCH /contacts/:id": "a modifié le contact",
+  "DELETE /contacts/:id": "a supprimé le contact",
+  "POST /members": "a ajouté un membre",
+  "PATCH /members/:id": "a modifié un membre",
+  "DELETE /members/:id": "a retiré un membre",
+  "POST /invitations": "a invité",
+  "DELETE /invitations/:id": "a annulé une invitation",
+  "POST /roles": "a créé un rôle",
+  "PATCH /roles/:id": "a modifié un rôle",
+  "DELETE /roles/:id": "a supprimé un rôle",
+  "POST /teams": "a créé une équipe",
+  "PATCH /teams/:id": "a modifié une équipe",
+  "DELETE /teams/:id": "a supprimé une équipe",
+  "POST /stages": "a créé une étape du pipeline",
+  "PATCH /stages/:id": "a modifié une étape du pipeline",
+  "DELETE /stages/:id": "a supprimé une étape du pipeline",
+  "POST /stages/reorder": "a réordonné le pipeline",
+  "POST /templates": "a créé un modèle de message",
+  "PATCH /templates/:id": "a modifié un modèle de message",
+  "DELETE /templates/:id": "a supprimé un modèle de message",
+  "POST /segments": "a créé un segment",
+  "DELETE /segments/:id": "a supprimé un segment",
+  "PATCH /companies/:id": "a modifié l'entreprise",
+};
+
+/** Phrase d'une action ; une route inconnue reste affichée telle quelle plutôt que cachée. */
+export const describeAction = (action: string) => PHRASES[action] ?? `a effectué ${action}`;
