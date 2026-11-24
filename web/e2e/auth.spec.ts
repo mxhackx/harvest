@@ -86,7 +86,7 @@ test.describe("connexion et inscription", () => {
   });
 
   test("les pages privées renvoient vers la connexion quand on n'est pas connecté", async ({ page }) => {
-    for (const path of ["/dashboard", "/dashboard/leads", "/dashboard/calendrier"]) {
+    for (const path of ["/dashboard", "/dashboard/crm/leads", "/dashboard/calendar"]) {
       await page.goto(path);
       await expect(page).toHaveURL(/\/login/);
     }

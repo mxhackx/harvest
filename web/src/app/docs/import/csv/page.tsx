@@ -11,7 +11,7 @@ export default function Page() {
     <DocArticle href="/docs/import/csv">
       <h2>Les règles</h2>
       <ul>
-        <li><strong>Première ligne = en-têtes.</strong> Chaque colonne porte le nom d’un <Link href="/docs/import/champs">champ</Link>.</li>
+        <li><strong>Première ligne = en-têtes.</strong> Chaque colonne porte le nom d’un <Link href="/docs/import/fields">champ</Link>.</li>
         <li><strong>Séparateur</strong> : virgule, point-virgule ou tabulation. {BRAND.name} le devine d’après la première ligne.</li>
         <li><strong>Encodage</strong> : UTF-8 (avec ou sans BOM). Les accents sont conservés.</li>
         <li><strong>Une colonne <code>name</code> est obligatoire</strong> (ou <code>nom</code>). Les autres colonnes sont facultatives.</li>

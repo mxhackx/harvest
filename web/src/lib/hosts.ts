@@ -5,7 +5,7 @@
  */
 
 /** Pages qui vivent sur le domaine de l'application. */
-const APP_PREFIXES = ["/dashboard", "/login", "/invitation", "/mot-de-passe-oublie", "/reinitialiser", "/onboarding"];
+const APP_PREFIXES = ["/dashboard", "/login", "/invitation", "/forgot-password", "/reset-password", "/onboarding"];
 /** Pages qui vivent sur le domaine de la vitrine (en plus de « / »). */
 const SITE_PREFIXES = ["/docs"];
 

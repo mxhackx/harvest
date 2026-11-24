@@ -13,7 +13,7 @@ describe("hostRedirect", () => {
     expect(go("www.hivation.tech", "/dashboard/leads/42")).toBe(`${APP}/dashboard/leads/42`);
     expect(go("www.hivation.tech", "/login")).toBe(`${APP}/login`);
     expect(go("www.hivation.tech", "/invitation", "?token=abc")).toBe(`${APP}/invitation?token=abc`);
-    expect(go("www.hivation.tech", "/reinitialiser", "?token=abc")).toBe(`${APP}/reinitialiser?token=abc`);
+    expect(go("www.hivation.tech", "/reset-password", "?token=abc")).toBe(`${APP}/reset-password?token=abc`);
   });
   it("vitrine : garde l'accueil et la documentation", () => {
     expect(go("www.hivation.tech", "/")).toBeNull();

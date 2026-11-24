@@ -16,7 +16,7 @@ export default function Page() {
         <li>soit un <strong>objet</strong> avec une clé <code>leads</code> qui contient ce tableau : <code>{'{ "leads": [ … ] }'}</code>.</li>
       </ul>
       <p>
-        Chaque lead est un objet « à plat » : une clé par <Link href="/docs/import/champs">champ</Link>, sans objet
+        Chaque lead est un objet « à plat » : une clé par <Link href="/docs/import/fields">champ</Link>, sans objet
         imbriqué. Seule la clé <code>name</code> est obligatoire.
       </p>
 

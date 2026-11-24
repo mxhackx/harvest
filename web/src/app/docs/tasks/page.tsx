@@ -2,15 +2,15 @@ import Link from "next/link";
 import { Callout, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
 
-export const metadata = docMetadata("/docs/taches");
+export const metadata = docMetadata("/docs/tasks");
 
 export default function Page() {
   return (
-    <DocArticle href="/docs/taches">
+    <DocArticle href="/docs/tasks">
       <h2>Créer une tâche</h2>
       <p>
         Ouvrez <strong>CRM › Tâches</strong>, ou l’onglet <strong>Tâches</strong> d’une{" "}
-        <Link href="/docs/fiche-lead">fiche lead</Link>, puis cliquez sur <strong>Nouvelle tâche</strong>. Indiquez ce
+        <Link href="/docs/lead">fiche lead</Link>, puis cliquez sur <strong>Nouvelle tâche</strong>. Indiquez ce
         qu’il y a à faire, une échéance (facultative) et le lead concerné.
       </p>
 

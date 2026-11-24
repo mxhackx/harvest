@@ -1,4 +1,6 @@
 import type { NextConfig } from "next";
+import { legacyRedirects } from "./src/lib/legacy-routes";
+import { ROUTES } from "./src/lib/routes";
 
 /**
  * Site et API sur deux domaines différents (Vercel + Render) : le cookie de session de l'API serait un cookie
@@ -16,12 +18,13 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return apiProxyTarget ? [{ source: "/api/:path*", destination: `${apiProxyTarget}/:path*` }] : [];
   },
-  // Les anciennes adresses de l'espace connecté (avant /dashboard) redirigent vers les nouvelles : favoris et liens déjà partagés.
+  // Un module tapé seul dans la barre d'adresse mène à sa première page (temporaire : elle peut changer),
+  // et les anciennes adresses françaises redirigent vers les actuelles (favoris, liens, e-mails déjà envoyés).
   async redirects() {
-    const moved = ["calendrier", "contacts", "equipe", "leads", "modeles", "pipeline", "rapports", "taches"];
     return [
-      ...moved.map((p) => ({ source: `/${p}`, destination: `/dashboard/${p}`, permanent: true })),
-      { source: "/leads/:id", destination: "/dashboard/leads/:id", permanent: true },
+      { source: "/dashboard/crm", destination: ROUTES.leads, permanent: false },
+      { source: "/dashboard/erp", destination: ROUTES.team, permanent: false },
+      ...legacyRedirects(),
     ];
   },
   /* config options here */
