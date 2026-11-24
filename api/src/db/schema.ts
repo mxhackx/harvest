@@ -476,3 +476,29 @@ export const waves = pgTable(
   },
   (t) => [index("waves_company").on(t.companyId, t.startsOn)],
 );
+
+/**
+ * E-mails envoyés depuis le CRM : qui a écrit à qui, quand, avec quel résultat. Les réponses arrivent dans la boîte
+ * de la personne qui écrit (reply-to) : le CRM n'a pas de boîte de réception. Effacés avec le contact (RGPD).
+ */
+export const emailLog = pgTable(
+  "email_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+    sentBy: uuid("sent_by").references(() => users.id, { onDelete: "set null" }),
+    toEmail: text("to_email").notNull(),
+    subject: text("subject").notNull(),
+    body: text("body").notNull(),
+    // sent | failed
+    status: text("status").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("email_log_lead").on(t.leadId, t.createdAt)],
+);

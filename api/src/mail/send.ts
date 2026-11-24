@@ -1,6 +1,6 @@
 import { config } from "../config.js";
 
-export type Mail = { to: string; subject: string; html: string; text: string };
+export type Mail = { to: string; subject: string; html: string; text: string; /** adresse où arrivent les réponses (ex. celle de la personne qui écrit depuis le CRM) */ replyTo?: string };
 
 /** Boîte d'envoi des tests : rien ne part sur le réseau quand NODE_ENV=test. */
 export const outbox: Mail[] = [];
@@ -19,7 +19,7 @@ export async function sendMail(mail: Mail, log?: { warn: (o: object, m: string) 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { authorization: `Bearer ${config.mail.apiKey}`, "content-type": "application/json" },
-      body: JSON.stringify({ from: config.mail.from, to: [mail.to], subject: mail.subject, html: mail.html, text: mail.text }),
+      body: JSON.stringify({ from: config.mail.from, to: [mail.to], subject: mail.subject, html: mail.html, text: mail.text, ...(mail.replyTo ? { reply_to: mail.replyTo } : {}) }),
       signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) {

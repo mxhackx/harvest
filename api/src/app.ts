@@ -13,6 +13,7 @@ import { leadRoutes } from "./routes/leads.js";
 import { auditRoutes } from "./routes/audit.js";
 import { regionRoutes } from "./routes/regions.js";
 import { waveRoutes } from "./routes/waves.js";
+import { emailRoutes } from "./routes/emails.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -66,5 +67,6 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(auditRoutes);
   await app.register(regionRoutes);
   await app.register(waveRoutes);
+  await app.register(emailRoutes);
   return app;
 }
