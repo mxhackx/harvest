@@ -50,6 +50,11 @@ services:
       - key: GITHUB_CLIENT_SECRET
         sync: false
 
+      # Service d'itinéraires (OSRM) des tournées. Par défaut le serveur de démonstration public (usage léger) : hébergez le
+      # vôtre en production. « off » : aucun appel, les itinéraires sont estimés en ligne droite.
+      - key: ROUTING_URL
+        sync: false
+
       # Adresse qui reçoit les messages de la bulle de contact de la documentation (facultatif : sans elle, les messages
       # sont seulement gardés en base, table contact_messages).
       - key: SUPPORT_EMAIL

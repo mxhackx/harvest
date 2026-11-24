@@ -106,6 +106,11 @@ export const DOCS: DocPage[] = [
     description: "Exportez vos leads en CSV ou JSON : formats, colonnes, droits requis et réimport.",
   },
   {
+    href: "/docs/tours",
+    title: "Tournées et itinéraires",
+    description: "Choisissez les prospects à visiter en présentiel, calculez l'itinéraire entre eux, optimisez l'ordre et ouvrez-le dans votre GPS.",
+  },
+  {
     href: "/docs/location",
     title: "Position sur la carte",
     description: "Comment un lead est placé sur la carte : coordonnées, lien Google Maps, adresse, et précision de la position.",
@@ -129,7 +134,7 @@ export const SECTIONS: Record<DocSection, { title: string; description: string }
 
 /** Chaque page de documentation appartient à exactement une collection (un test le vérifie). */
 export const COLLECTIONS: Collection[] = [
-  { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/location", "/docs/calendar", "/docs/tasks", "/docs/offline"] },
+  { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/tours", "/docs/location", "/docs/calendar", "/docs/tasks", "/docs/offline"] },
   { id: "leads", section: "guide", title: "Leads et clients", description: "La fiche d'un lead, le pipeline, les contacts et les messages.", hrefs: ["/docs/accounts", "/docs/lead", "/docs/quotes", "/docs/pipeline", "/docs/messages"] },
   { id: "donnees", section: "guide", title: "Importer et exporter", description: "Faire entrer vos leads existants, et en sortir vos données.", hrefs: ["/docs/import", "/docs/export"] },
   { id: "equipe", section: "guide", title: "Équipe et suivi", description: "Inviter, répartir, fixer des objectifs et lire les rapports.", hrefs: ["/docs/team", "/docs/objectives", "/docs/reports"] },

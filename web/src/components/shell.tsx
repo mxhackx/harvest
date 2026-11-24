@@ -42,6 +42,7 @@ const MODULES: Module[] = [
     icon: MapIcon,
     pages: [
       { label: "Vagues", short: "Vagues", href: ROUTES.waves, icon: BoardIcon },
+      { label: "Tournées", short: "Tournées", href: ROUTES.tours, icon: CalendarIcon },
       { label: "Régions", short: "Régions", href: ROUTES.regions, icon: PinIcon },
       { label: "Carte", short: "Carte", href: ROUTES.map, icon: MapIcon },
     ],

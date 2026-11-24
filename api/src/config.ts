@@ -36,6 +36,12 @@ export const config = {
    * s'affichent à l'écran). Tant qu'aucun domaine n'est vérifié chez Resend, l'expéditeur par défaut ne peut écrire
    * qu'à l'adresse du compte Resend : définir MAIL_FROM, ex. « Hivation <noreply@hivation.tech> ».
    */
+  /**
+   * Service d'itinéraires routiers (OSRM). Par défaut le serveur de démonstration public, à usage léger : pour un vrai
+   * déploiement, hébergez le vôtre. « off » (ou NODE_ENV=test) coupe tout appel : les itinéraires sont alors estimés.
+   * Les coordonnées des prospects d'une tournée sont envoyées à ce service.
+   */
+  routingUrl: process.env.NODE_ENV === "test" || process.env.ROUTING_URL === "off" ? "" : (process.env.ROUTING_URL ?? "https://router.project-osrm.org").replace(/\/$/, ""),
   /** Adresse qui reçoit les messages de la bulle de contact (ex. support@hivation.tech). Sans elle, les messages sont seulement gardés en base. */
   supportEmail: process.env.SUPPORT_EMAIL ?? "",
   mail: {

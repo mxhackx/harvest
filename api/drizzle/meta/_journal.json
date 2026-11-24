@@ -218,6 +218,13 @@
       "when": 1795561234673,
       "tag": "0030_visit_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1795561929726,
+      "tag": "0031_tours",
+      "breakpoints": true
     }
   ]
 }

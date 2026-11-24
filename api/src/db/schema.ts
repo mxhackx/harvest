@@ -648,3 +648,38 @@ export const quotes = pgTable(
   },
   (t) => [uniqueIndex("quotes_number").on(t.companyId, t.number), index("quotes_lead").on(t.leadId)],
 );
+
+/**
+ * Tournée : une journée de visites, dans un ordre, avec son itinéraire. Personnelle (celle de son auteur). Les étapes
+ * sont copiées au moment de l'enregistrement : la tournée garde son tracé même si un lead est ensuite déplacé ou supprimé.
+ */
+export const tours = pgTable(
+  "tours",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    ownerId: uuid("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    plannedOn: date("planned_on", { mode: "string" }).notNull(),
+    // heure de départ (HH:MM) et minutes passées sur place à chaque étape
+    startTime: text("start_time").notNull().default("08:00"),
+    stopMinutes: integer("stop_minutes").notNull().default(20),
+    start: jsonb("start").$type<{ lat: number; lng: number; label: string }>().notNull(),
+    // arrivée si elle est fixée (retour au départ, par exemple) ; null = la tournée finit à la dernière étape
+    end: jsonb("end").$type<{ lat: number; lng: number; label: string } | null>(),
+    stops: jsonb("stops").$type<{ leadId: string; name: string; city: string; phone: string; lat: number; lng: number }[]>().notNull(),
+    legs: jsonb("legs").$type<{ distanceKm: number; durationMin: number }[]>().notNull(),
+    geometry: jsonb("geometry").$type<[number, number][]>().notNull(),
+    totalKm: doublePrecision("total_km").notNull().default(0),
+    totalMin: integer("total_min").notNull().default(0),
+    approximate: boolean("approximate").notNull().default(false),
+    // planned | done
+    status: text("status").notNull().default("planned"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("tours_owner").on(t.companyId, t.ownerId, t.plannedOn)],
+);

@@ -75,6 +75,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   invalid_body: "Vérifiez les champs saisis.",
   forbidden: "Vous n'avez pas le droit de faire cela.",
   stage_exists: "Une étape porte déjà ce nom.",
+  invalid_stops: "Certains prospects ne peuvent pas être des étapes (à distance, sans position, ou introuvables).",
   quote_locked: "Ce devis est envoyé : il ne peut plus être modifié ni supprimé.",
   quote_transition: "Ce changement de statut n'est pas possible.",
   quote_empty: "Ajoutez au moins une ligne avant d'envoyer le devis.",
