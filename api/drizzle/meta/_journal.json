@@ -253,6 +253,13 @@
       "when": 1795564065242,
       "tag": "0035_automations",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1795564278453,
+      "tag": "0036_support",
+      "breakpoints": true
     }
   ]
 }

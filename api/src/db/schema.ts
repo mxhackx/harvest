@@ -769,3 +769,60 @@ export const automationRuns = pgTable(
   },
   (t) => [uniqueIndex("automation_runs_unique").on(t.automationId, t.leadId)],
 );
+
+/** Ticket : une demande ou une réclamation d'un client après la vente, suivie jusqu'à sa résolution. */
+export const tickets = pgTable(
+  "tickets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    // le client concerné (un lead) ; null = ticket sans client précis
+    leadId: uuid("lead_id").references(() => leads.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    // open | in_progress | resolved | closed
+    status: text("status").notNull().default("open"),
+    // low | normal | high | urgent
+    priority: text("priority").notNull().default("normal"),
+    assigneeId: uuid("assignee_id").references(() => users.id, { onDelete: "set null" }),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  },
+  (t) => [index("tickets_company").on(t.companyId, t.status, t.createdAt)],
+);
+
+export const ticketComments = pgTable(
+  "ticket_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ticketId: uuid("ticket_id")
+      .notNull()
+      .references(() => tickets.id, { onDelete: "cascade" }),
+    authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("ticket_comments_ticket").on(t.ticketId, t.createdAt)],
+);
+
+/** Article de la base de connaissances : une réponse fréquente, rangée par mots-clés, que toute l'équipe retrouve vite. */
+export const kbArticles = pgTable(
+  "kb_articles",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("kb_company").on(t.companyId, t.title)],
+);

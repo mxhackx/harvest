@@ -25,6 +25,8 @@ import { quoteRoutes } from "./routes/quotes.js";
 import { tourRoutes } from "./routes/tours.js";
 import { invoiceRoutes } from "./routes/invoices.js";
 import { automationRoutes } from "./routes/automations.js";
+import { ticketRoutes } from "./routes/tickets.js";
+import { kbRoutes } from "./routes/kb.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -90,5 +92,7 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(tourRoutes);
   await app.register(invoiceRoutes);
   await app.register(automationRoutes);
+  await app.register(ticketRoutes);
+  await app.register(kbRoutes);
   return app;
 }
