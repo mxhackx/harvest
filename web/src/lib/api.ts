@@ -259,6 +259,8 @@ export type CalEvent = {
   title: string;
   kind: EventKind;
   startsAt: string;
+  /** null = durée non précisée */
+  endsAt: string | null;
   notes: string;
   done: boolean;
   leadId: string | null;
