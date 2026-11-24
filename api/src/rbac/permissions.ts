@@ -16,6 +16,8 @@ export const CATALOG = {
   verification: { actions: ["read", "create", "update"], scoped: true },
   workflow: { actions: ["read", "create", "update", "delete"], scoped: true },
   finance: { actions: ["read", "create", "update", "delete"], scoped: true },
+  // journal des actions de l'entreprise : réservé au CEO
+  audit: { actions: ["read"], scoped: false },
 } as const;
 
 export type Resource = keyof typeof CATALOG;
@@ -57,7 +59,7 @@ export const SYSTEM_ROLES: SystemRole[] = [
     description: "Pilote l'équipe et les données. Ne modifie pas l'entreprise ni les rôles.",
     grants: all().filter(
       (x) =>
-        !["company:update", "company:delete", "role:create", "role:update", "role:delete"].includes(
+        !["company:update", "company:delete", "role:create", "role:update", "role:delete", "audit:read"].includes(
           x.permission,
         ),
     ),

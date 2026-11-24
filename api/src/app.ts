@@ -10,6 +10,8 @@ import { companyRoutes } from "./routes/companies.js";
 import { roleRoutes } from "./routes/roles.js";
 import { memberRoutes } from "./routes/members.js";
 import { leadRoutes } from "./routes/leads.js";
+import { auditRoutes } from "./routes/audit.js";
+import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
 import { contactRoutes } from "./routes/contacts.js";
@@ -39,6 +41,7 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   app.decorateRequest("user", null);
   app.decorateRequest("member", null);
   app.addHook("onRequest", loadUser);
+  app.addHook("onResponse", auditHook);
 
   app.get("/health", async () => ({ status: "ok" }));
   await app.register(authRoutes);
@@ -58,5 +61,6 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(invitationRoutes);
   await app.register(leadAssignRoutes);
   await app.register(notificationRoutes);
+  await app.register(auditRoutes);
   return app;
 }
