@@ -30,5 +30,6 @@ export const ROUTES = {
   webhooks: `${ERP}/webhooks`,
   waves: WAVES,
   regions: `${WAVES}/regions`,
+  tours: `${WAVES}/tours`,
   map: `${WAVES}/map`,
 } as const;
