@@ -7,6 +7,7 @@ export const DASHBOARD = "/dashboard";
 const CRM = `${DASHBOARD}/crm`;
 const ERP = `${DASHBOARD}/erp`;
 const WAVES = `${DASHBOARD}/waves`;
+const SERVICE = `${DASHBOARD}/service`;
 
 export const ROUTES = {
   home: DASHBOARD,
@@ -33,6 +34,9 @@ export const ROUTES = {
   audit: `${ERP}/audit`,
   webhooks: `${ERP}/webhooks`,
   automations: `${ERP}/automations`,
+  tickets: `${SERVICE}/tickets`,
+  ticket: (id: string) => `${SERVICE}/tickets/${id}`,
+  kb: `${SERVICE}/kb`,
   waves: WAVES,
   regions: `${WAVES}/regions`,
   tours: `${WAVES}/tours`,

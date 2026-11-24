@@ -14,7 +14,7 @@ import { usePins } from "@/lib/pins";
 import { CrumbProvider, useCrumbLabel } from "@/lib/crumb";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
+import { BoardIcon, BookIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
 import { GlobalSearch } from "./global-search";
 import { NotificationsBell } from "./notifications-bell";
 import { OfflineSupport } from "./offline-support";
@@ -67,6 +67,16 @@ const MODULES: Module[] = [
       { label: "Objectifs", short: "Objectifs", href: ROUTES.objectives, icon: CoinIcon },
       { label: "Doublons", short: "Doublons", href: ROUTES.duplicates, icon: UsersIcon, needs: "lead:delete" },
       { label: "Corbeille", short: "Corbeille", href: ROUTES.trash, icon: TrashIcon, needs: "lead:delete" },
+    ],
+  },
+  {
+    key: "service",
+    label: "Service",
+    href: ROUTES.tickets,
+    icon: UserIcon,
+    pages: [
+      { label: "Tickets", short: "Tickets", href: ROUTES.tickets, icon: FormIcon, needs: "ticket:read" },
+      { label: "Base de connaissances", short: "Savoir", href: ROUTES.kb, icon: BookIcon },
     ],
   },
   {
