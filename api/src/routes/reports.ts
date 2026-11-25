@@ -9,6 +9,7 @@ import { alive } from "../leads/access.js";
 import { requirePermission } from "../plugins/auth.js";
 import { funnel, pipelineByStage, type Move } from "../reports/compute.js";
 import { listStages } from "../stages/store.js";
+import { forecastByMonth, kpis } from "../reports/forecast.js";
 
 const DAY = 24 * 3600 * 1000;
 const date = z.string().datetime({ offset: true }).transform((v) => new Date(v));
@@ -35,6 +36,36 @@ type Rep = {
  * un Manager ceux de l'entreprise. Aucun droit supplémentaire à gérer, et aucune fuite possible.
  */
 export async function reportRoutes(app: FastifyInstance) {
+  // Prévision de chiffre d'affaires (affaires en cours par mois de conclusion espérée) et indicateurs de performance.
+  app.get("/reports/forecast", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
+    const q = query.safeParse(req.query);
+    if (!q.success) return reply.code(400).send({ error: "invalid_query", issues: q.error.issues });
+    const to = q.data.to ?? new Date();
+    const from = q.data.from ?? new Date(to.getTime() - 30 * DAY);
+    const { subject } = req.member!;
+    const scope = and(scopeCondition(leads, subject, "lead:read")!, alive)!;
+    const stages = await listStages(subject.companyId);
+    const rows = await db
+      .select({ status: leads.status, estimatedValue: leads.estimatedValue, probability: leads.probability, expectedCloseOn: leads.expectedCloseOn, createdAt: leads.createdAt, closedAt: leads.closedAt, ownerId: leads.ownerId })
+      .from(leads)
+      .where(scope);
+    const forecast = forecastByMonth(rows, stages);
+    const k = kpis(rows, stages, from, to);
+    // chiffre d'affaires gagné par commercial sur la période
+    const wonKeys = new Set(stages.filter((s) => s.kind === "won").map((s) => s.key));
+    const byOwner = new Map<string, { won: number; wonValue: number }>();
+    for (const l of rows) {
+      if (!l.closedAt || l.closedAt < from || l.closedAt >= to || !wonKeys.has(l.status)) continue;
+      const r = byOwner.get(l.ownerId) ?? { won: 0, wonValue: 0 };
+      r.won++;
+      r.wonValue += l.estimatedValue ?? 0;
+      byOwner.set(l.ownerId, r);
+    }
+    const names = byOwner.size ? await db.select({ id: users.id, name: users.name }).from(users).where(inArray(users.id, [...byOwner.keys()])) : [];
+    const byRep = [...byOwner.entries()].map(([userId, r]) => ({ userId, name: names.find((n) => n.id === userId)?.name ?? "", ...r })).sort((a, b) => b.wonValue - a.wonValue);
+    return { period: { from: from.toISOString(), to: to.toISOString() }, forecast, kpis: k, byRep };
+  });
+
   app.get("/reports", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
     const q = query.safeParse(req.query);
     if (!q.success) return reply.code(400).send({ error: "invalid_query", issues: q.error.issues });

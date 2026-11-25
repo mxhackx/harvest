@@ -11,16 +11,17 @@ import { StagesProvider } from "@/lib/stages-store";
 import { SessionProvider, type Session } from "@/lib/session";
 import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
 import { usePins } from "@/lib/pins";
+import { CrumbProvider, useCrumbLabel } from "@/lib/crumb";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
+import { BoardIcon, BookIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
 import { GlobalSearch } from "./global-search";
 import { NotificationsBell } from "./notifications-bell";
 import { OfflineSupport } from "./offline-support";
 import { Notice } from "./ui";
 
 type Icon = ComponentType<{ size?: number }>;
-type Page = { label: string; short: string; href: string; icon: Icon; /** droit requis pour voir la page */ needs?: string };
+type Page = { label: string; short: string; href: string; icon: Icon; /** droit requis pour voir la page */ needs?: string; /** autres préfixes d'adresses qui dépendent de cette page (ex. les devis, côté Leads) */ also?: string[] };
 type Module = { key: string; label: string; href: string; icon: Icon; pages: Page[]; /** droit requis pour voir le module */ needs?: string };
 
 // Seuls les modules et pages réellement construits apparaissent.
@@ -42,6 +43,7 @@ const MODULES: Module[] = [
     icon: MapIcon,
     pages: [
       { label: "Vagues", short: "Vagues", href: ROUTES.waves, icon: BoardIcon },
+      { label: "Tournées", short: "Tournées", href: ROUTES.tours, icon: CalendarIcon },
       { label: "Régions", short: "Régions", href: ROUTES.regions, icon: PinIcon },
       { label: "Carte", short: "Carte", href: ROUTES.map, icon: MapIcon },
     ],
@@ -52,8 +54,10 @@ const MODULES: Module[] = [
     href: ROUTES.leads,
     icon: UsersIcon,
     pages: [
+      { label: "Factures", short: "Factures", href: ROUTES.invoices, icon: CoinIcon, also: ["/dashboard/crm/invoices"] },
+      { label: "Segments", short: "Segments", href: ROUTES.segments, icon: BoardIcon },
       { label: "Comptes", short: "Comptes", href: ROUTES.accounts, icon: BriefcaseIcon },
-      { label: "Leads", short: "Leads", href: ROUTES.leads, icon: UsersIcon },
+      { label: "Leads", short: "Leads", href: ROUTES.leads, icon: UsersIcon, also: ["/dashboard/crm/quotes"] },
       { label: "Contacts", short: "Contacts", href: ROUTES.contacts, icon: UserIcon },
       { label: "Tâches", short: "Tâches", href: ROUTES.tasks, icon: CheckIcon },
       { label: "Modèles", short: "Modèles", href: ROUTES.templates, icon: FormIcon },
@@ -66,6 +70,16 @@ const MODULES: Module[] = [
     ],
   },
   {
+    key: "service",
+    label: "Service",
+    href: ROUTES.tickets,
+    icon: UserIcon,
+    pages: [
+      { label: "Tickets", short: "Tickets", href: ROUTES.tickets, icon: FormIcon, needs: "ticket:read" },
+      { label: "Base de connaissances", short: "Savoir", href: ROUTES.kb, icon: BookIcon },
+    ],
+  },
+  {
     key: "team",
     label: "ERP",
     href: ROUTES.team,
@@ -73,6 +87,7 @@ const MODULES: Module[] = [
     needs: "member:read",
     pages: [
       { label: "Équipe", short: "Équipe", href: ROUTES.team, icon: UsersIcon },
+      { label: "Automatisations", short: "Auto", href: ROUTES.automations, icon: BoardIcon, needs: "automation:read" },
       { label: "Webhooks", short: "Webhooks", href: ROUTES.webhooks, icon: BriefcaseIcon, needs: "webhook:read" },
       { label: "Journal d'audit", short: "Audit", href: ROUTES.audit, icon: FormIcon, needs: "audit:read" },
     ],
@@ -125,7 +140,7 @@ export function Shell({ children }: { children: ReactNode }) {
     <li key={p.href} className="group relative">
       <Link
         href={p.href}
-        aria-current={p.href === path ? "page" : undefined}
+        aria-current={path === p.href || path.startsWith(`${p.href}/`) ? "page" : undefined}
         className={`flex h-10 items-center gap-2 rounded-control border px-2 pr-9 text-body ${
           p.href === path ? "border-accent/25 bg-accent-soft font-medium" : "border-transparent hover:bg-field"
         }`}
@@ -144,10 +159,12 @@ export function Shell({ children }: { children: ReactNode }) {
       </button>
     </li>
   );
-  const page = active.pages.find((p) => p.href === path) ?? active.pages[0];
+  const isIn = (p: Page) => [p.href, ...(p.also ?? [])].some((h) => path === h || path.startsWith(`${h}/`));
+  const page = [...active.pages].filter(isIn).sort((a, b) => b.href.length - a.href.length)[0] ?? active.pages[0];
 
   return (
     <SessionProvider value={session}>
+      <CrumbProvider>
       <StagesProvider>
       <LeadsProvider>
       <div className="flex min-h-dvh">
@@ -199,7 +216,7 @@ export function Shell({ children }: { children: ReactNode }) {
                 <span aria-hidden className="hidden text-muted sm:inline">›</span>
                 <Link href={active.href} className="text-muted hover:text-ink hover:underline">{active.label}</Link>
                 <span aria-hidden className="text-muted">›</span>
-                <span aria-current="page" className="font-medium text-ink">{page.label}</span>
+                <CrumbTail page={page} />
               </nav>
             </div>
             <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
@@ -221,7 +238,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <Link
             key={p.href}
             href={p.href}
-            aria-current={p.href === path ? "page" : undefined}
+            aria-current={path === p.href || path.startsWith(`${p.href}/`) ? "page" : undefined}
             className={`flex min-w-[76px] flex-1 shrink-0 flex-col items-center justify-center gap-1 text-small ${
               p.href === path ? "bg-accent-soft font-medium text-accent-press" : "text-muted"
             }`}
@@ -233,6 +250,20 @@ export function Shell({ children }: { children: ReactNode }) {
       </nav>
       </LeadsProvider>
       </StagesProvider>
+      </CrumbProvider>
     </SessionProvider>
+  );
+}
+
+/** Fin du fil d'Ariane : la page du module, puis (sur une page de détail) le nom de l'objet ouvert. */
+function CrumbTail({ page }: { page: { label: string; href: string } }) {
+  const crumb = useCrumbLabel();
+  if (!crumb) return <span aria-current="page" className="font-medium text-ink">{page.label}</span>;
+  return (
+    <>
+      <Link href={page.href} className="text-muted hover:text-ink hover:underline">{page.label}</Link>
+      <span aria-hidden className="text-muted">›</span>
+      <span aria-current="page" className="max-w-[240px] truncate font-medium text-ink">{crumb}</span>
+    </>
   );
 }

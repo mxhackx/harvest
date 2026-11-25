@@ -211,6 +211,55 @@
       "when": 1795554369352,
       "tag": "0029_quotes",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1795561234673,
+      "tag": "0030_visit_mode",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1795561929726,
+      "tag": "0031_tours",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1795563287743,
+      "tag": "0032_contacts_sf",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1795563472095,
+      "tag": "0033_segments_page",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1795563785860,
+      "tag": "0034_invoices",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1795564065242,
+      "tag": "0035_automations",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1795564278453,
+      "tag": "0036_support",
+      "breakpoints": true
     }
   ]
 }

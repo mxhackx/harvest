@@ -51,6 +51,16 @@ export default function Page() {
         Les noms d’étape du fil sont ceux de l’époque : renommer une étape plus tard ne réécrit pas l’histoire.
       </p>
 
+      <h2>Prospect simple ou à visiter en présentiel</h2>
+      <p>
+        Chaque lead a un <strong>type de prospect</strong> (section « Type de prospect » de la fiche). Un prospect{" "}
+        <strong>à visiter en présentiel</strong> apparaît sur la carte, entre dans les tournées et compte dans les vagues
+        (visites à faire, à repasser). Un <strong>prospect simple</strong> est joint à distance (téléphone, WhatsApp,
+        e-mail) : il n’a pas de visite à faire, n’est pas sur la carte et ne compte pas dans les vagues, mais reste dans
+        la liste, le pipeline et les rapports. Le filtre « Type de prospect » de la liste sépare les deux, et une étiquette
+        « À distance » marque les prospects simples. Les leads existants sont à visiter par défaut.
+      </p>
+
       <h2>Champs personnalisés</h2>
       <p>
         <strong>CRM › Champs</strong> (réservé aux responsables) ajoute des informations propres à votre métier sur chaque

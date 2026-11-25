@@ -51,6 +51,16 @@ export const DOCS: DocPage[] = [
     description: "Préparez un devis pour une opportunité : lignes, taxe, validité, envoi, acceptation et impression en PDF.",
   },
   {
+    href: "/docs/invoices",
+    title: "Factures",
+    description: "Transformez un devis accepté en facture, envoyez-la, suivez les paiements et ce qu'il reste à encaisser.",
+  },
+  {
+    href: "/docs/support",
+    title: "Tickets et base de connaissances",
+    description: "Suivez les demandes et réclamations des clients après la vente, et gardez les réponses fréquentes de l'équipe sous la main.",
+  },
+  {
     href: "/docs/pipeline",
     title: "Pipeline et étapes",
     description: "Personnalisez les étapes de votre pipeline : noms, couleurs, probabilités, étapes gagnées et perdues, motif de perte et valeur pondérée.",
@@ -74,6 +84,11 @@ export const DOCS: DocPage[] = [
     href: "/docs/objectives",
     title: "Objectifs par commercial",
     description: "Fixez pour chaque commercial un objectif mensuel de visites, de leads gagnés et de valeur gagnée, et suivez l'avancement réel mois par mois.",
+  },
+  {
+    href: "/docs/automations",
+    title: "Automatisations",
+    description: "Répartissez les nouveaux leads à tour de rôle et relancez automatiquement ceux qui restent sans suite, par tâche ou par e-mail.",
   },
   {
     href: "/docs/webhooks",
@@ -106,6 +121,11 @@ export const DOCS: DocPage[] = [
     description: "Exportez vos leads en CSV ou JSON : formats, colonnes, droits requis et réimport.",
   },
   {
+    href: "/docs/tours",
+    title: "Tournées et itinéraires",
+    description: "Choisissez les prospects à visiter en présentiel, calculez l'itinéraire entre eux, optimisez l'ordre et ouvrez-le dans votre GPS.",
+  },
+  {
     href: "/docs/location",
     title: "Position sur la carte",
     description: "Comment un lead est placé sur la carte : coordonnées, lien Google Maps, adresse, et précision de la position.",
@@ -129,10 +149,10 @@ export const SECTIONS: Record<DocSection, { title: string; description: string }
 
 /** Chaque page de documentation appartient à exactement une collection (un test le vérifie). */
 export const COLLECTIONS: Collection[] = [
-  { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/location", "/docs/calendar", "/docs/tasks", "/docs/offline"] },
-  { id: "leads", section: "guide", title: "Leads et clients", description: "La fiche d'un lead, le pipeline, les contacts et les messages.", hrefs: ["/docs/accounts", "/docs/lead", "/docs/quotes", "/docs/pipeline", "/docs/messages"] },
+  { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/tours", "/docs/location", "/docs/calendar", "/docs/tasks", "/docs/offline"] },
+  { id: "leads", section: "guide", title: "Leads et clients", description: "La fiche d'un lead, le pipeline, les contacts et les messages.", hrefs: ["/docs/accounts", "/docs/lead", "/docs/quotes", "/docs/invoices", "/docs/support", "/docs/pipeline", "/docs/messages"] },
   { id: "donnees", section: "guide", title: "Importer et exporter", description: "Faire entrer vos leads existants, et en sortir vos données.", hrefs: ["/docs/import", "/docs/export"] },
-  { id: "equipe", section: "guide", title: "Équipe et suivi", description: "Inviter, répartir, fixer des objectifs et lire les rapports.", hrefs: ["/docs/team", "/docs/objectives", "/docs/reports"] },
+  { id: "equipe", section: "guide", title: "Équipe et suivi", description: "Inviter, répartir, fixer des objectifs et lire les rapports.", hrefs: ["/docs/team", "/docs/objectives", "/docs/automations", "/docs/reports"] },
   { id: "webhooks", section: "api", title: "Webhooks", description: "Être prévenu en temps réel quand un lead change.", hrefs: ["/docs/webhooks"] },
   { id: "formats", section: "api", title: "Formats de fichiers", description: "Référence technique des fichiers CSV et JSON acceptés à l'import.", hrefs: ["/docs/import/csv", "/docs/import/json", "/docs/import/fields", "/docs/import/errors"] },
 ];

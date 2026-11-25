@@ -75,6 +75,12 @@ export const ERROR_MESSAGES: Record<string, string> = {
   invalid_body: "Vérifiez les champs saisis.",
   forbidden: "Vous n'avez pas le droit de faire cela.",
   stage_exists: "Une étape porte déjà ce nom.",
+  invalid_stops: "Certains prospects ne peuvent pas être des étapes (à distance, sans position, ou introuvables).",
+  invoice_locked: "Cette facture est envoyée : elle ne peut plus être modifiée ni supprimée (vous pouvez l'annuler).",
+  invoice_transition: "Ce changement de statut n'est pas possible.",
+  invoice_exists: "Ce devis a déjà une facture.",
+  quote_not_accepted: "Seul un devis accepté peut devenir une facture.",
+  too_many_automations: "Vingt automatisations au plus.",
   quote_locked: "Ce devis est envoyé : il ne peut plus être modifié ni supprimé.",
   quote_transition: "Ce changement de statut n'est pas possible.",
   quote_empty: "Ajoutez au moins une ligne avant d'envoyer le devis.",
@@ -117,6 +123,8 @@ export type Lead = {
   id: string;
   /** région où tombe sa position (déduite des coordonnées) */
   regionId: string | null;
+  /** onsite = à visiter en présentiel ; remote = prospect simple, joint à distance */
+  visitMode: "onsite" | "remote";
   /** compte (entreprise cliente) dont ce lead est une opportunité */
   accountId: string | null;
   /** valeurs des champs personnalisés : { identifiant du champ: valeur } */

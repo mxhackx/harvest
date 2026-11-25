@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Callout, DocArticle } from "@/components/docs/blocks";
+import { Callout, CodeBlock, DocArticle } from "@/components/docs/blocks";
 import { docMetadata } from "@/lib/seo";
 
 export const metadata = docMetadata("/docs/quotes");
@@ -32,6 +32,36 @@ export default function Page() {
         « Enregistrer au format PDF » pour l’envoyer à votre client. {" "}
         <Link href="/docs/messages">L’envoi par e-mail</Link> reste manuel : joignez le PDF à votre message.
       </p>
+
+      <h2>Importer et exporter des devis (JSON, CSV)</h2>
+      <p>
+        Sur l’onglet <strong>Devis</strong> d’un lead, <strong>Exporter (CSV)</strong> et <strong>Exporter (JSON)</strong>{" "}
+        téléchargent ses devis ; <strong>Importer</strong> crée des <strong>brouillons</strong> à partir d’un fichier (on
+        analyse d’abord, puis on confirme). Les numéros sont attribués à l’import. L’export JSON peut être réimporté tel quel.
+      </p>
+      <p><strong>JSON</strong> : un tableau de devis (ou un seul), avec ses lignes.</p>
+      <CodeBlock lang="json" label="Devis (JSON)" code={`[
+  {
+    "title": "Site vitrine",
+    "taxRate": 18,
+    "validUntil": "2026-12-31",
+    "notes": "Paiement à 30 jours",
+    "lines": [
+      { "label": "Création du site", "quantity": 1, "unitPrice": 250000 },
+      { "label": "Formation (heures)", "quantity": 2.5, "unitPrice": 15000 }
+    ]
+  }
+]`} />
+      <p>
+        <strong>CSV</strong> : une ligne par ligne de devis ; les lignes de même <code>title</code> forment un devis, dont
+        la taxe, la validité et les notes se lisent sur la première ligne. Colonnes : <code>title</code>, <code>label</code>,{" "}
+        <code>quantity</code>, <code>unitPrice</code> (obligatoires), <code>taxRate</code>, <code>validUntil</code>,{" "}
+        <code>notes</code> (facultatives). Séparateur virgule ou point-virgule. Au plus 50 devis par fichier et 50 lignes
+        par devis ; la quantité a 2 décimales au plus et le prix unitaire est un entier.
+      </p>
+      <CodeBlock lang="csv" label="Devis (CSV)" code={`title,taxRate,validUntil,notes,label,quantity,unitPrice
+Site vitrine,18,2026-12-31,Paiement à 30 jours,Création du site,1,250000
+Site vitrine,,,,Formation (heures),2.5,15000`} />
 
       <Callout title="Qui voit quoi ?">
         Un devis suit les droits sur son lead : on le lit avec le droit de lire le lead, on l’écrit avec celui de le modifier.

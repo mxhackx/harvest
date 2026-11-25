@@ -7,6 +7,7 @@ export const DASHBOARD = "/dashboard";
 const CRM = `${DASHBOARD}/crm`;
 const ERP = `${DASHBOARD}/erp`;
 const WAVES = `${DASHBOARD}/waves`;
+const SERVICE = `${DASHBOARD}/service`;
 
 export const ROUTES = {
   home: DASHBOARD,
@@ -21,6 +22,10 @@ export const ROUTES = {
   trash: `${CRM}/trash`,
   duplicates: `${CRM}/duplicates`,
   objectives: `${CRM}/objectives`,
+  invoices: `${CRM}/invoices`,
+  invoice: (id: string) => `${CRM}/invoices/${id}`,
+  segments: `${CRM}/segments`,
+  segment: (id: string) => `${CRM}/segments/${id}`,
   fields: `${CRM}/fields`,
   quote: (id: string) => `${CRM}/quotes/${id}`,
   accounts: `${CRM}/accounts`,
@@ -28,7 +33,12 @@ export const ROUTES = {
   team: `${ERP}/team`,
   audit: `${ERP}/audit`,
   webhooks: `${ERP}/webhooks`,
+  automations: `${ERP}/automations`,
+  tickets: `${SERVICE}/tickets`,
+  ticket: (id: string) => `${SERVICE}/tickets/${id}`,
+  kb: `${SERVICE}/kb`,
   waves: WAVES,
   regions: `${WAVES}/regions`,
+  tours: `${WAVES}/tours`,
   map: `${WAVES}/map`,
 } as const;

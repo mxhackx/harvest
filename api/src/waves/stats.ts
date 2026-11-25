@@ -28,11 +28,13 @@ export type LeadBrief = { id: string; name: string; city: string; phone: string 
  * Bilan d'une vague d'après l'état actuel des leads de sa région. « Visité » = visite enregistrée pendant la période
  * (date de visite du lead, ou note de type visite dans son fil). « Converti » = passé en étape « gagné » pendant la période.
  * « À repasser » = lead encore ouvert (ni gagné ni perdu) et non visité pendant la période.
+ * Seuls les prospects à visiter en présentiel comptent comme visités ou à repasser : un prospect simple (joint à distance)
+ * n'a pas de visite à faire. Les convertis comptent tous les leads de la région.
  */
 export async function computeBilan(w: Pick<Wave, "companyId" | "regionId" | "startsOn" | "endsOn" | "targetVisits">): Promise<{ bilan: Bilan; toRevisit: LeadBrief[] }> {
   const { from, to } = periodBounds(w.startsOn, w.endsOn);
   const rows = await db
-    .select({ id: leads.id, name: leads.name, city: leads.city, phone: leads.phone, status: leads.status, visitedAt: leads.visitedAt, closedAt: leads.closedAt })
+    .select({ id: leads.id, name: leads.name, city: leads.city, phone: leads.phone, status: leads.status, visitedAt: leads.visitedAt, closedAt: leads.closedAt, visitMode: leads.visitMode })
     .from(leads)
     .where(and(eq(leads.companyId, w.companyId), eq(leads.regionId, w.regionId), alive));
   const kinds = new Map((await listStages(w.companyId)).map((s) => [s.key, s.kind]));
@@ -46,11 +48,12 @@ export async function computeBilan(w: Pick<Wave, "companyId" | "regionId" | "sta
     : [];
   const noted = new Set(visitNotes.map((v) => v.leadId));
 
-  const visitedIds = new Set(rows.filter((l) => inPeriod(l.visitedAt) || noted.has(l.id)).map((l) => l.id));
+  const onsite = rows.filter((l) => l.visitMode === "onsite");
+  const visitedIds = new Set(onsite.filter((l) => inPeriod(l.visitedAt) || noted.has(l.id)).map((l) => l.id));
   const converted = rows.filter((l) => kinds.get(l.status) === "won" && inPeriod(l.closedAt)).length;
-  const toRevisit = rows.filter((l) => (kinds.get(l.status) ?? "open") === "open" && !visitedIds.has(l.id));
+  const toRevisit = onsite.filter((l) => (kinds.get(l.status) ?? "open") === "open" && !visitedIds.has(l.id));
   return {
-    bilan: { total: rows.length, visited: visitedIds.size, converted, toRevisit: toRevisit.length, targetVisits: w.targetVisits },
+    bilan: { total: onsite.length, visited: visitedIds.size, converted, toRevisit: toRevisit.length, targetVisits: w.targetVisits },
     toRevisit: toRevisit.slice(0, 200).map(({ id, name, city, phone }) => ({ id, name, city, phone })),
   };
 }

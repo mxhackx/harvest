@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { and, asc, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { contacts, emailLog, leads } from "../db/schema.js";
+import { accounts, contacts, emailLog, leads, users } from "../db/schema.js";
 import { alive, findReadableLead, leadAttrs } from "../leads/access.js";
 import { whatsappField } from "../leads/fields.js";
 import { can } from "../rbac/policy.js";
@@ -16,7 +16,17 @@ const email = z
   .refine((v) => v === "" || z.string().email().safeParse(v).success, "adresse e-mail invalide");
 
 const base = z.object({
+  // soit « name » (ancien format : tout le nom), soit prénom et nom (le nom est alors obligatoire)
   name: z.string().trim().min(1).max(100),
+  salutation: z.string().trim().max(20),
+  firstName: z.string().trim().max(60),
+  lastName: z.string().trim().max(60),
+  reportsToId: z.string().uuid().nullable(),
+  country: z.string().trim().max(60),
+  street: z.string().trim().max(200),
+  city: z.string().trim().max(100),
+  region: z.string().trim().max(100),
+  postalCode: z.string().trim().max(20),
   role: z.string().trim().max(100),
   phone: z.string().trim().max(40),
   whatsapp: whatsappField,
@@ -24,8 +34,22 @@ const base = z.object({
   notes: z.string().trim().max(500),
   isPrimary: z.boolean(),
 });
-const createBody = base.partial().required({ name: true });
+const createBody = base.partial().refine((v) => !!(v.name?.trim() || v.lastName?.trim()), { message: "le nom est obligatoire", path: ["lastName"] });
 const patchBody = base.partial();
+
+/**
+ * Le nom affiché (« prénom nom ») et ses deux morceaux restent cohérents : si on donne prénom et nom, `name` en découle ;
+ * si on ne donne que `name` (ancien format), il devient le nom de famille.
+ */
+export function withNames<T extends { name?: string; firstName?: string; lastName?: string }>(data: T, current?: { firstName: string; lastName: string; name: string }): T & { name?: string; firstName?: string; lastName?: string } {
+  if (data.firstName === undefined && data.lastName === undefined) {
+    if (data.name === undefined) return data;
+    return { ...data, firstName: "", lastName: data.name };
+  }
+  const firstName = data.firstName ?? current?.firstName ?? "";
+  const lastName = data.lastName ?? current?.lastName ?? "";
+  return { ...data, firstName, lastName, name: `${firstName} ${lastName}`.trim() || current?.name || "" };
+}
 
 const uuid = z.string().uuid();
 
@@ -46,6 +70,12 @@ export async function eraseContactData(contact: typeof contacts.$inferSelect): P
   await db.delete(emailLog).where(contact.email ? and(eq(emailLog.leadId, contact.leadId), or(byContact, eq(emailLog.toEmail, contact.email.toLowerCase()))) : byContact);
 }
 
+/** Le supérieur d'un contact est une autre personne du même lead. */
+async function sameLeadContact(leadId: string, contactId: string) {
+  const [c] = await db.select({ id: contacts.id }).from(contacts).where(and(eq(contacts.id, contactId), eq(contacts.leadId, leadId)));
+  return !!c;
+}
+
 /** `leads.contactName` reste le nom du contact principal : listes, import et export continuent de s'en servir. */
 export async function syncLeadContactName(leadId: string) {
   const [primary] = await db.select({ name: contacts.name }).from(contacts).where(and(eq(contacts.leadId, leadId), eq(contacts.isPrimary, true)));
@@ -56,9 +86,9 @@ export async function syncLeadContactName(leadId: string) {
 export async function ensurePrimaryContact(leadId: string, companyId: string, name: string) {
   const [primary] = await db.select().from(contacts).where(and(eq(contacts.leadId, leadId), eq(contacts.isPrimary, true)));
   if (primary) {
-    if (primary.name !== name) await db.update(contacts).set({ name, updatedAt: new Date() }).where(eq(contacts.id, primary.id));
+    if (primary.name !== name) await db.update(contacts).set({ name, firstName: "", lastName: name, updatedAt: new Date() }).where(eq(contacts.id, primary.id));
   } else {
-    await db.insert(contacts).values({ leadId, companyId, name, isPrimary: true });
+    await db.insert(contacts).values({ leadId, companyId, name, lastName: name, isPrimary: true });
   }
 }
 
@@ -82,16 +112,18 @@ export async function contactRoutes(app: FastifyInstance) {
     );
     const [items, [{ total }]] = await Promise.all([
       db
-        .select({ contact: contacts, leadName: leads.name })
+        .select({ contact: contacts, leadName: leads.name, accountId: leads.accountId, accountName: accounts.name, ownerName: users.name })
         .from(contacts)
         .innerJoin(leads, eq(leads.id, contacts.leadId))
+        .leftJoin(accounts, eq(accounts.id, leads.accountId))
+        .leftJoin(users, eq(users.id, contacts.ownerId))
         .where(where)
         .orderBy(asc(contacts.name), asc(contacts.id))
         .limit(q.data.limit)
         .offset(q.data.offset),
       db.select({ total: sql<number>`count(*)::int` }).from(contacts).innerJoin(leads, eq(leads.id, contacts.leadId)).where(where),
     ]);
-    return { items: items.map((r) => ({ ...r.contact, leadName: r.leadName })), total };
+    return { items: items.map((r) => ({ ...r.contact, leadName: r.leadName, accountId: r.accountId, accountName: r.accountName, ownerName: r.ownerName })), total };
   });
 
   app.get<{ Params: { id: string } }>("/leads/:id/contacts", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
@@ -111,7 +143,8 @@ export async function contactRoutes(app: FastifyInstance) {
     if (existing.length >= 30) return reply.code(409).send({ error: "too_many_contacts" });
     const { isPrimary, ...data } = body.data;
     // le premier contact d'un lead est toujours le principal
-    const [created] = await db.insert(contacts).values({ ...data, leadId: lead.id, companyId: subject.companyId, isPrimary: false }).returning();
+    if (data.reportsToId && !(await sameLeadContact(lead.id, data.reportsToId))) return reply.code(400).send({ error: "invalid_body", issues: [{ message: "supérieur introuvable", path: ["reportsToId"] }] });
+    const [created] = await db.insert(contacts).values({ ...withNames(data), leadId: lead.id, companyId: subject.companyId, ownerId: subject.userId, isPrimary: false } as typeof contacts.$inferInsert).returning();
     if (isPrimary || existing.length === 0) await makePrimary(lead.id, created.id);
     await syncLeadContactName(lead.id);
     const [fresh] = await db.select().from(contacts).where(eq(contacts.id, created.id));
@@ -128,7 +161,8 @@ export async function contactRoutes(app: FastifyInstance) {
     const { isPrimary, ...data } = body.data;
     // un lead qui a des contacts en a toujours un principal : on en change en en désignant un autre
     if (isPrimary === false && found.contact.isPrimary) return reply.code(409).send({ error: "primary_required" });
-    if (Object.keys(data).length) await db.update(contacts).set({ ...data, updatedAt: new Date() }).where(eq(contacts.id, found.contact.id));
+    if (data.reportsToId && (data.reportsToId === found.contact.id || !(await sameLeadContact(found.lead.id, data.reportsToId)))) return reply.code(400).send({ error: "invalid_body", issues: [{ message: "supérieur invalide", path: ["reportsToId"] }] });
+    if (Object.keys(data).length) await db.update(contacts).set({ ...withNames(data, found.contact), updatedAt: new Date() }).where(eq(contacts.id, found.contact.id));
     if (isPrimary === true) await makePrimary(found.lead.id, found.contact.id);
     await syncLeadContactName(found.lead.id);
     const [fresh] = await db.select().from(contacts).where(eq(contacts.id, found.contact.id));

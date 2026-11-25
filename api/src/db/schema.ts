@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   date,
   index,
   jsonb,
@@ -251,6 +252,8 @@ export const leads = pgTable("leads", {
   deletedBy: uuid("deleted_by").references(() => users.id, { onDelete: "set null" }),
   // région où tombe sa position (déduite des coordonnées, jamais saisie) ; null = hors de toute région ou sans position
   regionId: uuid("region_id").references(() => regions.id, { onDelete: "set null" }),
+  // onsite = prospect à visiter en présentiel (carte, tournées, vagues) ; remote = prospect simple, joint à distance
+  visitMode: text("visit_mode").notNull().default("onsite"),
   // compte (entreprise cliente) dont ce lead est une opportunité ; null = lead sans compte
   accountId: uuid("account_id").references(() => accounts.id, { onDelete: "set null" }),
   // valeurs des champs personnalisés : { identifiant du champ: valeur }
@@ -301,6 +304,18 @@ export const contacts = pgTable(
     whatsapp: text("whatsapp").notNull().default(""),
     email: text("email").notNull().default(""),
     notes: text("notes").notNull().default(""),
+    // à la façon d'une fiche de CRM : civilité, prénom et nom (name = « prénom nom », gardé pour les listes), supérieur,
+    // propriétaire et adresse postale
+    salutation: text("salutation").notNull().default(""),
+    firstName: text("first_name").notNull().default(""),
+    lastName: text("last_name").notNull().default(""),
+    reportsToId: uuid("reports_to_id").references((): AnyPgColumn => contacts.id, { onDelete: "set null" }),
+    ownerId: uuid("owner_id").references(() => users.id, { onDelete: "set null" }),
+    country: text("country").notNull().default(""),
+    street: text("street").notNull().default(""),
+    city: text("city").notNull().default(""),
+    region: text("region").notNull().default(""),
+    postalCode: text("postal_code").notNull().default(""),
     isPrimary: boolean("is_primary").notNull().default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -450,6 +465,7 @@ export const segments = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    description: text("description").notNull().default(""),
     config: jsonb("config").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
@@ -645,4 +661,168 @@ export const quotes = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [uniqueIndex("quotes_number").on(t.companyId, t.number), index("quotes_lead").on(t.leadId)],
+);
+
+/**
+ * Tournée : une journée de visites, dans un ordre, avec son itinéraire. Personnelle (celle de son auteur). Les étapes
+ * sont copiées au moment de l'enregistrement : la tournée garde son tracé même si un lead est ensuite déplacé ou supprimé.
+ */
+export const tours = pgTable(
+  "tours",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    ownerId: uuid("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    plannedOn: date("planned_on", { mode: "string" }).notNull(),
+    // heure de départ (HH:MM) et minutes passées sur place à chaque étape
+    startTime: text("start_time").notNull().default("08:00"),
+    stopMinutes: integer("stop_minutes").notNull().default(20),
+    start: jsonb("start").$type<{ lat: number; lng: number; label: string }>().notNull(),
+    // arrivée si elle est fixée (retour au départ, par exemple) ; null = la tournée finit à la dernière étape
+    end: jsonb("end").$type<{ lat: number; lng: number; label: string } | null>(),
+    stops: jsonb("stops").$type<{ leadId: string; name: string; city: string; phone: string; lat: number; lng: number }[]>().notNull(),
+    legs: jsonb("legs").$type<{ distanceKm: number; durationMin: number }[]>().notNull(),
+    geometry: jsonb("geometry").$type<[number, number][]>().notNull(),
+    totalKm: doublePrecision("total_km").notNull().default(0),
+    totalMin: integer("total_min").notNull().default(0),
+    approximate: boolean("approximate").notNull().default(false),
+    // planned | done
+    status: text("status").notNull().default("planned"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("tours_owner").on(t.companyId, t.ownerId, t.plannedOn)],
+);
+
+/**
+ * Facture d'une opportunité (un lead), le plus souvent tirée d'un devis accepté. Numéro unique par entreprise
+ * (F-2026-0001). Brouillon modifiable ; envoyée, elle est figée ; payée ou annulée, c'est terminé.
+ */
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    quoteId: uuid("quote_id").references(() => quotes.id, { onDelete: "set null" }),
+    number: text("number").notNull(),
+    title: text("title").notNull(),
+    // draft | sent | paid | cancelled
+    status: text("status").notNull().default("draft"),
+    lines: jsonb("lines").$type<{ label: string; quantity: number; unitPrice: number }[]>().notNull().default([]),
+    taxRate: integer("tax_rate").notNull().default(0),
+    dueOn: date("due_on", { mode: "string" }),
+    notes: text("notes").notNull().default(""),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("invoices_number").on(t.companyId, t.number), index("invoices_lead").on(t.leadId)],
+);
+
+/**
+ * Automatisation : une règle qui agit toute seule sur les leads. `assign` répartit les nouveaux leads à tour de rôle entre
+ * des personnes ; `task` crée une tâche de relance X jours après la création si rien ne s'est passé ; `email` envoie
+ * un e-mail de suivi au contact principal X jours après. Chaque lead n'est traité qu'une fois par règle (automation_runs).
+ */
+export const automations = pgTable(
+  "automations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    // assign | task | email
+    kind: text("kind").notNull(),
+    params: jsonb("params").$type<Record<string, unknown>>().notNull(),
+    active: boolean("active").notNull().default(true),
+    // prochain rang de la répartition à tour de rôle
+    cursor: integer("cursor").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("automations_company").on(t.companyId)],
+);
+
+export const automationRuns = pgTable(
+  "automation_runs",
+  {
+    automationId: uuid("automation_id")
+      .notNull()
+      .references(() => automations.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id")
+      .notNull()
+      .references(() => leads.id, { onDelete: "cascade" }),
+    // ce qui s'est passé : done (action faite) ou skipped (condition non remplie)
+    outcome: text("outcome").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex("automation_runs_unique").on(t.automationId, t.leadId)],
+);
+
+/** Ticket : une demande ou une réclamation d'un client après la vente, suivie jusqu'à sa résolution. */
+export const tickets = pgTable(
+  "tickets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    // le client concerné (un lead) ; null = ticket sans client précis
+    leadId: uuid("lead_id").references(() => leads.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    // open | in_progress | resolved | closed
+    status: text("status").notNull().default("open"),
+    // low | normal | high | urgent
+    priority: text("priority").notNull().default("normal"),
+    assigneeId: uuid("assignee_id").references(() => users.id, { onDelete: "set null" }),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  },
+  (t) => [index("tickets_company").on(t.companyId, t.status, t.createdAt)],
+);
+
+export const ticketComments = pgTable(
+  "ticket_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ticketId: uuid("ticket_id")
+      .notNull()
+      .references(() => tickets.id, { onDelete: "cascade" }),
+    authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("ticket_comments_ticket").on(t.ticketId, t.createdAt)],
+);
+
+/** Article de la base de connaissances : une réponse fréquente, rangée par mots-clés, que toute l'équipe retrouve vite. */
+export const kbArticles = pgTable(
+  "kb_articles",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("kb_company").on(t.companyId, t.title)],
 );

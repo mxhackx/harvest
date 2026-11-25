@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { api, describeError, formatValue } from "@/lib/api";
 import { PERIODS, barWidth, fieldActions, pct, periodRange, type Report } from "@/lib/reports";
 import { useSession } from "@/lib/session";
+import { ForecastPanels } from "./forecast-panels";
 import { Notice, Panel } from "./ui";
 
 function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
@@ -180,6 +181,7 @@ export function ReportsPage() {
           </Panel>
         </>
       )}
+      <ForecastPanels days={days} />
     </div>
   );
 }

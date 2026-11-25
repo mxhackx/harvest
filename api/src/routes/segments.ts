@@ -15,12 +15,15 @@ const config = z.object({
   query: z.string().max(100),
   sort: z.string().max(40),
   filters: z.object({
+    mode: z.enum(["all", "onsite", "remote"]).default("all"),
     visit: z.enum(["all", "to_visit", "visited"]),
     position: z.enum(["all", "with", "without"]),
     sector: z.string().max(100),
   }),
 });
-const body = z.object({ name: z.string().trim().min(1).max(60), config });
+const body = z.object({ name: z.string().trim().min(1).max(60), description: z.string().trim().max(300).default(""), config });
+const patchBody = z.object({ name: z.string().trim().min(1).max(60).optional(), description: z.string().trim().max(300).optional(), config: config.optional() });
+const columns = { id: segments.id, name: segments.name, description: segments.description, config: segments.config, createdAt: segments.createdAt };
 
 
 /** Segments : vues de leads personnelles. Chacun ne voit, ne crée et ne supprime que les siens. */
@@ -29,7 +32,7 @@ export async function segmentRoutes(app: FastifyInstance) {
     and(eq(segments.companyId, req.member!.subject.companyId), eq(segments.userId, req.member!.subject.userId));
 
   app.get("/segments", { preHandler: requirePermission("lead:read") }, async (req) =>
-    db.select({ id: segments.id, name: segments.name, config: segments.config }).from(segments).where(mine(req)).orderBy(asc(segments.name)),
+    db.select(columns).from(segments).where(mine(req)).orderBy(asc(segments.name)),
   );
 
   app.post("/segments", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
@@ -41,9 +44,29 @@ export async function segmentRoutes(app: FastifyInstance) {
     try {
       const [created] = await db
         .insert(segments)
-        .values({ companyId: subject.companyId, userId: subject.userId, name: parsed.data.name, config: parsed.data.config })
-        .returning({ id: segments.id, name: segments.name, config: segments.config });
+        .values({ companyId: subject.companyId, userId: subject.userId, name: parsed.data.name, description: parsed.data.description, config: parsed.data.config })
+        .returning(columns);
       return reply.code(201).send(created);
+    } catch (e) {
+      if (isUniqueViolation(e)) return reply.code(409).send({ error: "segment_exists" });
+      throw e;
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/segments/:id", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
+    if (!uuid.safeParse(req.params.id).success) return reply.code(404).send({ error: "not_found" });
+    const [s] = await db.select(columns).from(segments).where(and(mine(req), eq(segments.id, req.params.id)));
+    return s ?? reply.code(404).send({ error: "not_found" });
+  });
+
+  // Renommer, décrire, ou changer les filtres d'un segment.
+  app.patch<{ Params: { id: string } }>("/segments/:id", { preHandler: requirePermission("lead:read") }, async (req, reply) => {
+    const parsed = patchBody.safeParse(req.body);
+    if (!parsed.success || Object.keys(parsed.data).length === 0) return reply.code(400).send({ error: "invalid_body", issues: parsed.success ? [] : parsed.error.issues });
+    if (!uuid.safeParse(req.params.id).success) return reply.code(404).send({ error: "not_found" });
+    try {
+      const [s] = await db.update(segments).set(parsed.data).where(and(mine(req), eq(segments.id, req.params.id))).returning(columns);
+      return s ?? reply.code(404).send({ error: "not_found" });
     } catch (e) {
       if (isUniqueViolation(e)) return reply.code(409).send({ error: "segment_exists" });
       throw e;

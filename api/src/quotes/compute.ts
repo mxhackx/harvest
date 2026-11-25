@@ -12,10 +12,10 @@ export function computeTotals(lines: Line[], taxRate: number): Totals {
   return { subtotal, tax, total: subtotal + tax };
 }
 
-/** Numéro suivant d'une année : D-2026-0001, D-2026-0002… ; l'année est celle de la date donnée, les numéros d'autres années sont ignorés. */
-export function nextNumber(existing: string[], now = new Date()): string {
+/** Numéro suivant d'une année : D-2026-0001, D-2026-0002… (F- pour les factures) ; l'année est celle de la date donnée, les numéros d'autres années sont ignorés. */
+export function nextNumber(existing: string[], now = new Date(), letter = "D"): string {
   const year = now.getUTCFullYear();
-  const prefix = `D-${year}-`;
+  const prefix = `${letter}-${year}-`;
   const max = existing.filter((n) => n.startsWith(prefix)).reduce((m, n) => Math.max(m, Number(n.slice(prefix.length)) || 0), 0);
   return `${prefix}${String(max + 1).padStart(4, "0")}`;
 }
