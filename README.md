@@ -7,6 +7,10 @@ Prospection et suivi de leads sur le terrain. Deux projets indépendants :
 - `api/` — Fastify, Drizzle, Postgres (auth, RBAC/ABAC, leads, calendrier, import/export)
 - `web/` — Next.js (CRM, carte de tournée, calendrier, documentation publique)
 
+## Cahier des charges
+
+La vision, les modules et les exigences du produit sont dans [docs/cahier-des-charges.md](docs/cahier-des-charges.md).
+
 ## Démarrer
 
 ```bash
