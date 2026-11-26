@@ -21,6 +21,7 @@
   --text-heading: 28px;
   --text-hero-sm: 40px;
   --text-hero: 56px;
+  --text-display: 76px;
 
   --leading-hero: 1.1;
   --tracking-display: -0.02em;
@@ -208,4 +209,191 @@ body {
 .workflow-canvas .react-flow__handle {
   width: 10px;
   height: 10px;
+}
+
+/*
+ * Page d'accueil : toujours sombre, quel que soit le thème choisi dans l'application. `.landing` redéfinit les jetons pour
+ * tout ce qu'elle contient (bulle de contact comprise), puis les effets (halo, grain, étoiles, apparitions).
+ */
+.landing {
+  color-scheme: dark;
+  --color-page: #050507;
+  --color-card: #0e0f13;
+  --color-field: #15171d;
+  --color-ink: #ffffff;
+  --color-muted: #a3a8b3;
+  --color-link: #7cc0ff;
+  --color-border: rgb(255 255 255 / 0.1);
+  --color-rule: rgb(255 255 255 / 0.08);
+  --color-frame: rgb(255 255 255 / 0.18);
+  --color-accent: #1e74d8;
+  --color-accent-hover: #1763bd;
+  --color-accent-soft: rgb(59 130 246 / 0.16);
+  --color-accent-press: #8cc4ff;
+  --color-forest: #5fd4c4;
+  --color-forest-soft: rgb(95 212 196 / 0.14);
+  --color-glow: #2563ff;
+  --color-glow-deep: #172f7a;
+  --color-glow-aqua: #0d6d78;
+  --color-glass: rgb(5 5 7 / 0.55);
+  background: var(--color-page);
+  color: var(--color-ink);
+}
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora i {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform;
+}
+.aurora i:nth-child(1) {
+  width: 55%;
+  height: 70%;
+  left: -12%;
+  top: -22%;
+  background: var(--color-glow);
+  animation: blob 18s ease-in-out infinite;
+}
+.aurora i:nth-child(2) {
+  width: 50%;
+  height: 60%;
+  left: 28%;
+  bottom: -28%;
+  background: var(--color-glow-deep);
+  animation: blob 23s ease-in-out -7s infinite reverse;
+}
+.aurora i:nth-child(3) {
+  width: 36%;
+  height: 50%;
+  right: -10%;
+  top: -8%;
+  background: var(--color-glow-aqua);
+  opacity: 0.55;
+  animation: blob 27s ease-in-out -12s infinite;
+}
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0); }
+  33% { transform: translate(14%, 10%) scale(1.25, 0.85) rotate(30deg); }
+  66% { transform: translate(-10%, 4%) scale(0.85, 1.2) rotate(-18deg); }
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.glass {
+  background: var(--color-glass);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(16px);
+}
+.shine {
+  background: linear-gradient(100deg, var(--color-ink) 35%, var(--color-accent-press) 50%, var(--color-ink) 65%);
+  background-size: 220% 100%;
+  background-clip: text;
+  color: transparent;
+  animation: shine 6s linear infinite;
+}
+@keyframes shine {
+  from { background-position: 100% center; }
+  to { background-position: -120% center; }
+}
+.typed {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  animation: typing 2s steps(30) both;
+}
+@keyframes typing {
+  from { max-width: 0; }
+  to { max-width: 32ch; }
+}
+.rise {
+  animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(28px); filter: blur(8px); }
+}
+.reveal {
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.7s ease;
+}
+.reveal[data-hidden] {
+  opacity: 0;
+  transform: translateY(32px);
+  filter: blur(6px);
+}
+.stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, var(--color-ink), transparent),
+    radial-gradient(1px 1px at 140px 90px, var(--color-muted), transparent),
+    radial-gradient(1.5px 1.5px at 90px 180px, var(--color-ink), transparent),
+    radial-gradient(1px 1px at 210px 150px, var(--color-muted), transparent);
+  background-size: 260px 230px;
+  animation: drift 40s linear infinite;
+}
+@keyframes drift {
+  to { background-position: 260px -230px; }
+}
+/* Carte à halo : la lumière suit le pointeur (--x, --y posés par le script), sur une grille fine. */
+.spot {
+  position: relative;
+  overflow: hidden;
+}
+.spot::before,
+.spot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.spot::before {
+  background: radial-gradient(320px circle at var(--x, 50%) var(--y, 0%), var(--color-accent-soft), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.spot:hover::before {
+  opacity: 1;
+}
+.spot::after {
+  opacity: 0.05;
+  background-image: linear-gradient(var(--color-muted) 0.5px, transparent 0.5px), linear-gradient(90deg, var(--color-muted) 0.5px, transparent 0.5px);
+  background-size: 28px 28px;
+}
+@media (hover: hover) {
+  .spot p {
+    opacity: 0.7;
+    transition: opacity 0.25s;
+  }
+  .spot:hover p,
+  .spot:focus-within p {
+    opacity: 1;
+  }
+}
+.fill-bar {
+  animation: fill 5s linear both;
+}
+@keyframes fill {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aurora i, .shine, .typed, .rise, .stars, .fill-bar {
+    animation: none;
+  }
+  .reveal {
+    transition: none;
+  }
 }
