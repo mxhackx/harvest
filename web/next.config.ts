@@ -27,8 +27,8 @@ const nextConfig: NextConfig = {
       ...legacyRedirects(),
     ];
   },
-  // le badge de développement recouvrirait la vignette de l'entreprise, en bas à gauche
-  devIndicators: { position: "bottom-right" },
+  // le badge de développement recouvre les coins : la vignette de l'entreprise à gauche, la bulle de contact à droite
+  devIndicators: false,
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
