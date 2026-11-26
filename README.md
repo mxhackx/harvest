@@ -36,6 +36,10 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 - **Vagues** (`waves`) : région, période, objectif. Phase calculée (à venir, en cours, en retard, clôturée) ; bilan (visités, convertis, à repasser) calculé en direct par [api/src/waves/stats.ts](api/src/waves/stats.ts), figé à la clôture.
 - Droits `wave:create|update|delete` (CEO et Manager) ; tout membre lit. Interface : section *Vagues* du menu (vagues, régions, carte). Documentation utilisateur : `/docs/waves`.
 
+## Workflows (IA)
+
+`/dashboard/ai/workflows` : éditeur de chaînes (React Flow). La table `workflows` stocke le dessin en JSON, validé par `api/src/workflows/graph.ts` (un déclencheur, chaîne linéaire, plafond d'autonomie par action, cahier des charges §12). **Aucun moteur d'exécution pour l'instant.** Test navigateur : `web/e2e/workflows.spec.ts`.
+
 ## E-mails depuis le CRM
 
 `POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.

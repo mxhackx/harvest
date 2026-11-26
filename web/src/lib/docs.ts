@@ -91,6 +91,11 @@ export const DOCS: DocPage[] = [
     description: "Répartissez les nouveaux leads à tour de rôle et relancez automatiquement ceux qui restent sans suite, par tâche ou par e-mail.",
   },
   {
+    href: "/docs/workflows",
+    title: "Workflows",
+    description: "Dessinez des chaînes d'étapes avec un déclencheur, des agents IA, des conditions et des validations, puis vérifiez-les.",
+  },
+  {
     href: "/docs/webhooks",
     title: "Webhooks",
     description: "Prévenez un autre outil dès qu'un lead est créé, modifié ou supprimé, avec un envoi JSON signé que votre serveur peut vérifier.",
@@ -152,7 +157,7 @@ export const COLLECTIONS: Collection[] = [
   { id: "terrain", section: "guide", title: "Vagues et terrain", description: "Régions, vagues, carte, calendrier et tâches.", hrefs: ["/docs/waves", "/docs/tours", "/docs/location", "/docs/calendar", "/docs/tasks", "/docs/offline"] },
   { id: "leads", section: "guide", title: "Leads et clients", description: "La fiche d'un lead, le pipeline, les contacts et les messages.", hrefs: ["/docs/accounts", "/docs/lead", "/docs/quotes", "/docs/invoices", "/docs/support", "/docs/pipeline", "/docs/messages"] },
   { id: "donnees", section: "guide", title: "Importer et exporter", description: "Faire entrer vos leads existants, et en sortir vos données.", hrefs: ["/docs/import", "/docs/export"] },
-  { id: "equipe", section: "guide", title: "Équipe et suivi", description: "Inviter, répartir, fixer des objectifs et lire les rapports.", hrefs: ["/docs/team", "/docs/objectives", "/docs/automations", "/docs/reports"] },
+  { id: "equipe", section: "guide", title: "Équipe et suivi", description: "Inviter, répartir, fixer des objectifs et lire les rapports.", hrefs: ["/docs/team", "/docs/objectives", "/docs/automations", "/docs/workflows", "/docs/reports"] },
   { id: "webhooks", section: "api", title: "Webhooks", description: "Être prévenu en temps réel quand un lead change.", hrefs: ["/docs/webhooks"] },
   { id: "formats", section: "api", title: "Formats de fichiers", description: "Référence technique des fichiers CSV et JSON acceptés à l'import.", hrefs: ["/docs/import/csv", "/docs/import/json", "/docs/import/fields", "/docs/import/errors"] },
 ];

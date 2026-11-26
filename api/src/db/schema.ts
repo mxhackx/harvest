@@ -826,3 +826,20 @@ export const kbArticles = pgTable(
   },
   (t) => [index("kb_company").on(t.companyId, t.title)],
 );
+
+/** Workflow : la définition d'une chaîne (déclencheur + étapes) dessinée dans l'éditeur. Forme validée par workflows/graph.ts. */
+export const workflows = pgTable(
+  "workflows",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    graph: jsonb("graph").notNull(),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("workflows_company").on(t.companyId)],
+);
