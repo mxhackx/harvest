@@ -94,17 +94,26 @@ export function Tilt({ children }: { children: ReactNode }) {
   );
 }
 
-/** Carte dont le halo suit le pointeur. */
+/** Retient la position du pointeur dans l'élément (--x, --y), pour les lueurs en CSS. */
+const track = (e: React.PointerEvent<HTMLElement>) => {
+  const box = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty("--x", `${e.clientX - box.left}px`);
+  e.currentTarget.style.setProperty("--y", `${e.clientY - box.top}px`);
+};
+
+/** Grand panneau éclairé par le pointeur. */
+export function Lamp({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return (
+    <section className={`lamp ${className}`} onPointerMove={track}>
+      {children}
+    </section>
+  );
+}
+
+/** Carte dont le halo et le liseré suivent le pointeur. */
 export function Spot({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div
-      className={`spot ${className}`}
-      onPointerMove={(e) => {
-        const box = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--x", `${e.clientX - box.left}px`);
-        e.currentTarget.style.setProperty("--y", `${e.clientY - box.top}px`);
-      }}
-    >
+    <div className={`spot rim ${className}`} onPointerMove={track}>
       {children}
     </div>
   );
@@ -122,7 +131,7 @@ export function Showcase({ slides }: { slides: Slide[] }) {
     return () => clearTimeout(t);
   }, [at, auto, slides.length]);
   return (
-    <div className="overflow-hidden rounded-card border border-frame bg-card">
+    <div className="overflow-hidden bg-card">
       <div className="relative h-72 overflow-hidden md:h-96">
         <div className="aurora" aria-hidden>
           <i />

@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 test("accueil : titre, aperçus que l'on choisit, texte révélé au défilement, rien ne dépasse sur téléphone", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Prospectez une région à la fois");
+  await expect(page.getByRole("list", { name: "Ce que contient l’application" })).toBeVisible();
   const slide = page.getByRole("button", { name: /Tournées optimisées/ });
   await slide.scrollIntoViewIfNeeded();
   await slide.click();
