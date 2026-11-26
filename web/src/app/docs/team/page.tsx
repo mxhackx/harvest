@@ -8,6 +8,13 @@ export const metadata = docMetadata("/docs/team");
 export default function Page() {
   return (
     <DocArticle href="/docs/team">
+      <h2>L’entreprise</h2>
+      <p>
+        La création se fait en quatre écrans : nom et photo (facultative), e-mail et téléphone (avec l’indicatif du pays),
+        secteur, puis région et première équipe. Ensuite, la vignette en bas à gauche (sur téléphone : <strong>Entreprise</strong>
+        dans la barre du bas) ouvre ces réglages. Seul le CEO peut les modifier.
+      </p>
+
       <h2>Inviter un collaborateur</h2>
       <ol>
         <li>Ouvrez <strong>ERP › Équipe</strong>.</li>
