@@ -27,7 +27,8 @@ const nextConfig: NextConfig = {
       ...legacyRedirects(),
     ];
   },
-  /* config options here */
+  // le badge de développement recouvrirait la vignette de l'entreprise, en bas à gauche
+  devIndicators: { position: "bottom-right" },
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

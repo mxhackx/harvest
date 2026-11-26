@@ -13,6 +13,7 @@ const AI = `${DASHBOARD}/ai`;
 export const ROUTES = {
   home: DASHBOARD,
   calendar: `${DASHBOARD}/calendar`,
+  company: `${DASHBOARD}/company`,
   leads: `${CRM}/leads`,
   lead: (id: string) => `${CRM}/leads/${id}`,
   contacts: `${CRM}/contacts`,
