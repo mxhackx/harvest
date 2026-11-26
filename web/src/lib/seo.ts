@@ -2,6 +2,7 @@ import { BRAND } from "./brand";
 import { THEME } from "./theme";
 import type { Metadata } from "next";
 import { findDoc } from "./docs";
+import { docsUrl } from "./hosts";
 
 export const SITE = {
   name: BRAND.name,
@@ -47,5 +48,5 @@ export const jsonLd = (data: unknown) => JSON.stringify(data).replace(/</g, "\\u
 export function docMetadata(href: string): Metadata {
   const page = findDoc(href);
   if (!page) throw new Error(`Page de documentation inconnue : ${href}`);
-  return pageMetadata({ title: `${page.title} — Documentation`, description: page.description, path: href });
+  return pageMetadata({ title: `${page.title} — Documentation`, description: page.description, path: docsUrl(href, "") });
 }

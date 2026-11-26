@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
-import { appHref } from "@/lib/hosts";
+import { appHref, docsHref } from "@/lib/hosts";
 import { ContactBubble } from "@/components/contact-bubble";
 import { ROUTES } from "@/lib/routes";
 import { SITE, jsonLd, pageMetadata } from "@/lib/seo";
@@ -51,7 +51,7 @@ export default function HomePage() {
           <span className="font-display text-brand font-semibold">{BRAND.name}</span>
         </Link>
         <nav aria-label="Navigation principale" className="flex items-center gap-5 text-small font-medium">
-          <Link href="/docs" className="hover:underline">Documentation</Link>
+          <Link href={docsHref("/docs")} className="hover:underline">Documentation</Link>
           <Link href={appHref("/login")} className="hover:underline">Se connecter</Link>
           <Link href={appHref(ROUTES.home)} className={`${button} hidden h-10 bg-accent text-white hover:bg-accent-hover sm:inline-flex`}>Ouvrir l’application</Link>
         </nav>
@@ -68,7 +68,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link href={appHref("/login")} className={`${button} bg-accent text-white hover:bg-accent-hover`}>Commencer</Link>
-            <Link href="/docs" className={`${button} border border-frame bg-card hover:bg-field`}>Lire la documentation</Link>
+            <Link href={docsHref("/docs")} className={`${button} border border-frame bg-card hover:bg-field`}>Lire la documentation</Link>
           </div>
         </section>
 
@@ -124,7 +124,7 @@ export default function HomePage() {
       <footer className="mx-auto flex w-full max-w-[1080px] flex-wrap items-center justify-between gap-3 px-6 py-8 text-small text-muted">
         <span>© {BRAND.name}</span>
         <nav aria-label="Pied de page" className="flex gap-5">
-          <Link href="/docs" className="hover:underline">Documentation</Link>
+          <Link href={docsHref("/docs")} className="hover:underline">Documentation</Link>
           <Link href={appHref("/login")} className="hover:underline">Connexion</Link>
         </nav>
       </footer>

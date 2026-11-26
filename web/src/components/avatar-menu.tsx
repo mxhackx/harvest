@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { setActiveCompanyId } from "@/lib/active-company";
 import { BookIcon } from "./icons";
-import { siteHref } from "@/lib/hosts";
+import { docsHref } from "@/lib/hosts";
 import { forgetOfflineData } from "@/lib/offline";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -165,7 +165,7 @@ export function AvatarMenu() {
           </div>
           <Link
             role="menuitem"
-            href={siteHref("/docs")}
+            href={docsHref("/docs")}
             onClick={() => setOpen(false)}
             className="flex h-10 w-full items-center gap-2 rounded-control px-2 text-body hover:bg-field"
           >

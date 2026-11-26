@@ -1,4 +1,4 @@
-import { appHref } from "@/lib/hosts";
+import { appHref, siteHref } from "@/lib/hosts";
 import { ROUTES } from "@/lib/routes";
 import { BRAND } from "@/lib/brand";
 import Image from "next/image";
@@ -48,7 +48,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
         <div className="flex w-full flex-wrap items-center justify-between gap-3 px-6 py-6 text-small text-muted">
           <span>© {BRAND.name}</span>
           <nav aria-label="Pied de page" className="flex gap-5">
-            <Link href="/" className="hover:underline">Accueil</Link>
+            <Link href={siteHref("/")} className="hover:underline">Accueil</Link>
             <Link href="/docs" className="hover:underline">Documentation</Link>
             <Link href={appHref(ROUTES.home)} className="hover:underline">Application</Link>
           </nav>
