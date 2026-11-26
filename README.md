@@ -62,7 +62,7 @@ Chaque action réussie qui modifie des données (POST, PATCH, PUT, DELETE d'un m
 
 ## Page d’accueil
 
-`web/src/app/page.tsx`, toujours sombre (classe `.landing` dans `globals.css`, qui porte aussi les effets). Les effets au défilement sont dans `components/landing/effects.tsx` ; ils respectent « réduire les animations » et le texte reste lisible sans JavaScript. Les aperçus (`screens.tsx`) sont des maquettes avec des données d’exemple.
+`web/src/app/page.tsx`, toujours sombre (classe `.landing` dans `globals.css`, qui porte aussi les effets). Les effets au défilement sont dans `components/landing/effects.tsx` ; ils respectent « réduire les animations » et le texte reste lisible sans JavaScript. Les aperçus (`screens.tsx`) et les mini-scènes des cartes (`scenes.tsx`) sont des maquettes avec des données d’exemple.
 
 ## Styles
 

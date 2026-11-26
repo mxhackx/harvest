@@ -3,7 +3,8 @@ import Link from "next/link";
 import { BRAND } from "@/lib/brand";
 import { appHref, docsHref } from "@/lib/hosts";
 import { ContactBubble } from "@/components/contact-bubble";
-import { Reveal, Showcase, Spot, Tilt, WordReveal } from "@/components/landing/effects";
+import { Lamp, Reveal, Showcase, Spot, Tilt, WordReveal } from "@/components/landing/effects";
+import { Scene } from "@/components/landing/scenes";
 import { PipelineScreen, RouteScreen, WaveScreen } from "@/components/landing/screens";
 import { ROUTES } from "@/lib/routes";
 import { SITE, jsonLd, pageMetadata } from "@/lib/seo";
@@ -37,6 +38,15 @@ const SLIDES = [
   { title: "Vagues par région", text: "Une région à la fois : ce qui est fait, ce qui reste, ce qu’il faut repasser.", screen: <WaveScreen /> },
   { title: "Tournées optimisées", text: "Choisissez les visites : l’itinéraire les met dans le bon ordre.", screen: <RouteScreen /> },
   { title: "Pipeline sur mesure", text: "Vos étapes et vos probabilités, de la première visite à la signature.", screen: <PipelineScreen /> },
+];
+
+const BASICS: { title: string; text: string }[] = [
+  { title: "Hors connexion", text: "Lire ses fiches et marquer ses visites sans réseau ; tout part au retour." },
+  { title: "Import et export", text: "CSV et JSON, avec détection des doublons et rapport d’analyse." },
+  { title: "Droits par rôle", text: "Chacun voit ce que son rôle permet, vérifié par le serveur." },
+  { title: "Journal d’audit", text: "Qui a fait quoi, et quand, consultable par le CEO." },
+  { title: "Webhooks signés", text: "Vos autres outils sont prévenus quand un lead change." },
+  { title: "Corbeille", text: "Un lead supprimé se restaure avant sa purge définitive." },
 ];
 
 const structured = {
@@ -79,40 +89,71 @@ export default function HomePage() {
       </header>
 
       <main>
-        <div className="p-2 md:p-6">
-          <section className="grain relative grid min-h-[calc(100svh-3rem)] place-items-center overflow-hidden rounded-card border border-rule px-6 py-32 text-center">
+        <div className="p-2 md:p-4">
+          <Lamp className="grain relative overflow-hidden rounded-card border border-rule pb-14 pt-32 md:pt-44">
             <div className="aurora" aria-hidden>
               <i />
               <i />
               <i />
             </div>
-            <div className="relative z-10 flex max-w-[980px] flex-col items-center gap-7">
-              <p className={label}>
-                <span className="typed">{"{ le CRM de terrain }"}</span>
+            <div className="beams" aria-hidden />
+            <div className={`${wrap} relative z-10`}>
+              <p className="rise inline-flex items-center gap-2 rounded-full border border-frame py-1 pl-1 pr-3 text-small">
+                <span className="rounded-full bg-ink px-2 py-0.5 text-micro font-bold uppercase text-page">Nouveau</span>
+                Devis et factures, sans quitter la fiche
               </p>
-              <h1 className="rise text-balance font-display text-hero-sm font-medium leading-hero tracking-display md:text-display">
-                Prospectez une région à la fois. <span className="shine">N’oubliez plus aucun lead.</span>
-              </h1>
-              <p className="rise max-w-[620px] font-mono text-small leading-relaxed text-muted [animation-delay:150ms] md:text-body">
-                {BRAND.name} réunit la carte de tournée, le pipeline, les relances et les rapports. Vous savez où aller, qui rappeler et ce qui rapporte.
-              </p>
-              <div className="rise flex flex-wrap justify-center gap-3 pt-4 [animation-delay:300ms]">
-                <Link href={appHref("/login")} className={primary}>Commencer</Link>
-                <Link href={docsHref("/docs")} className={ghost}>Lire la documentation</Link>
+              <div className="mt-6 grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:items-end">
+                <h1 className="rise text-balance font-display text-hero-sm font-medium leading-hero tracking-display md:text-display">
+                  Prospectez une région à la fois. <span className="shine">N’oubliez plus aucun lead.</span>
+                </h1>
+                <div className="rise flex flex-col items-start gap-6 [animation-delay:200ms]">
+                  <p className="font-mono text-small leading-relaxed text-muted md:text-body">
+                    {BRAND.name} réunit la carte de tournée, le pipeline, les relances et les rapports. Vous savez où aller, qui rappeler et ce qui rapporte.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Link href={appHref("/login")} className={primary}>Commencer</Link>
+                    <Link href={docsHref("/docs")} className={ghost}>Lire la documentation</Link>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rise mt-16 [animation-delay:350ms]">
+                <Tilt>
+                  <div className="halo-ring rounded-card">
+                    <div className="overflow-hidden rounded-card bg-card text-left">
+                      <div aria-hidden className="flex items-center gap-2 border-b border-rule px-4 py-3">
+                        {[0, 1, 2].map((i) => <span key={i} className="size-2.5 rounded-full bg-frame" />)}
+                        <span className="ml-3 font-mono text-caption text-muted">{BRAND.name} · votre équipe</span>
+                        <span className="ml-auto flex items-center gap-2 text-caption text-forest"><span className="size-2 rounded-full bg-forest" /> en tournée</span>
+                      </div>
+                      <div className="grid md:grid-cols-[180px_1fr]">
+                        <ul aria-hidden className="hidden flex-col gap-1 border-r border-rule p-3 text-small text-muted md:flex">
+                          {["Tableau de bord", "Vagues", "Tournées", "Leads", "Pipeline", "Devis", "Rapports"].map((x) => (
+                            <li key={x} className={`rounded-control px-3 py-2 ${x === "Vagues" ? "bg-accent-soft font-medium text-ink" : ""}`}>{x}</li>
+                          ))}
+                        </ul>
+                        <Showcase slides={SLIDES} />
+                      </div>
+                    </div>
+                  </div>
+                </Tilt>
               </div>
             </div>
-          </section>
+          </Lamp>
         </div>
 
-        <ul aria-label="Ce que contient l’application" className={`${wrap} flex flex-wrap justify-center gap-3 py-20`}>
-          {CHIPS.map((c, i) => (
-            <li key={c}>
-              <Reveal delay={i * 45}>
-                <span className="block rounded-full border border-border bg-card px-4 py-2 font-mono text-caption uppercase transition-colors hover:border-accent-press hover:text-accent-press">{c}</span>
-              </Reveal>
-            </li>
-          ))}
-        </ul>
+        <div className="marquee py-14">
+          <div>
+            {/* la liste est répétée pour boucler sans raccord ; la copie est ignorée par les lecteurs d'écran */}
+            {[false, true].map((copy) => (
+              <ul key={String(copy)} aria-hidden={copy || undefined} aria-label={copy ? undefined : "Ce que contient l’application"} className="flex gap-3 pr-3">
+                {CHIPS.map((c) => (
+                  <li key={c} className="whitespace-nowrap rounded-full border border-border bg-card px-4 py-2 font-mono text-caption uppercase transition-colors hover:border-accent-press hover:text-accent-press">{c}</li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
 
         <section className={`${wrap} grid gap-8 py-16 md:grid-cols-[1.6fr_1fr] md:items-end`}>
           <Reveal>
@@ -128,14 +169,10 @@ export default function HomePage() {
 
         <section className="relative grid min-h-[80svh] place-items-center overflow-hidden px-6 py-24 text-center">
           <div className="stars" aria-hidden />
+          <span className="shooting left-[12%] top-[18%]" aria-hidden />
+          <span className="shooting left-[55%] top-[8%] [animation-delay:2.6s]" aria-hidden />
+          <span className="shooting left-[30%] top-[60%] [animation-delay:4.8s]" aria-hidden />
           <WordReveal text="Savoir où aller, qui rappeler et ce qui rapporte." className="relative max-w-[1000px] font-display text-hero-sm font-medium leading-hero tracking-display md:text-display" />
-        </section>
-
-        <section aria-labelledby="apercu" className={`${wrap} py-16`}>
-          <h2 id="apercu" className={`${title} mb-10 text-center`}>De la région à la signature</h2>
-          <Tilt>
-            <Showcase slides={SLIDES} />
-          </Tilt>
         </section>
 
         <section aria-labelledby="fonctions" className={`${wrap} scroll-mt-28 py-16`}>
@@ -145,13 +182,33 @@ export default function HomePage() {
             {FEATURES.map((f, i) => (
               <li key={f.title}>
                 <Reveal delay={(i % 3) * 100} className="h-full">
-                  <Spot className="h-full min-h-52 rounded-card border border-border bg-card p-6 transition-colors hover:border-frame">
-                    <div className="relative flex h-full flex-col justify-end gap-3">
-                      <h3 className="font-display text-lead font-medium">{f.title}</h3>
-                      <p className="font-mono text-small leading-relaxed text-muted">{f.text}</p>
+                  <Spot className="h-full rounded-card border border-border bg-card">
+                    <div className="relative">
+                      <Scene index={i} />
+                      <div className="flex flex-col gap-2 border-t border-rule p-6">
+                        <h3 className="font-display text-lead font-medium">{f.title}</h3>
+                        <p className="font-mono text-small leading-relaxed text-muted">{f.text}</p>
+                      </div>
                     </div>
                   </Spot>
                 </Reveal>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section aria-labelledby="socle" className={`${wrap} py-16`}>
+          <h2 id="socle" className={`${title} max-w-[620px]`}>Et tout ce qui évite les mauvaises surprises</h2>
+          <ul className="mt-10 grid gap-px overflow-hidden rounded-card border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {BASICS.map((b, i) => (
+              <li key={b.title} className="bg-page">
+                <Spot className="h-full p-7">
+                  <div className="relative">
+                    <span aria-hidden className="font-mono text-caption text-accent-press">/{String(i + 1).padStart(2, "0")}</span>
+                    <h3 className="mt-6 font-display text-lead font-medium">{b.title}</h3>
+                    <p className="mt-2 font-mono text-small leading-relaxed text-muted">{b.text}</p>
+                  </div>
+                </Spot>
               </li>
             ))}
           </ul>
@@ -192,6 +249,7 @@ export default function HomePage() {
               <i />
               <i />
             </div>
+            <div className="beams" aria-hidden />
             <Reveal className="relative z-10 flex flex-col items-center gap-8">
               <h2 className="font-display text-hero-sm font-medium leading-hero tracking-display md:text-hero">Prêt pour votre prochaine vague ?</h2>
               <Link href={appHref("/login")} className={primary}>Créer mon espace</Link>
