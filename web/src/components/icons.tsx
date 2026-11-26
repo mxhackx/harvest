@@ -247,3 +247,51 @@ export function PushPinIcon({ size = 20 }: { size?: number }) {
     </svg>
   );
 }
+
+export function SparkIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M12 3l1.9 5.6L19.5 10.5l-5.6 1.9L12 18l-1.9-5.6L4.5 10.5l5.6-1.9L12 3zM19 16v5M16.5 18.5h5" />
+    </svg>
+  );
+}
+
+export function PowerIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M12 3v9M6.3 7a8 8 0 1 0 11.4 0" />
+    </svg>
+  );
+}
+
+export function LockIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M6 11h12v9H6zM8.5 11V7.5a3.5 3.5 0 0 1 7 0V11" />
+    </svg>
+  );
+}
+
+export function CopyIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M9 9h11v11H9zM5 15H4V4h11v1" />
+    </svg>
+  );
+}
+
+export function UndoIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M9 7L4 12l5 5M4 12h11a5 5 0 0 1 0 10h-2" />
+    </svg>
+  );
+}
+
+export function RedoIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+      <path d="M15 7l5 5-5 5M20 12H9a5 5 0 0 0 0 10h2" />
+    </svg>
+  );
+}
