@@ -77,6 +77,10 @@ export const companies = pgTable("companies", {
   name: text("name").notNull(),
   sector: text("sector").notNull(),
   region: text("region").notNull(),
+  // coordonnées et photo de l'entreprise ; la photo est une petite image en data URL (réduite par le navigateur)
+  email: text("email").notNull().default(""),
+  phone: text("phone").notNull().default(""),
+  logo: text("logo").notNull().default(""),
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

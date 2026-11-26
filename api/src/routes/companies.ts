@@ -12,11 +12,11 @@ type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 /** Crée l'entreprise, ses rôles système, sa première équipe, et fait du créateur le CEO. */
 export async function createCompanyWithDefaults(
   tx: Tx,
-  input: { userId: string; name: string; sector: string; region: string; teamName: string },
+  input: { userId: string; name: string; sector: string; region: string; teamName: string; email?: string; phone?: string; logo?: string },
 ) {
   const [company] = await tx
     .insert(companies)
-    .values({ name: input.name, sector: input.sector, region: input.region, createdBy: input.userId })
+    .values({ name: input.name, sector: input.sector, region: input.region, email: input.email, phone: input.phone, logo: input.logo, createdBy: input.userId })
     .returning();
   await tx.insert(pipelineStages).values(DEFAULT_STAGES.map((s, i) => ({ companyId: company.id, ...s, position: i })));
   const [team] = await tx.insert(teams).values({ companyId: company.id, name: input.teamName }).returning();
@@ -50,12 +50,23 @@ export async function createCompanyWithDefaults(
   return { company, team };
 }
 
-const companyBody = z.object({
+/** Photo : PNG, JPEG ou WebP en data URL (jamais de SVG, qui peut porter du script), ~110 Ko au plus. "" = pas de photo. */
+export const MAX_LOGO = 150_000;
+const logo = z.string().max(MAX_LOGO, "image trop lourde").regex(/^(data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*)?$/, "image PNG, JPEG ou WebP attendue");
+/** Téléphone au format international (cahier des charges §5.2) : les espaces et la ponctuation sont retirés. */
+const phone = z
+  .string()
+  .transform((v) => v.replace(/[\s().-]/g, ""))
+  .pipe(z.string().regex(/^(\+[1-9]\d{7,14})?$/, "numéro au format international, ex. +229 01 97 00 00 00"));
+const email = z.union([z.literal(""), z.string().trim().toLowerCase().email("adresse e-mail invalide").max(200)]);
+
+const identity = {
   name: z.string().trim().min(1).max(100),
   sector: z.string().trim().min(1).max(100),
   region: z.string().trim().min(1).max(100),
-  teamName: z.string().trim().min(1).max(100),
-});
+};
+const companyBody = z.object({ ...identity, teamName: z.string().trim().min(1).max(100), email: email.default(""), phone: phone.default(""), logo: logo.default("") });
+const companyPatch = z.object({ ...identity, email, phone, logo }).partial();
 
 export async function companyRoutes(app: FastifyInstance) {
   app.post("/companies", { preHandler: requireUser }, async (req, reply) => {
@@ -65,6 +76,15 @@ export async function companyRoutes(app: FastifyInstance) {
       createCompanyWithDefaults(tx, { userId: req.user!.id, ...body.data }),
     );
     return reply.code(201).send(result);
+  });
+
+  // L'entreprise active : seule celle de la requête peut être modifiée.
+  app.patch("/company", { preHandler: requirePermission("company:update") }, async (req, reply) => {
+    const body = companyPatch.safeParse(req.body);
+    if (!body.success || Object.keys(body.data).length === 0) return reply.code(400).send({ error: "invalid_body", issues: body.success ? [] : body.error.issues });
+    const [company] = await db.update(companies).set(body.data).where(eq(companies.id, req.member!.subject.companyId)).returning();
+    req.auditLabel = company.name;
+    return company;
   });
 
   app.get("/teams", { preHandler: requirePermission("team:read") }, async (req) =>

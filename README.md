@@ -60,6 +60,10 @@ Les pages `/docs` suivent le modèle d'un centre d'aide : recherche (Ctrl+K), **
 
 Chaque action réussie qui modifie des données (POST, PATCH, PUT, DELETE d'un membre connecté) ajoute une ligne à `audit_log` : qui, quelle route, quel objet (nom conservé même après suppression). Jamais le contenu des requêtes (mots de passe, jetons). Le hook est dans [api/src/audit/record.ts](api/src/audit/record.ts) ; pour qu'une route garde le nom de l'objet touché, elle pose `req.auditLabel`. Lecture : `GET /audit` (droit `audit:read`, réservé au CEO) et page *ERP › Journal d'audit*. La phrase affichée pour chaque route est dans [web/src/lib/audit.ts](web/src/lib/audit.ts) : à compléter quand on ajoute une route.
 
+## Page d’accueil
+
+`web/src/app/page.tsx`, toujours sombre (classe `.landing` dans `globals.css`, qui porte aussi les effets). Les effets au défilement sont dans `components/landing/effects.tsx` ; ils respectent « réduire les animations » et le texte reste lisible sans JavaScript. Les aperçus (`screens.tsx`) et les mini-scènes des cartes (`scenes.tsx`) sont des maquettes avec des données d’exemple.
+
 ## Styles
 
 Polices, tailles et couleurs sont définies une seule fois, dans [web/src/app/globals.css](web/src/app/globals.css) (bloc `@theme`). Les composants utilisent les classes qui en découlent (`font-display`, `text-heading`, `bg-accent`…) ou `var(--…)` : aucune valeur de style écrite en dur. Exceptions : le code qui ne lit pas le CSS (cartes MapLibre via `cssVar()`, aperçu de partage et `themeColor` via `THEME`) passe par [web/src/lib/theme.ts](web/src/lib/theme.ts), et un test vérifie que ces copies suivent `globals.css`. Les couleurs d'étapes du pipeline et du logo Google sont des données, pas du style.
@@ -122,7 +126,7 @@ démarrage de l'API (`npm run start:prod`).
 | Variable | Valeur |
 | --- | --- |
 | `DATABASE_URL` | l'URL du Session pooler de Supabase |
-| `APP_URLS` | les adresses du site, **l'application en premier** : `https://app.hivation.tech,https://www.hivation.tech` (la première sert aux liens des e-mails et à la redirection après connexion ; toutes sont autorisées par CORS) |
+| `APP_URLS` | les adresses du site, **l'application en premier** : `https://app.hivation.tech,https://www.hivation.tech,https://docs.hivation.tech` (la première sert aux liens des e-mails et à la redirection après connexion ; toutes sont autorisées par CORS) |
 | `API_URL` | `https://api.hivation.tech` (adresse de l'API **vue par le navigateur**, voir ci-dessous) |
 | `GOOGLE_*`, `GITHUB_*` | vos clés OAuth, ou vides |
 | `RESEND_API_KEY` | clé API [Resend](https://resend.com) pour les e-mails (invitations, mot de passe oublié) ; vide : aucun e-mail, les liens s'affichent à l'écran |
@@ -138,8 +142,11 @@ Vérifiez ensuite `https://<votre-service>.onrender.com/health` : `{"status":"ok
 | `NEXT_PUBLIC_API_URL` | `https://api.hivation.tech` (domaine de l'API sur Render ; pas de relais `/api` nécessaire, voir ci-dessous) |
 | `NEXT_PUBLIC_SITE_URL` | l'adresse de la vitrine : `https://www.hivation.tech` (`hivation.tech` redirige vers `www` dans Vercel) |
 | `NEXT_PUBLIC_APP_URL` | l'adresse de l'application, ex. `https://app.hivation.tech` |
+| `NEXT_PUBLIC_DOCS_URL` | l'adresse de la documentation, ex. `https://docs.hivation.tech` (facultatif : sans elle, la doc reste sur la vitrine) |
 
-Ajoutez les domaines `www.hivation.tech` (principal, `hivation.tech` y redirige) et `app.hivation.tech` au **même** projet Vercel. Le proxy ([web/src/proxy.ts](web/src/proxy.ts)) envoie `/dashboard`, `/login`, `/invitation`, `/forgot-password`, `/reset-password` et `/onboarding` vers `app.`, et la racine de `app.` (ainsi que `/docs`) vers le bon endroit. On se connecte sur `app.`, et le navigateur reste sur `app.hivation.tech` (jamais sur `www`). Sans `NEXT_PUBLIC_APP_URL`, tout reste sur un seul domaine.
+Ajoutez les domaines `www.hivation.tech` (principal, `hivation.tech` y redirige) et `app.hivation.tech` au **même** projet Vercel. Le proxy ([web/src/proxy.ts](web/src/proxy.ts)) envoie `/dashboard`, `/login`, `/invitation`, `/forgot-password`, `/reset-password` et `/onboarding` vers `app.`, et la racine de `app.` (ainsi que `/docs`) vers le bon endroit.
+
+**Documentation sur `docs.`** Dans cet ordre : ajoutez `docs.hivation.tech` au même projet Vercel (avec l'enregistrement DNS qu'il indique) ; ajoutez `https://docs.hivation.tech` **à la fin** de `APP_URLS` sur Render, sinon la bulle de contact et les avis de la doc sont bloqués par CORS ; puis définissez `NEXT_PUBLIC_DOCS_URL` et redéployez Vercel. `/docs` redirige alors vers `docs.`, et la racine de `docs.` ouvre le centre d'aide. On se connecte sur `app.`, et le navigateur reste sur `app.hivation.tech` (jamais sur `www`). Sans `NEXT_PUBLIC_APP_URL`, tout reste sur un seul domaine.
 
 Redéployez : ces variables sont lues à la compilation.
 

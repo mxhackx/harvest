@@ -89,7 +89,7 @@ export async function authRoutes(app: FastifyInstance) {
   app.get("/me", { preHandler: requireUser }, async (req) => {
     const user = req.user!;
     const rows = await db
-      .select({ id: companies.id, name: companies.name, sector: companies.sector, region: companies.region })
+      .select({ id: companies.id, name: companies.name, sector: companies.sector, region: companies.region, email: companies.email, phone: companies.phone, logo: companies.logo })
       .from(memberships)
       .innerJoin(companies, eq(companies.id, memberships.companyId))
       .where(eq(memberships.userId, user.id));

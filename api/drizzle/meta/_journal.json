@@ -267,6 +267,13 @@
       "when": 1795651407699,
       "tag": "0037_workflows",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1795653029517,
+      "tag": "0038_company_identity",
+      "breakpoints": true
     }
   ]
 }

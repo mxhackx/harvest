@@ -28,6 +28,17 @@ describe("hostRedirect", () => {
   it("n'attrape pas un chemin qui ne fait que commencer pareil", () => {
     expect(go("www.hivation.tech", "/dashboards")).toBeNull();
   });
+  it("avec un domaine de documentation : la doc y vit, le reste en repart", () => {
+    const DOCS = "https://docs.hivation.tech";
+    const to = (host: string, path: string) => hostRedirect(host, path, "", SITE, APP, DOCS);
+    expect(to("www.hivation.tech", "/docs/import")).toBe(`${DOCS}/docs/import`);
+    expect(to("app.hivation.tech", "/docs/import")).toBe(`${DOCS}/docs/import`);
+    expect(to("docs.hivation.tech", "/")).toBe(`${DOCS}/docs`);
+    expect(to("docs.hivation.tech", "/docs/import")).toBeNull();
+    expect(to("docs.hivation.tech", "/login")).toBe(`${APP}/login`);
+    expect(to("docs.hivation.tech", "/autre")).toBe(`${SITE}/autre`);
+    expect(to("www.hivation.tech", "/")).toBeNull();
+  });
   it("autre domaine (prévisualisation, localhost) : jamais de redirection", () => {
     expect(go("hivation-git-x.vercel.app", "/dashboard")).toBeNull();
   });
