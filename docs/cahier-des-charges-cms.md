@@ -110,3 +110,63 @@ Conformément au principe directeur (*le modèle propose, le logiciel contrôle*
 * **Tester le mode hors-ligne (`CRM-01` / `CRM-02`) :** Couper volontairement la connexion mobile sur une demi-journée pour vérifier l'absence de doublons ou de pertes à la synchronisation.
 * **Chronométrer la capture (`CRM-03`) :** Vérifier que la saisie d'un lead devant une boutique prend 3 gestes maximum à une main.
 * **Mesurer les métriques réelles (`OBS-01` à `OBS-04`) :** Temps entre le devis et la mise en ligne, coût en jetons/services par site, et goulots d'étranglement côté client (photos, logo, paiement Mobile Money).
+
+---
+
+## 6. Exigences reprises du cahier des charges global
+
+Source : [cahier-des-charges.md](cahier-des-charges.md). À intégrer dans les sections ci-dessus au fil des décisions.
+
+### 6.1 Bloquant
+
+- [ ] **Paiement et suivi des conversions** actifs : un site n'est « lancé » qu'avec eux (§1.1, jalon J4, contrôles C08 et C09, CMS-13).
+- [ ] **Aperçu avant publication** et retour à la version précédente en un geste (CMS-04, PLM-10).
+- [ ] **Portail client** : écrire le contenu, déposer les médias, demander une modification (CMS-05).
+- [ ] **Mise en ligne d'une modification sans redéploiement** (CMS-03).
+- [ ] **Fichiers** rangés par société, accès par URL signée à durée courte (SEC-03).
+- [ ] **Domaines** rattachés à une seule société, aucune reprise sans preuve (SEC-04).
+- [ ] **Contrôles obligatoires manquants** : C03 (toutes les pages existent), C07 (aucun lien vide ou en erreur, aucune navigation en double), C13 (pages légales et consentement).
+
+### 6.2 Ensuite
+
+- [ ] **Blocs restants** (§9.2) : actualités et événements, demande spéciale, avis, carte et accès, réservation, tarifs avec paiement, page liée à un QR code, pied de page et mentions (nécessaire à C13).
+- [ ] **Droits** sur les sites et contenus (§3.2).
+- [ ] **Contrat de fabrication** en JSON, versions de spécification, releases immuables, demandes de changement (§11, CMS-06).
+- [ ] **Qualité** : référencement, performance, accessibilité, plusieurs langues (CMS-10, 11, 12, 15 ; NF-07, 08, 11 ; contrôles C10 et C12).
+- [ ] **Juridique** : consentement, conditions et mentions par pays, droits sur les images et polices (CMS-14, JUR-10, JUR-11).
+- [ ] **Mesures** : durée de mise en ligne et coût par site (OBS-01, OBS-02).
+
+### 6.3 Contradictions à trancher
+
+- [ ] **WordPress** : le cahier global prévoit des cibles WordPress en basse priorité (CMS-08, CMS-09) ; ce document ne garde que des démos.
+- [ ] **Commerciaux** : la matrice (§3.2) ne leur donne aucun droit sur les sites, alors que la génération sur le terrain les suppose.
+- [ ] **Publication immédiate** pour la démonstration, contre les contrôles et la validation exigés. Piste : montrer un aperçu privé.
+
+---
+
+## 7. Pense-bête : tout piloter depuis le terminal
+
+Dépôt, déploiement et domaine peuvent s'automatiser sans navigateur. Commandes à vérifier dans la documentation au moment de les utiliser.
+
+**À retenir pour Hivation :** avec une application unique (CMS-01), un nouveau site client ne demande **ni nouveau dépôt ni nouveau projet Vercel**. Seul son domaine personnalisé est à ajouter au projet existant. Les étapes 1 et 2 ne servent qu'une fois, ou pour un site livré à part.
+
+### Avec les outils en ligne de commande
+
+```bash
+gh repo create mon-projet --private --source=. --push   # 1. dépôt GitHub (--public exposerait le code)
+vercel --prod --yes                                     # 2. lier le dossier et déployer
+vercel domains add mondomaine.com                       # 3. ajouter le domaine
+```
+
+### Avec les API (jetons `GITHUB_TOKEN` et `VERCEL_TOKEN`, côté serveur uniquement)
+
+1. Dépôt : `POST https://api.github.com/user/repos`, puis `git remote add` et `git push`.
+2. Projet Vercel lié au dépôt : `POST https://api.vercel.com/v9/projects` (version à vérifier) avec
+   `{"name": "mon-projet", "gitRepository": {"type": "github", "repo": "utilisateur/mon-projet"}}`.
+   L'application GitHub de Vercel doit déjà être autorisée.
+3. Déploiement : `POST https://api.vercel.com/v13/deployments`, ou un simple push.
+4. Domaine : `POST https://api.vercel.com/v10/projects/{id}/domains` avec `{"name": "mondomaine.com"}`.
+
+### DNS
+
+Si le domaine n'utilise pas les serveurs de noms de Vercel, les enregistrements A ou CNAME se créent chez le registrar (ou par son API : Cloudflare, OVH…). Pour le wildcard `*.sites`, le CNAME seul ne suffit pas : il faut aussi déléguer `_acme-challenge.sites` à Vercel par des enregistrements NS ([documentation](https://vercel.com/docs/domains/working-with-domains/add-a-domain)). Cela complète la section 3.1.
