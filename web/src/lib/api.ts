@@ -57,7 +57,7 @@ export async function api<T = unknown>(path: string, init: { method?: string; bo
 export type Me = {
   user: { id: string; email: string; name: string; image: string | null; emailReminders: boolean };
   memberships: {
-    company: { id: string; name: string; sector: string; region: string };
+    company: { id: string; name: string; sector: string; region: string; email: string; phone: string; logo: string };
     teamId: string | null;
     team: { id: string; name: string } | null;
     roleIds: string[];

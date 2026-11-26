@@ -64,15 +64,24 @@ test.describe("connexion et inscription", () => {
     await page.getByRole("button", { name: "Créer mon compte" }).click();
 
     await expect(page).toHaveURL(/\/onboarding/);
+    const next = () => page.getByRole("button", { name: "Suivant" }).click();
     await page.getByLabel("Nom de l'entreprise").fill("Boulangerie du Port");
-    await page.getByLabel("Secteur").fill("Restauration");
+    await next();
+    await page.getByLabel("Téléphone").fill("+229 01 97 00 00 00");
+    await next();
+    await page.getByRole("button", { name: "Restauration" }).click();
+    await next();
     await page.getByLabel("Région de départ").fill("Cotonou");
+    if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT });
     await page.getByRole("button", { name: "Créer mon espace" }).click();
 
     await expect(page).toHaveURL(/localhost:3100\/dashboard$/);
     await expect(page.getByRole("heading", { name: "Bonjour Jean" })).toBeVisible();
     await expect(page.getByText("Rien à visiter pour l'instant.")).toBeVisible();
     await expect(page.getByText("Boulangerie du Port").first()).toBeVisible();
+    // la vignette en bas à gauche ouvre les réglages de l'entreprise
+    await page.getByRole("link", { name: "Configurer Boulangerie du Port" }).click();
+    await expect(page.getByLabel("Téléphone")).toHaveValue("+2290197000000");
   });
 
   test("un mot de passe trop court est refusé à l'inscription", async ({ page }) => {

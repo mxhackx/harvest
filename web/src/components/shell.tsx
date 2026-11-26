@@ -14,6 +14,7 @@ import { usePins } from "@/lib/pins";
 import { CrumbProvider, useCrumbLabel } from "@/lib/crumb";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
+import { CompanyLogo } from "./company-logo";
 import { BoardIcon, BookIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, SparkIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
 import { GlobalSearch } from "./global-search";
 import { NotificationsBell } from "./notifications-bell";
@@ -34,6 +35,7 @@ const MODULES: Module[] = [
     pages: [
       { label: "Tableau de bord", short: "Accueil", href: ROUTES.home, icon: HomeIcon },
       { label: "Calendrier", short: "Calendrier", href: ROUTES.calendar, icon: CalendarIcon },
+      { label: "Entreprise", short: "Entreprise", href: ROUTES.company, icon: BriefcaseIcon },
     ],
   },
   {
@@ -194,6 +196,16 @@ export function Shell({ children }: { children: ReactNode }) {
               {m.label}
             </Link>
           ))}
+          {/* Coin inférieur gauche : l'entreprise active et ses réglages */}
+          <Link
+            href={ROUTES.company}
+            aria-label={`Configurer ${session.company.name}`}
+            title={`Configurer ${session.company.name}`}
+            aria-current={path === ROUTES.company ? "page" : undefined}
+            className={`mt-auto rounded-control border-2 p-0.5 ${path === ROUTES.company ? "border-accent" : "border-transparent hover:border-frame"}`}
+          >
+            <CompanyLogo name={session.company.name} logo={session.company.logo} />
+          </Link>
         </nav>
 
         {/* Colonne du module, 232 px */}
