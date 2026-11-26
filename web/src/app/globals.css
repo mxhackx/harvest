@@ -193,3 +193,19 @@ body {
 .doc tr:last-child td {
   border-bottom: 0;
 }
+
+/* Canevas des workflows (React Flow) : ses variables reprennent les jetons, en clair comme en sombre. */
+.workflow-canvas .react-flow {
+  --xy-background-color: var(--color-page);
+  --xy-background-pattern-color: var(--color-border);
+  --xy-edge-stroke: var(--color-neutral);
+  --xy-edge-stroke-selected: var(--color-accent);
+  --xy-connectionline-stroke: var(--color-accent);
+  --xy-handle-background-color: var(--color-card);
+  --xy-handle-border-color: var(--color-neutral);
+  --xy-attribution-background-color: var(--color-card);
+}
+.workflow-canvas .react-flow__handle {
+  width: 10px;
+  height: 10px;
+}

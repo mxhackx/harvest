@@ -14,7 +14,7 @@ import { usePins } from "@/lib/pins";
 import { CrumbProvider, useCrumbLabel } from "@/lib/crumb";
 import { useMe } from "@/lib/use-me";
 import { AvatarMenu } from "./avatar-menu";
-import { BoardIcon, BookIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
+import { BoardIcon, BookIcon, CalendarIcon, CheckIcon, BriefcaseIcon, CoinIcon, FormIcon, HomeIcon, MapIcon, PinIcon, PushPinIcon, SparkIcon, TrashIcon, UserIcon, UsersIcon } from "./icons";
 import { GlobalSearch } from "./global-search";
 import { NotificationsBell } from "./notifications-bell";
 import { OfflineSupport } from "./offline-support";
@@ -78,6 +78,14 @@ const MODULES: Module[] = [
       { label: "Tickets", short: "Tickets", href: ROUTES.tickets, icon: FormIcon, needs: "ticket:read" },
       { label: "Base de connaissances", short: "Savoir", href: ROUTES.kb, icon: BookIcon },
     ],
+  },
+  {
+    key: "ai",
+    label: "IA",
+    href: ROUTES.workflows,
+    icon: SparkIcon,
+    needs: "workflow:read",
+    pages: [{ label: "Workflows", short: "IA", href: ROUTES.workflows, icon: SparkIcon }],
   },
   {
     key: "team",
@@ -189,7 +197,8 @@ export function Shell({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Colonne du module, 232 px */}
-        <aside className="sticky top-0 print:!hidden hidden h-dvh w-[232px] shrink-0 flex-col gap-4 border-r border-rule bg-card p-3 md:flex">
+        {/* L'éditeur de workflows a sa propre liste à gauche : il prend la place de cette colonne. */}
+        <aside className={`sticky top-0 print:!hidden hidden h-dvh w-[232px] shrink-0 flex-col gap-4 border-r border-rule bg-card p-3 ${path.startsWith(ROUTES.workflows) ? "" : "md:flex"}`}>
           <div className="rounded-control border border-frame px-3 py-2">
             <p className="font-display text-brand font-semibold leading-tight">{BRAND.name}</p>
             <p className="truncate text-small text-muted">{session.company.name}</p>

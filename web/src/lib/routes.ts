@@ -8,6 +8,7 @@ const CRM = `${DASHBOARD}/crm`;
 const ERP = `${DASHBOARD}/erp`;
 const WAVES = `${DASHBOARD}/waves`;
 const SERVICE = `${DASHBOARD}/service`;
+const AI = `${DASHBOARD}/ai`;
 
 export const ROUTES = {
   home: DASHBOARD,
@@ -37,6 +38,8 @@ export const ROUTES = {
   tickets: `${SERVICE}/tickets`,
   ticket: (id: string) => `${SERVICE}/tickets/${id}`,
   kb: `${SERVICE}/kb`,
+  workflows: `${AI}/workflows`,
+  workflow: (id: string) => `${AI}/workflows/${id}`,
   waves: WAVES,
   regions: `${WAVES}/regions`,
   tours: `${WAVES}/tours`,
