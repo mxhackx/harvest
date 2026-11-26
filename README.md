@@ -9,7 +9,7 @@ Prospection et suivi de leads sur le terrain. Deux projets indépendants :
 
 ## Cahier des charges
 
-La vision, les modules et les exigences du produit sont dans [docs/cahier-des-charges.md](docs/cahier-des-charges.md).
+La vision, les modules et les exigences du produit sont dans [docs/cahier-des-charges.md](docs/cahier-des-charges.md). Le plan du module CMS (document de travail) est dans [docs/cahier-des-charges-cms.md](docs/cahier-des-charges-cms.md).
 
 ## Démarrer
 
