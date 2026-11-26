@@ -170,3 +170,43 @@ vercel domains add mondomaine.com                       # 3. ajouter le domaine
 ### DNS
 
 Si le domaine n'utilise pas les serveurs de noms de Vercel, les enregistrements A ou CNAME se créent chez le registrar (ou par son API : Cloudflare, OVH…). Pour le wildcard `*.sites`, le CNAME seul ne suffit pas : il faut aussi déléguer `_acme-challenge.sites` à Vercel par des enregistrements NS ([documentation](https://vercel.com/docs/domains/working-with-domains/add-a-domain)). Cela complète la section 3.1.
+
+---
+
+## 8. Composition d'un site en « atomes » et facturation (côté devis)
+
+Décidé le 26 novembre 2026. Rien n'est encore codé.
+
+### 8.1 Atomes
+
+Un site est **composé d'atomes**, des briques que l'on assemble : page vitrine, blog, SEO, et ainsi de suite. La composition définit ce qui est livré et permet de **fixer le prix en interne**.
+
+### 8.2 Les trois axes de facturation
+
+| Axe | Ce qu'il mesure | Exemples |
+| --- | --- | --- |
+| **Texte** | la quantité et la profondeur du contenu | niveau de SEO, richesse de la page d'accueil |
+| **Fonctionnalités** | ce que le site sait faire | boutons, traitements côté serveur (backend), outils branchés |
+| **Valeur** | ce que le site rapporte ou représente pour le client | un site produit pour 500 F peut être facturé 500 000 F à un artiste |
+
+Le coût de production et le prix de vente sont donc deux choses distinctes.
+
+### 8.3 Proposition de mise en œuvre (à valider)
+
+- Chaque atome porte : un nom, un coût de production **interne**, un prix de base, des niveaux de texte et une liste de fonctionnalités.
+- Prix du devis = somme des atomes (texte + fonctionnalités) + part « valeur » fixée pour ce client.
+- Le client voit ses lignes et son prix. Le coût de production et la marge ne figurent jamais sur le devis.
+- La part « valeur » est saisie et validée par le propriétaire, jamais calculée ni proposée seule par l'IA.
+- Montants en entiers avec leur devise (FCFA).
+- Un devis envoyé garde ses prix, même si le tarif d'un atome change ensuite.
+- Le devis accepté fournit la liste des atomes à la factory « site ».
+
+Lien avec le cahier global : les atomes correspondent à la nomenclature (§11) et au catalogue d'articles (ERP-02 : changer un tarif ne crée pas de version de produit).
+
+### 8.4 Questions ouvertes
+
+- [ ] Quelle est la liste des premiers atomes ?
+- [ ] Combien de niveaux de texte (par exemple simple, standard, poussé) ?
+- [ ] La part « valeur » : un montant libre, un coefficient ou des paliers par type de client ?
+- [ ] Un prix plancher (par exemple jamais sous le coût de production) ?
+- [ ] Qu'est-ce qui est payé une fois, et qu'est-ce qui revient chaque mois (hébergement, maintenance) ?
