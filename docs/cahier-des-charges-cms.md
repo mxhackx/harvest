@@ -210,3 +210,46 @@ Lien avec le cahier global : les atomes correspondent à la nomenclature (§11) 
 - [ ] La part « valeur » : un montant libre, un coefficient ou des paliers par type de client ?
 - [ ] Un prix plancher (par exemple jamais sous le coût de production) ?
 - [ ] Qu'est-ce qui est payé une fois, et qu'est-ce qui revient chaque mois (hébergement, maintenance) ?
+
+---
+
+## 9. Ressources à consulter
+
+Liste établie de mémoire le 26 novembre 2026 : vérifier que les adresses et les offres sont toujours à jour. Aucun prix n'a été relevé.
+
+### Sites et thèmes WordPress (inspiration par secteur)
+- [Répertoire officiel des thèmes](https://wordpress.org/themes/)
+- [ThemeForest](https://themeforest.net/category/wordpress) : thèmes payants avec démos, classés par métier
+- [Astra](https://wpastra.com/website-templates/), [Kadence](https://www.kadencewp.com/), [bibliothèque Elementor](https://elementor.com/library/)
+
+### Modèles et composants Next.js
+- [Modèles Vercel](https://vercel.com/templates) et [vitrine Next.js](https://nextjs.org/showcase)
+- [shadcn/ui](https://ui.shadcn.com/), [Tailwind Plus](https://tailwindcss.com/plus)
+- Animations : [Magic UI](https://magicui.design/), [Aceternity UI](https://ui.aceternity.com/)
+
+### CMS connus (à comparer)
+- Pour développeurs : [Payload](https://payloadcms.com/), [Sanity](https://www.sanity.io/), [Strapi](https://strapi.io/), [Directus](https://directus.io/)
+- Pour le grand public : [Wix](https://www.wix.com/), [Webflow](https://webflow.com/), [Framer](https://www.framer.com/), [Shopify](https://www.shopify.com/)
+
+À regarder : comment on ajoute un bloc, l'aperçu, la publication, le prix par site.
+
+### Prix des fonctionnalités (ce que le marché facture)
+- [Codeur](https://www.codeur.com/) et [Malt](https://www.malt.fr/) : tarifs de freelances francophones
+- [Upwork](https://www.upwork.com/) et [Fiverr](https://www.fiverr.com/) : prix en dollars par prestation
+- **Le plus fiable pour le Bénin :** demander des devis à cinq agences ou freelances locaux, sur le même cahier des charges.
+
+### Coûts de production (pour le coût interne des atomes)
+- Hébergement et base : [Vercel](https://vercel.com/pricing) (l'offre gratuite Hobby exclut l'usage commercial), [Supabase](https://supabase.com/pricing)
+- IA : [Gemini](https://ai.google.dev/pricing), [Groq](https://groq.com/pricing)
+- Paiement en FCFA et Mobile Money : [FedaPay](https://fedapay.com/), [KKiaPay](https://kkiapay.me/), [CinetPay](https://cinetpay.com/)
+
+### Contrôles de qualité
+- [PageSpeed Insights](https://pagespeed.web.dev/) (performance et accessibilité), [Google Trends](https://trends.google.com/) (recherches par pays)
+
+### Grille de relevé
+
+S'inspirer d'une démo est permis ; en copier le code, les images ou les textes demande une licence (JUR-10).
+
+| Source | Secteur | Atomes observés | Fonctionnalités | Prix affiché | Date |
+| --- | --- | --- | --- | --- | --- |
+| | | | | | |
