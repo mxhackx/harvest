@@ -22,6 +22,7 @@ describe("arbre d'un site", () => {
     const n = { ...hero, props: { background: "red;} body{display:none", color: "$accent" } };
     expect(styleOf(n, site, false)).toMatchObject({ color: "var(--accent)" });
     expect(styleOf(n, site, false).background).toBeUndefined();
+    expect(styleOf({ ...hero, props: { borderWidth: 1, borderColor: "$texte/15" } }, site, false).border).toBe("1px solid color-mix(in srgb, var(--texte) 15%, transparent)");
   });
 });
 

@@ -1,0 +1,45 @@
+{
+ "name": "barre-menu-appel",
+ "title": "Menu avec bouton d'appel",
+ "category": "Navigation",
+ "description": "Compact, pensé pour être appelé depuis un téléphone.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Menu appel",
+  "props": {
+   "direction": "row",
+   "gap": 12,
+   "align": "center",
+   "justify": "space-between",
+   "paddingY": 12,
+   "paddingX": 16
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nom du commerce",
+    "textStyle": "label"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$accent",
+     "color": "$fond",
+     "radius": 12,
+     "paddingY": 8,
+     "paddingX": 16,
+     "fontWeight": 600
+    },
+    "text": "Appeler",
+    "href": "tel:"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

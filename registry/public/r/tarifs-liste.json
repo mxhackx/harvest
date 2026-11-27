@@ -1,0 +1,119 @@
+{
+ "name": "tarifs-liste",
+ "title": "Liste de tarifs",
+ "category": "Tarifs",
+ "description": "Des prestations et leurs prix, ligne par ligne.",
+ "atom": "Catalogue",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Liste",
+  "props": {
+   "direction": "column",
+   "gap": 4,
+   "paddingY": 20,
+   "paddingX": 20,
+   "radius": 16,
+   "borderWidth": 1,
+   "borderColor": "$accent"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nos tarifs",
+    "textStyle": "h2"
+   },
+   {
+    "type": "frame",
+    "name": "Ligne",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 8
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Prestation simple",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "3 000 F",
+      "textStyle": "label"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Ligne",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 8
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Prestation complète",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "7 500 F",
+      "textStyle": "label"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Ligne",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 8
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Forfait mensuel",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "25 000 F",
+      "textStyle": "label"
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

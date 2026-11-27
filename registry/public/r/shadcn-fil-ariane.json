@@ -1,0 +1,74 @@
+{
+ "name": "shadcn-fil-ariane",
+ "title": "Breadcrumb",
+ "category": "shadcn/ui",
+ "description": "Le chemin jusqu'à la page.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Fil d'Ariane",
+  "props": {
+   "direction": "row",
+   "gap": 4,
+   "align": "center"
+  },
+  "children": [
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 16,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "color": "$texte",
+     "borderColor": "$texte/0"
+    },
+    "text": "Accueil",
+    "href": "/"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.65,
+     "fontSize": 14
+    },
+    "text": "›",
+    "textStyle": "body"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 16,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "color": "$texte",
+     "borderColor": "$texte/0"
+    },
+    "text": "La carte",
+    "href": "/carte"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.65,
+     "fontSize": 14
+    },
+    "text": "› Desserts",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

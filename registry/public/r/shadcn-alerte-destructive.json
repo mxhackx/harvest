@@ -1,0 +1,43 @@
+{
+ "name": "shadcn-alerte-destructive",
+ "title": "Alert · destructive",
+ "category": "shadcn/ui",
+ "description": "Un avertissement.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Alert",
+  "props": {
+   "direction": "column",
+   "gap": 4,
+   "radius": 12,
+   "borderWidth": 1,
+   "borderColor": "#dc2626",
+   "paddingY": 14,
+   "paddingX": 16,
+   "color": "#dc2626"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Fermeture exceptionnelle",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "fontSize": 14
+    },
+    "text": "Le commerce sera fermé ce lundi.",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

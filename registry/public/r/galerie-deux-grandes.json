@@ -1,0 +1,45 @@
+{
+ "name": "galerie-deux-grandes",
+ "title": "Deux grandes photos",
+ "category": "Galeries",
+ "description": "Pour montrer un lieu ou deux réalisations.",
+ "atom": "Galerie",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Deux photos",
+  "props": {
+   "direction": "column",
+   "gap": 12,
+   "columns": 2,
+   "paddingY": 16,
+   "paddingX": 16
+  },
+  "children": [
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 240
+    },
+    "src": "",
+    "alt": "Photo 1"
+   },
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 240
+    },
+    "src": "",
+    "alt": "Photo 2"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

@@ -1,0 +1,61 @@
+{
+ "name": "shadcn-avatar",
+ "title": "Avatar",
+ "category": "shadcn/ui",
+ "description": "Portrait rond avec nom et rôle.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Avatar",
+  "props": {
+   "direction": "row",
+   "gap": 12,
+   "align": "center"
+  },
+  "children": [
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "height": 44,
+     "maxWidth": 44,
+     "radius": 99,
+     "fit": "cover"
+    },
+    "src": "",
+    "alt": ""
+   },
+   {
+    "type": "frame",
+    "name": "Identité",
+    "props": {
+     "direction": "column",
+     "gap": 0
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Prénom Nom",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Responsable",
+      "textStyle": "body"
+     }
+    ]
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

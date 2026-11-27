@@ -1,0 +1,271 @@
+{
+ "name": "tarifs-trois-formules",
+ "title": "Trois formules",
+ "category": "Tarifs",
+ "description": "Trois offres côte à côte, celle du milieu mise en avant.",
+ "atom": "Catalogue",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Tarifs",
+  "props": {
+   "direction": "column",
+   "gap": 16,
+   "paddingY": 32,
+   "paddingX": 20,
+   "textAlign": "center"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nos formules",
+    "textStyle": "h2"
+   },
+   {
+    "type": "frame",
+    "name": "Formules",
+    "props": {
+     "direction": "column",
+     "gap": 12,
+     "columns": 3
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "Essentiel",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "paddingY": 20,
+       "paddingX": 20,
+       "radius": 16,
+       "borderWidth": 1,
+       "borderColor": "$accent",
+       "align": "stretch",
+       "textAlign": "center"
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Essentiel",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "5 000 F",
+        "textStyle": "h2"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Le principal",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Sans engagement",
+        "textStyle": "body"
+       },
+       {
+        "type": "frame",
+        "name": "Action",
+        "props": {
+         "direction": "column",
+         "gap": 8,
+         "align": "center"
+        },
+        "children": [
+         {
+          "type": "button",
+          "name": "Bouton",
+          "props": {
+           "color": "$accent",
+           "borderColor": "$accent",
+           "borderWidth": 2,
+           "radius": 12,
+           "paddingY": 10,
+           "paddingX": 20,
+           "fontWeight": 600
+          },
+          "text": "Choisir",
+          "href": "https://wa.me/"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Confort",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "paddingY": 20,
+       "paddingX": 20,
+       "radius": 16,
+       "borderWidth": 1,
+       "borderColor": "$accent",
+       "align": "stretch",
+       "textAlign": "center",
+       "background": "$accent",
+       "color": "$fond"
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Confort",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "10 000 F",
+        "textStyle": "h2"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Tout l'essentiel",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Service en plus",
+        "textStyle": "body"
+       },
+       {
+        "type": "frame",
+        "name": "Action",
+        "props": {
+         "direction": "column",
+         "gap": 8,
+         "align": "center"
+        },
+        "children": [
+         {
+          "type": "button",
+          "name": "Bouton",
+          "props": {
+           "background": "$fond",
+           "color": "$accent",
+           "radius": 12,
+           "paddingY": 12,
+           "paddingX": 22,
+           "fontWeight": 600
+          },
+          "text": "Choisir",
+          "href": "https://wa.me/"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Premium",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "paddingY": 20,
+       "paddingX": 20,
+       "radius": 16,
+       "borderWidth": 1,
+       "borderColor": "$accent",
+       "align": "stretch",
+       "textAlign": "center"
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Premium",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "20 000 F",
+        "textStyle": "h2"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Tout le confort",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Sur mesure",
+        "textStyle": "body"
+       },
+       {
+        "type": "frame",
+        "name": "Action",
+        "props": {
+         "direction": "column",
+         "gap": 8,
+         "align": "center"
+        },
+        "children": [
+         {
+          "type": "button",
+          "name": "Bouton",
+          "props": {
+           "color": "$accent",
+           "borderColor": "$accent",
+           "borderWidth": 2,
+           "radius": 12,
+           "paddingY": 10,
+           "paddingX": 20,
+           "fontWeight": 600
+          },
+          "text": "Choisir",
+          "href": "https://wa.me/"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

@@ -15,8 +15,14 @@ const SHADOWS = ["none", "0 1px 4px rgba(0,0,0,0.12)", "0 8px 24px rgba(0,0,0,0.
 
 export const varName = (name: string) => name.toLowerCase().replace(/[^a-z0-9-]/g, "") || "v";
 export const isHex = (v: string) => /^#[0-9a-fA-F]{6}$/.test(v);
-/** « $accent » renvoie à une variable ; sinon seule une couleur hexadécimale est admise. */
-export const cssColor = (v?: string): string | undefined => (!v ? undefined : v.startsWith("$") ? `var(--${varName(v.slice(1))})` : isHex(v) ? v : undefined);
+/** « $accent » renvoie à une variable, « $texte/15 » à la même à 15 % ; sinon seule une couleur hexadécimale est admise. */
+export const cssColor = (v?: string): string | undefined => {
+  if (!v) return undefined;
+  if (!v.startsWith("$")) return isHex(v) ? v : undefined;
+  const [name, alpha] = v.slice(1).split("/");
+  const base = `var(--${varName(name)})`;
+  return alpha === undefined ? base : `color-mix(in srgb, ${base} ${Math.min(100, Math.max(0, Math.round(Number(alpha) || 0)))}%, transparent)`;
+};
 export const safeHref = (href = ""): string => (/^(https?:\/\/|tel:|mailto:|\/(?!\/)|#)/i.test(href.trim()) ? href.trim() : "#");
 
 const px = (n: number | undefined) => (typeof n === "number" && Number.isFinite(n) ? `${Math.min(4000, Math.max(-100, n))}px` : undefined);

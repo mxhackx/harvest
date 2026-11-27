@@ -1,0 +1,129 @@
+{
+ "name": "shadcn-faq",
+ "title": "FAQ (cartes)",
+ "category": "shadcn/ui",
+ "description": "Questions et réponses, toutes visibles.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "FAQ",
+  "props": {
+   "direction": "column",
+   "gap": 0,
+   "paddingY": 8,
+   "paddingX": 16
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "Question",
+    "props": {
+     "direction": "column",
+     "gap": 4,
+     "paddingY": 14
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Faut-il réserver ?",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "C'est conseillé le week-end.",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Séparateur",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "height": 1,
+     "background": "$texte/15"
+    },
+    "children": []
+   },
+   {
+    "type": "frame",
+    "name": "Question",
+    "props": {
+     "direction": "column",
+     "gap": 4,
+     "paddingY": 14
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Quels moyens de paiement ?",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Espèces et Mobile Money.",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Séparateur",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "height": 1,
+     "background": "$texte/15"
+    },
+    "children": []
+   },
+   {
+    "type": "frame",
+    "name": "Question",
+    "props": {
+     "direction": "column",
+     "gap": 4,
+     "paddingY": 14
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Livrez-vous ?",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Oui, dans un rayon de 5 km.",
+      "textStyle": "body"
+     }
+    ]
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

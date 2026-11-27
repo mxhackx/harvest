@@ -1,0 +1,108 @@
+{
+ "name": "galerie-legendes",
+ "title": "Galerie avec légendes",
+ "category": "Galeries",
+ "description": "Chaque photo a son titre.",
+ "atom": "Galerie",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Légendes",
+  "props": {
+   "direction": "column",
+   "gap": 12,
+   "columns": 3,
+   "paddingY": 20,
+   "paddingX": 20,
+   "textAlign": "center"
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "La salle",
+    "props": {
+     "direction": "column",
+     "gap": 6
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 130
+      },
+      "src": "",
+      "alt": "La salle"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "La salle",
+      "textStyle": "label"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "La terrasse",
+    "props": {
+     "direction": "column",
+     "gap": 6
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 130
+      },
+      "src": "",
+      "alt": "La terrasse"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "La terrasse",
+      "textStyle": "label"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "La cuisine",
+    "props": {
+     "direction": "column",
+     "gap": 6
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 130
+      },
+      "src": "",
+      "alt": "La cuisine"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "La cuisine",
+      "textStyle": "label"
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

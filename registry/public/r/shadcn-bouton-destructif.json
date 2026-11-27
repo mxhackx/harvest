@@ -1,0 +1,28 @@
+{
+ "name": "shadcn-bouton-destructif",
+ "title": "Button · destructive",
+ "category": "shadcn/ui",
+ "description": "Bouton pour une action à risque.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "button",
+  "name": "Bouton",
+  "props": {
+   "radius": 8,
+   "paddingY": 9,
+   "paddingX": 16,
+   "fontSize": 14,
+   "fontWeight": 500,
+   "borderWidth": 1,
+   "background": "#dc2626",
+   "color": "#ffffff",
+   "borderColor": "#dc2626"
+  },
+  "text": "Annuler la réservation",
+  "href": "#"
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

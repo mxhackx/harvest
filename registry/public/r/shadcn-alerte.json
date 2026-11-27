@@ -1,0 +1,43 @@
+{
+ "name": "shadcn-alerte",
+ "title": "Alert",
+ "category": "shadcn/ui",
+ "description": "Un message d'information.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Alert",
+  "props": {
+   "direction": "column",
+   "gap": 4,
+   "radius": 12,
+   "borderWidth": 1,
+   "borderColor": "$texte/15",
+   "paddingY": 14,
+   "paddingX": 16
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Bon à savoir",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.65,
+     "fontSize": 14
+    },
+    "text": "Réservation conseillée le week-end.",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

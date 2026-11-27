@@ -1,0 +1,76 @@
+{
+ "name": "entete-image-cote",
+ "title": "En-tête avec image à côté",
+ "category": "En-têtes",
+ "description": "Le texte et une photo, l'un sous l'autre sur mobile.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "En-tête image",
+  "props": {
+   "direction": "column",
+   "gap": 24,
+   "columns": 2,
+   "align": "center",
+   "paddingY": 40,
+   "paddingX": 24
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "Texte",
+    "props": {
+     "direction": "column",
+     "gap": 14,
+     "align": "flex-start"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Votre titre ici sur deux lignes",
+      "textStyle": "h1"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.75
+      },
+      "text": "Une phrase sur votre savoir-faire.",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "Nous écrire",
+      "href": "https://wa.me/"
+     }
+    ]
+   },
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 280
+    },
+    "src": "",
+    "alt": "Photo principale"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

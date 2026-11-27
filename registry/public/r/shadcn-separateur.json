@@ -1,0 +1,33 @@
+{
+ "name": "shadcn-separateur",
+ "title": "Separator",
+ "category": "shadcn/ui",
+ "description": "Un trait fin entre deux parties.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Séparation",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "paddingY": 12
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "Séparateur",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "height": 1,
+     "background": "$texte/15"
+    },
+    "children": []
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

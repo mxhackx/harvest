@@ -1,0 +1,179 @@
+{
+ "name": "shadcn-tableau",
+ "title": "Table",
+ "category": "shadcn/ui",
+ "description": "Des lignes et des colonnes simples.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Table",
+  "props": {
+   "direction": "column",
+   "gap": 0,
+   "radius": 12,
+   "borderWidth": 1,
+   "borderColor": "$texte/15",
+   "paddingY": 8,
+   "paddingX": 16
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "Ligne",
+    "props": {
+     "direction": "row",
+     "gap": 8,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 10
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Formule",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Prix",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Séparateur",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "height": 1,
+     "background": "$texte/15"
+    },
+    "children": []
+   },
+   {
+    "type": "frame",
+    "name": "Ligne",
+    "props": {
+     "direction": "row",
+     "gap": 8,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 10
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Essentiel",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "fontWeight": 600
+      },
+      "text": "5 000 F",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Séparateur",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "height": 1,
+     "background": "$texte/15"
+    },
+    "children": []
+   },
+   {
+    "type": "frame",
+    "name": "Ligne",
+    "props": {
+     "direction": "row",
+     "gap": 8,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 10
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Confort",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "fontWeight": 600
+      },
+      "text": "10 000 F",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Séparateur",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "height": 1,
+     "background": "$texte/15"
+    },
+    "children": []
+   },
+   {
+    "type": "frame",
+    "name": "Ligne",
+    "props": {
+     "direction": "row",
+     "gap": 8,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 10
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Premium",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "fontWeight": 600
+      },
+      "text": "20 000 F",
+      "textStyle": "body"
+     }
+    ]
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

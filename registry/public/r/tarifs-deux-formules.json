@@ -1,0 +1,158 @@
+{
+ "name": "tarifs-deux-formules",
+ "title": "Deux formules",
+ "category": "Tarifs",
+ "description": "Un choix simple entre deux offres.",
+ "atom": "Catalogue",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Deux formules",
+  "props": {
+   "direction": "column",
+   "gap": 16,
+   "columns": 2,
+   "paddingY": 24,
+   "paddingX": 20
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "Sur place",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "paddingY": 20,
+     "paddingX": 20,
+     "radius": 16,
+     "borderWidth": 1,
+     "borderColor": "$accent",
+     "align": "stretch",
+     "textAlign": "center"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Sur place",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "4 000 F",
+      "textStyle": "h2"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.75
+      },
+      "text": "Menu du jour",
+      "textStyle": "body"
+     },
+     {
+      "type": "frame",
+      "name": "Action",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "align": "center"
+      },
+      "children": [
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "color": "$accent",
+         "borderColor": "$accent",
+         "borderWidth": 2,
+         "radius": 12,
+         "paddingY": 10,
+         "paddingX": 20,
+         "fontWeight": 600
+        },
+        "text": "Choisir",
+        "href": "https://wa.me/"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Soirée",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "paddingY": 20,
+     "paddingX": 20,
+     "radius": 16,
+     "borderWidth": 1,
+     "borderColor": "$accent",
+     "align": "stretch",
+     "textAlign": "center",
+     "background": "$accent",
+     "color": "$fond"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Soirée",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "12 000 F",
+      "textStyle": "h2"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.75
+      },
+      "text": "Entrée, plat et boisson",
+      "textStyle": "body"
+     },
+     {
+      "type": "frame",
+      "name": "Action",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "align": "center"
+      },
+      "children": [
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "background": "$fond",
+         "color": "$accent",
+         "radius": 12,
+         "paddingY": 12,
+         "paddingX": 22,
+         "fontWeight": 600
+        },
+        "text": "Choisir",
+        "href": "https://wa.me/"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

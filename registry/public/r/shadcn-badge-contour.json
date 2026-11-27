@@ -1,0 +1,37 @@
+{
+ "name": "shadcn-badge-contour",
+ "title": "Badge · outline",
+ "category": "shadcn/ui",
+ "description": "Étiquette à contour.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Badge",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "align": "flex-start"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "radius": 99,
+     "paddingY": 2,
+     "paddingX": 10,
+     "fontSize": 12,
+     "fontWeight": 600,
+     "borderWidth": 1,
+     "borderColor": "$texte/15"
+    },
+    "text": "Disponible",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

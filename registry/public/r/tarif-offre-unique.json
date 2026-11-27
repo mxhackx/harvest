@@ -1,0 +1,66 @@
+{
+ "name": "tarif-offre-unique",
+ "title": "Offre unique",
+ "category": "Tarifs",
+ "description": "Un seul prix, ce qu'il comprend et un bouton.",
+ "atom": "Catalogue",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Offre",
+  "props": {
+   "direction": "column",
+   "gap": 10,
+   "paddingY": 32,
+   "paddingX": 20,
+   "radius": 16,
+   "borderWidth": 1,
+   "borderColor": "$accent",
+   "align": "center",
+   "textAlign": "center"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Tout compris",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "color": "$accent"
+    },
+    "text": "15 000 F",
+    "textStyle": "h1"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.75
+    },
+    "text": "Installation, mise en ligne et un mois de suivi.",
+    "textStyle": "body"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$accent",
+     "color": "$fond",
+     "radius": 12,
+     "paddingY": 12,
+     "paddingX": 22,
+     "fontWeight": 600
+    },
+    "text": "Commander",
+    "href": "https://wa.me/"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}
