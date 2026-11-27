@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { walk } from "@/lib/cms/model";
 import { REGISTRY_URL, parseNode, type Component } from "@/lib/cms/library";
 import type { Site } from "@/lib/cms/model";
 import { rootVariables } from "@/lib/cms/style";
@@ -10,10 +11,13 @@ import type { useCatalog } from "./library-panel";
 /** L'aperçu est dessiné par le même moteur que le canevas, avec les couleurs et les styles de `site`. */
 export function Preview({ component, site, small = false }: { component: Component; site: Site; small?: boolean }) {
   const node = useMemo(() => parseNode(component.node), [component]);
+  // un grand bloc est montré plus petit et depuis son haut, sinon son début serait coupé
+  const big = !!node && walk(node).length > 6;
+  const zoom = (small ? 0.42 : 0.72) * (big ? 0.7 : 1);
   return (
     // des « span » : l'aperçu peut se trouver dans un bouton
-    <span aria-hidden className={`pointer-events-none flex select-none flex-col justify-center overflow-hidden ${small ? "h-24 w-full rounded-micro border border-rule p-2" : "h-52 border-b border-rule p-4"}`} style={{ ...rootVariables(site), background: "var(--fond)", color: "var(--texte)", fontFamily: "system-ui, sans-serif" }}>
-      <span className="block text-left" style={{ zoom: small ? 0.42 : 0.72 }}>{node && <CanvasNode node={node} site={site} mobile={false} actions={null} />}</span>
+    <span aria-hidden className={`pointer-events-none flex select-none flex-col overflow-hidden ${big ? "justify-start" : "justify-center"} ${small ? "h-24 w-full rounded-micro border border-rule p-2" : "h-52 border-b border-rule p-4"}`} style={{ ...rootVariables(site), background: "var(--fond)", color: "var(--texte)", fontFamily: "system-ui, sans-serif" }}>
+      <span className="block text-left" style={{ zoom }}>{node && <CanvasNode node={node} site={site} mobile={false} actions={null} />}</span>
     </span>
   );
 }

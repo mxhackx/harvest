@@ -7,6 +7,7 @@ test("marketplace : parcourir, ajouter à Hivation, poser dans un site, puis dep
   await page.getByRole("button", { name: "Cartes", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Carte produit" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Bouton WhatsApp", exact: true })).toBeHidden();
+  await expect(page.getByRole("link", { name: "Ajouter à Hivation" })).toHaveCount(0);
   if (process.env.SHOT) {
     await page.getByRole("button", { name: "Tout" }).click();
     await page.screenshot({ path: process.env.SHOT });
@@ -28,16 +29,23 @@ test("marketplace : parcourir, ajouter à Hivation, poser dans un site, puis dep
 
   // galerie en grand dans l'éditeur, puis section « Composants » de l'accueil du CMS
   await page.getByRole("banner").getByRole("button", { name: "Composants" }).click();
-  await page.getByLabel("Rechercher dans la galerie").fill("badge");
-  await page.getByRole("button", { name: "Poser : Badge" }).click();
+  await page.getByLabel("Rechercher dans la galerie").fill("étiquette");
+  await page.getByRole("button", { name: "Poser : Étiquette « Nouveau »" }).click();
   await expect(page.locator(".studio-canvas").getByText("Nouveau", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Retour à mes sites" }).click();
   await page.getByRole("tab", { name: "Composants" }).click();
   const cards = page.getByRole("list", { name: "Galerie de composants" }).getByRole("listitem").filter({ has: page.getByRole("button", { name: /^Ajouter :/ }) });
   await expect(cards).toHaveCount(12);
   if (process.env.SHOT2) await page.screenshot({ path: process.env.SHOT2 });
-  await page.getByRole("button", { name: /Charger plus/ }).click();
-  await expect(cards).toHaveCount(19);
+  const more = page.getByRole("button", { name: /Charger plus/ });
+  while (await more.count()) await more.click();
+  const total = (await (await request.get("http://localhost:3101/r/registry.json")).json()).items.length;
+  await expect(cards).toHaveCount(total);
+  await page.getByRole("button", { name: "Tarifs", exact: true }).click();
+  await expect(cards).toHaveCount(4);
+  if (process.env.SHOT3) await page.screenshot({ path: process.env.SHOT3.replace(".png", "-tarifs.png") });
+  await page.getByRole("button", { name: "Tout" }).click();
+  await page.getByLabel("Rechercher dans la galerie").fill("horaires");
   await page.getByRole("button", { name: "Ajouter : Horaires" }).click();
   await expect(page.locator(".studio-canvas").getByText("Samedi · 10 h – 22 h")).toBeVisible();
 });

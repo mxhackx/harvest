@@ -48,6 +48,7 @@ function Color({ label, value, site, onChange }: { label: string; value: string 
       <select aria-label={`${label} : variable`} value={value?.startsWith("$") ? value : value ? "custom" : ""} onChange={(e) => onChange(e.target.value === "custom" ? "#000000" : e.target.value || undefined)} className={`${input} text-ink`}>
         <option value="">Aucune</option>
         {site.variables.map((v) => <option key={v.name} value={`$${v.name}`}>${v.name}</option>)}
+        {value?.includes("/") && <option value={value}>{value.replace("/", " à ")} %</option>}
         <option value="custom">Libre…</option>
       </select>
       {value && !value.startsWith("$") && <input type="color" aria-label={`${label} : valeur`} value={isHex(value) ? value : "#000000"} onChange={(e) => onChange(e.target.value)} className="size-8 shrink-0 rounded-micro border border-border" />}
