@@ -1,0 +1,51 @@
+{
+ "name": "carte-avis",
+ "title": "Avis client",
+ "category": "Cartes",
+ "description": "La parole d'un client, avec son nom.",
+ "atom": "Catalogue",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Avis",
+  "props": {
+   "direction": "column",
+   "gap": 10,
+   "paddingY": 20,
+   "paddingX": 20,
+   "radius": 16,
+   "borderWidth": 1,
+   "borderColor": "$accent"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "color": "$accent"
+    },
+    "text": "★★★★★",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "« Accueil chaleureux et service rapide. »",
+    "textStyle": "body"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.7,
+     "fontSize": 14
+    },
+    "text": "Prénom du client",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

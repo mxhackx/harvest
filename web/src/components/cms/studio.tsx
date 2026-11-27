@@ -8,6 +8,8 @@ import { zip } from "@/lib/cms/zip";
 import { ChevronIcon, CopyIcon, DownloadIcon, PowerIcon, RedoIcon, TrashIcon, UndoIcon } from "../icons";
 import { CanvasNode, DRAG_NEW, DRAG_NODE, isDrag, whereFor, type CanvasActions, type Where } from "./canvas";
 import { NodeFields, PageFields, StyleFields } from "./inspector";
+import { LibraryPanel, useCatalog } from "./library-panel";
+import { parseNode, type Component } from "@/lib/cms/library";
 
 const DEVICES = { mobile: 390, tablet: 768, desktop: 1180 };
 const DEVICE_LABEL = { mobile: "Mobile", tablet: "Tablette", desktop: "Bureau" };
@@ -15,22 +17,25 @@ const icon = "flex size-8 shrink-0 items-center justify-center rounded-control t
 const tab = (on: boolean) => `h-8 rounded-control px-3 text-small font-medium ${on ? "bg-field text-ink" : "text-muted hover:text-ink"}`;
 const heading = "flex items-center justify-between px-3 pt-3 text-caption font-semibold uppercase text-muted";
 
-/** Élément à créer, décrit par ce qu'on a glissé ou cliqué : « element:text » ou « section:hero ». */
-const make = (what: string, siteName: string): Node | null => {
+/** Élément à créer, décrit par ce qu'on a glissé ou cliqué : « element:text », « section:hero » ou « component:badge ». */
+const make = (what: string, siteName: string, library: Component[]): Node | null => {
   const [kind, id] = what.split(":");
+  // une copie : l'original du registre peut changer sans toucher aux sites déjà composés
+  if (kind === "component") return parseNode(library.find((c) => c.name === id)?.node);
   if (kind === "element" && id in ELEMENTS) return ELEMENTS[id as NodeType]();
   return kind === "section" && id in SECTIONS ? SECTIONS[id].build(siteName) : null;
 };
 
-type Props = { site: Site; onChange: (site: Site) => void; onBack: () => void; saved: boolean };
+type Props = { site: Site; onChange: (site: Site) => void; onBack: () => void; saved: boolean; /** composant demandé depuis la marketplace */ pending?: string | null; onPendingDone?: () => void };
 
 /** Éditeur de site, organisé comme Figma : pages et calques à gauche, canevas au centre, propriétés à droite. */
-export function Studio({ site, onChange, onBack, saved }: Props) {
+export function Studio({ site, onChange, onBack, saved, pending, onPendingDone }: Props) {
+  const catalog = useCatalog();
   // `key` : des frappes successives dans le même champ ne font qu'une étape d'annulation
   const [history, setHistory] = useState<{ past: Site[]; future: Site[]; key: string }>({ past: [], future: [], key: "" });
   const [pageId, setPageId] = useState(site.pages[0].id);
   const [selected, setSelected] = useState<string | null>(null);
-  const [left, setLeft] = useState<"layers" | "insert">("layers");
+  const [left, setLeft] = useState<"layers" | "insert" | "library">("layers");
   const [right, setRight] = useState<"design" | "styles" | "checks">("design");
   const [device, setDevice] = useState<keyof typeof DEVICES>("mobile");
   const [zoom, setZoom] = useState(1);
@@ -64,16 +69,16 @@ export function Studio({ site, onChange, onBack, saved }: Props) {
   const setRoot = (next: Node, key = "") => { if (next !== root) setPage({ root: next }, key); };
 
   const add = (what: string) => {
-    const added = make(what, site.name);
+    const added = make(what, site.name, catalog.items);
     if (!added) return;
-    setRoot(insert(root, what.startsWith("section:") ? null : selected, added));
+    setRoot(insert(root, what.startsWith("element:") ? selected : null, added));
     setSelected(added.id);
     setRight("design");
   };
   const dropOn = (e: DragEvent, targetId: string, where: Where) => {
     const moved = e.dataTransfer.getData(DRAG_NODE);
     if (moved) return setRoot(drop(root, moved, targetId, where));
-    const added = make(e.dataTransfer.getData(DRAG_NEW), site.name);
+    const added = make(e.dataTransfer.getData(DRAG_NEW), site.name, catalog.items);
     if (!added) return;
     setRoot(place(root, targetId, where, added));
     setSelected(added.id);
@@ -171,6 +176,22 @@ export function Studio({ site, onChange, onBack, saved }: Props) {
         <button type="button" onClick={download} className="flex h-8 items-center gap-2 rounded-control bg-accent px-3 text-small font-medium text-white hover:bg-accent-hover"><DownloadIcon size={14} /> Exporter le code</button>
       </header>
 
+      {pending && (
+        <div className="flex flex-wrap items-center gap-3 border-b border-rule bg-accent-soft px-3 py-2 text-small">
+          {catalog.loading ? (
+            "Chargement du composant…"
+          ) : catalog.items.some((c) => c.name === pending) ? (
+            <>
+              <span>Composant « {catalog.items.find((c) => c.name === pending)!.title} » prêt à poser sur la page « {page.name} ».</span>
+              <button type="button" className="h-8 rounded-control bg-accent px-3 font-medium text-white" onClick={() => { add(`component:${pending}`); onPendingDone?.(); }}>Poser ici</button>
+            </>
+          ) : (
+            <span>Ce composant est introuvable dans le registre.</span>
+          )}
+          <button type="button" className="text-muted underline" onClick={onPendingDone}>Ignorer</button>
+        </div>
+      )}
+
       <div className="flex min-h-0 flex-1">
         <aside aria-label="Structure" className="flex w-64 shrink-0 flex-col border-r border-rule max-md:hidden">
           <div className={heading}>
@@ -188,10 +209,13 @@ export function Studio({ site, onChange, onBack, saved }: Props) {
           <div role="tablist" className="flex gap-1 border-b border-rule p-2">
             <button type="button" role="tab" aria-selected={left === "layers"} onClick={() => setLeft("layers")} className={tab(left === "layers")}>Calques</button>
             <button type="button" role="tab" aria-selected={left === "insert"} onClick={() => setLeft("insert")} className={tab(left === "insert")}>Ajouter</button>
+            <button type="button" role="tab" aria-selected={left === "library"} onClick={() => setLeft("library")} className={tab(left === "library")}>Composants</button>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto p-2">
             {left === "layers" ? (
               <ul aria-label="Calques">{(root.children ?? []).map((c) => layer(c, 0))}</ul>
+            ) : left === "library" ? (
+              <LibraryPanel catalog={catalog} onAdd={add} />
             ) : (
               <>
                 <p className="px-1 pb-1 text-caption font-semibold uppercase text-muted">Éléments</p>

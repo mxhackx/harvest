@@ -15,7 +15,9 @@
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test:e2e:offline": "bash scripts/e2e-offline.sh",
-    "predev:local": "node scripts/copy-maplibre.mjs"
+    "predev:local": "node scripts/copy-maplibre.mjs",
+    "registry:build": "vite-node ../registry/src/write.ts",
+    "registry:dev": "node ../registry/serve.mjs"
   },
   "dependencies": {
     "@xyflow/react": "^12.12.1",

@@ -1,0 +1,37 @@
+{
+ "name": "etat-ouverture",
+ "title": "Ouvert aujourd'hui",
+ "category": "Étiquettes",
+ "description": "Indique les horaires du jour.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Ouverture",
+  "props": {
+   "direction": "row",
+   "gap": 8,
+   "align": "center"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "color": "$accent"
+    },
+    "text": "●",
+    "textStyle": "body"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Ouvert aujourd'hui jusqu'à 23 h",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

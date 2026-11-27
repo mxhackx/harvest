@@ -1,0 +1,982 @@
+{
+ "name": "hivation",
+ "homepage": "https://ui.hivation.tech",
+ "items": [
+  {
+   "name": "bouton-whatsapp",
+   "title": "Bouton WhatsApp",
+   "category": "Actions",
+   "description": "Ouvre une conversation WhatsApp. Complétez le numéro dans le lien.",
+   "atom": "Contact",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$accent",
+     "color": "$fond",
+     "radius": 12,
+     "paddingY": 12,
+     "paddingX": 22,
+     "fontWeight": 600
+    },
+    "text": "Écrire sur WhatsApp",
+    "href": "https://wa.me/"
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "bouton-whatsapp-contour",
+   "title": "Bouton WhatsApp (contour)",
+   "category": "Actions",
+   "description": "La variante discrète du bouton WhatsApp.",
+   "atom": "Contact",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "color": "$accent",
+     "borderColor": "$accent",
+     "borderWidth": 2,
+     "radius": 12,
+     "paddingY": 10,
+     "paddingX": 20,
+     "fontWeight": 600
+    },
+    "text": "Écrire sur WhatsApp",
+    "href": "https://wa.me/"
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "bouton-appel",
+   "title": "Bouton d'appel",
+   "category": "Actions",
+   "description": "Appelle le commerce d'un seul geste.",
+   "atom": "Contact",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$accent",
+     "color": "$fond",
+     "radius": 12,
+     "paddingY": 12,
+     "paddingX": 22,
+     "fontWeight": 600
+    },
+    "text": "Appeler",
+    "href": "tel:"
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "duo-boutons",
+   "title": "Deux boutons",
+   "category": "Actions",
+   "description": "Une action principale et une secondaire, empilées sur mobile.",
+   "atom": "Contact",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Deux boutons",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "stack": true,
+     "justify": "center"
+    },
+    "children": [
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "Réserver",
+      "href": "#"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "color": "$accent",
+       "borderColor": "$accent",
+       "borderWidth": 2,
+       "radius": 12,
+       "paddingY": 10,
+       "paddingX": 20,
+       "fontWeight": 600
+      },
+      "text": "Voir la carte",
+      "href": "#"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "badge",
+   "title": "Badge",
+   "category": "Étiquettes",
+   "description": "Une courte étiquette arrondie.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Badge",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "align": "flex-start"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 99,
+       "paddingY": 4,
+       "paddingX": 12,
+       "fontSize": 13,
+       "fontWeight": 600
+      },
+      "text": "Nouveau",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "etat-ouverture",
+   "title": "Ouvert aujourd'hui",
+   "category": "Étiquettes",
+   "description": "Indique les horaires du jour.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Ouverture",
+    "props": {
+     "direction": "row",
+     "gap": 8,
+     "align": "center"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "●",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Ouvert aujourd'hui jusqu'à 23 h",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "carte-produit",
+   "title": "Carte produit",
+   "category": "Cartes",
+   "description": "Photo, nom, prix et bouton de commande.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Produit",
+    "props": {
+     "direction": "column",
+     "gap": 10,
+     "paddingY": 20,
+     "paddingX": 20,
+     "radius": 16,
+     "borderWidth": 1,
+     "borderColor": "$accent"
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 180
+      },
+      "src": "",
+      "alt": ""
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nom du produit",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "5 000 F",
+      "textStyle": "label"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "Commander",
+      "href": "https://wa.me/"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "ligne-plat",
+   "title": "Ligne de menu",
+   "category": "Cartes",
+   "description": "Un plat, sa description et son prix.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Plat",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 10
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "Détail",
+      "props": {
+       "direction": "column",
+       "gap": 2
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Nom du plat",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.7
+        },
+        "text": "Ingrédients en une ligne",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "4 000 F",
+      "textStyle": "label"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "carte-service",
+   "title": "Carte service",
+   "category": "Cartes",
+   "description": "Un service présenté en trois lignes.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Service",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "paddingY": 20,
+     "paddingX": 20,
+     "radius": 16,
+     "borderWidth": 1,
+     "borderColor": "$accent"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nom du service",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.8
+      },
+      "text": "Ce que le client obtient, en une ou deux phrases.",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "carte-avis",
+   "title": "Avis client",
+   "category": "Cartes",
+   "description": "La parole d'un client, avec son nom.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Avis",
+    "props": {
+     "direction": "column",
+     "gap": 10,
+     "paddingY": 20,
+     "paddingX": 20,
+     "radius": 16,
+     "borderWidth": 1,
+     "borderColor": "$accent"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "★★★★★",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "« Accueil chaleureux et service rapide. »",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.7,
+       "fontSize": 14
+      },
+      "text": "Prénom du client",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "membre-equipe",
+   "title": "Membre d'équipe",
+   "category": "Cartes",
+   "description": "Portrait, nom et rôle.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Membre",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "align": "center",
+     "textAlign": "center"
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 60,
+       "height": 120,
+       "maxWidth": 120
+      },
+      "src": "",
+      "alt": ""
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Prénom Nom",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.7
+      },
+      "text": "Rôle",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "horaires",
+   "title": "Horaires",
+   "category": "Informations",
+   "description": "Les jours et heures d'ouverture.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Horaires",
+    "props": {
+     "direction": "column",
+     "gap": 6,
+     "paddingY": 20,
+     "paddingX": 20,
+     "radius": 16,
+     "borderWidth": 1,
+     "borderColor": "$accent"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Lundi – Vendredi · 9 h – 19 h",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Samedi · 10 h – 22 h",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Dimanche · fermé",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "adresse",
+   "title": "Adresse et itinéraire",
+   "category": "Informations",
+   "description": "L'adresse et un lien vers l'itinéraire.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Adresse",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "align": "flex-start"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nous trouver",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Quartier, ville",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "color": "$accent",
+       "borderColor": "$accent",
+       "borderWidth": 2,
+       "radius": 12,
+       "paddingY": 10,
+       "paddingX": 20,
+       "fontWeight": 600
+      },
+      "text": "Itinéraire",
+      "href": "https://maps.google.com/"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "reseaux",
+   "title": "Réseaux sociaux",
+   "category": "Informations",
+   "description": "Des liens vers les comptes du commerce.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Réseaux",
+    "props": {
+     "direction": "row",
+     "gap": 8,
+     "align": "center",
+     "justify": "center"
+    },
+    "children": [
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "color": "$accent",
+       "borderColor": "$accent",
+       "borderWidth": 2,
+       "radius": 12,
+       "paddingY": 10,
+       "paddingX": 20,
+       "fontWeight": 600
+      },
+      "text": "Facebook",
+      "href": "https://facebook.com/"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "color": "$accent",
+       "borderColor": "$accent",
+       "borderWidth": 2,
+       "radius": 12,
+       "paddingY": 10,
+       "paddingX": 20,
+       "fontWeight": 600
+      },
+      "text": "Instagram",
+      "href": "https://instagram.com/"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "color": "$accent",
+       "borderColor": "$accent",
+       "borderWidth": 2,
+       "radius": 12,
+       "paddingY": 10,
+       "paddingX": 20,
+       "fontWeight": 600
+      },
+      "text": "TikTok",
+      "href": "https://tiktok.com/"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "barre-menu",
+   "title": "Barre de menu",
+   "category": "Navigation",
+   "description": "Le nom et les liens principaux.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Menu",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "justify": "space-between",
+     "stack": true,
+     "paddingY": 14,
+     "paddingX": 20
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nom du commerce",
+      "textStyle": "label"
+     },
+     {
+      "type": "frame",
+      "name": "Liens",
+      "props": {
+       "direction": "row",
+       "gap": 4,
+       "align": "center"
+      },
+      "children": [
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$texte"
+        },
+        "text": "Accueil",
+        "href": "/"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$texte"
+        },
+        "text": "La carte",
+        "href": "/carte"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "background": "$accent",
+         "color": "$fond",
+         "radius": 12,
+         "paddingY": 12,
+         "paddingX": 22,
+         "fontWeight": 600
+        },
+        "text": "Contact",
+        "href": "#contact"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "pied-de-page",
+   "title": "Pied de page",
+   "category": "Navigation",
+   "description": "Nom, contact et mentions légales.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Pied de page",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "align": "center",
+     "textAlign": "center",
+     "paddingY": 32,
+     "paddingX": 20
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nom du commerce",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.7
+      },
+      "text": "Cotonou, Bénin",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "color": "$texte",
+       "paddingY": 6,
+       "paddingX": 6,
+       "opacity": 0.7
+      },
+      "text": "Mentions légales",
+      "href": "/mentions"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "fontSize": 13,
+       "opacity": 0.6
+      },
+      "text": "© Tous droits réservés",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "bandeau-promo",
+   "title": "Bandeau promotionnel",
+   "category": "Mise en avant",
+   "description": "Une offre mise en avant sur toute la largeur.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Promo",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "justify": "center",
+     "stack": true,
+     "background": "$accent",
+     "color": "$fond",
+     "paddingY": 14,
+     "paddingX": 20
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Offre du moment : -10 % cette semaine",
+      "textStyle": "label"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$fond",
+       "color": "$accent",
+       "radius": 10,
+       "paddingY": 8,
+       "paddingX": 16,
+       "fontWeight": 600
+      },
+      "text": "J'en profite",
+      "href": "#"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "appel-action",
+   "title": "Appel à l'action",
+   "category": "Mise en avant",
+   "description": "Un titre, une phrase et un bouton, centrés.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Appel à l'action",
+    "props": {
+     "direction": "column",
+     "gap": 14,
+     "align": "center",
+     "textAlign": "center",
+     "paddingY": 48,
+     "paddingX": 24
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Envie de nous rendre visite ?",
+      "textStyle": "h2"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Réservez en quelques secondes.",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "Réserver",
+      "href": "https://wa.me/"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "chiffres-cles",
+   "title": "Chiffres clés",
+   "category": "Mise en avant",
+   "description": "Trois nombres qui parlent.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Chiffres",
+    "props": {
+     "direction": "column",
+     "gap": 16,
+     "columns": 3,
+     "paddingY": 24,
+     "paddingX": 20,
+     "textAlign": "center"
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "Chiffre",
+      "props": {
+       "direction": "column",
+       "gap": 2
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "10 ans",
+        "textStyle": "h2"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.7
+        },
+        "text": "d'expérience",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Chiffre",
+      "props": {
+       "direction": "column",
+       "gap": 2
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "500+",
+        "textStyle": "h2"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.7
+        },
+        "text": "clients",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Chiffre",
+      "props": {
+       "direction": "column",
+       "gap": 2
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "7 j / 7",
+        "textStyle": "h2"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.7
+        },
+        "text": "à votre service",
+        "textStyle": "body"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  }
+ ]
+}

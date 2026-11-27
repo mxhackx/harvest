@@ -1,0 +1,24 @@
+{
+ "name": "bouton-appel",
+ "title": "Bouton d'appel",
+ "category": "Actions",
+ "description": "Appelle le commerce d'un seul geste.",
+ "atom": "Contact",
+ "version": 1,
+ "node": {
+  "type": "button",
+  "name": "Bouton",
+  "props": {
+   "background": "$accent",
+   "color": "$fond",
+   "radius": 12,
+   "paddingY": 12,
+   "paddingX": 22,
+   "fontWeight": 600
+  },
+  "text": "Appeler",
+  "href": "tel:"
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

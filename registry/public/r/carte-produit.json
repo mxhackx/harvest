@@ -1,0 +1,66 @@
+{
+ "name": "carte-produit",
+ "title": "Carte produit",
+ "category": "Cartes",
+ "description": "Photo, nom, prix et bouton de commande.",
+ "atom": "Catalogue",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Produit",
+  "props": {
+   "direction": "column",
+   "gap": 10,
+   "paddingY": 20,
+   "paddingX": 20,
+   "radius": 16,
+   "borderWidth": 1,
+   "borderColor": "$accent"
+  },
+  "children": [
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 180
+    },
+    "src": "",
+    "alt": ""
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nom du produit",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "color": "$accent"
+    },
+    "text": "5 000 F",
+    "textStyle": "label"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$accent",
+     "color": "$fond",
+     "radius": 12,
+     "paddingY": 12,
+     "paddingX": 22,
+     "fontWeight": 600
+    },
+    "text": "Commander",
+    "href": "https://wa.me/"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}
