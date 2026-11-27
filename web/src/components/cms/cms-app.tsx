@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
 import { BRAND } from "@/lib/brand";
-import { TEMPLATES, loadSites, newSite, saveSites, walk, type Site } from "@/lib/cms/model";
+import { TEMPLATES, insert, loadSites, newSite, saveSites, walk, type Site } from "@/lib/cms/model";
+import { parseNode, type Component } from "@/lib/cms/library";
+import { Gallery } from "./gallery";
+import { useCatalog } from "./library-panel";
 import { rootVariables } from "@/lib/cms/style";
 import { appHref } from "@/lib/hosts";
 import { ROUTES } from "@/lib/routes";
@@ -57,6 +60,7 @@ function Sites({ companyId }: { companyId: string }) {
     setOpenId(id);
   };
   const [template, setTemplate] = useState("restaurant");
+  const [section, setSection] = useState<"sites" | "components">("sites");
   const create = () => {
     const site = newSite(`Site ${sites.length + 1}`, template);
     store((list) => [...list, site]);
@@ -75,6 +79,28 @@ function Sites({ companyId }: { companyId: string }) {
         </span>
         <Link href={appHref(ROUTES.home)} className="text-small text-link underline">Ouvrir l’application</Link>
       </header>
+      <div role="tablist" className="mx-auto flex max-w-[1180px] gap-1 px-6 pt-4">
+        {([["sites", "Mes sites"], ["components", "Composants"]] as const).map(([key, label]) => (
+          <button key={key} type="button" role="tab" aria-selected={section === key} onClick={() => setSection(key)} className={`h-9 rounded-control px-4 text-small font-medium ${section === key ? "bg-card text-ink" : "text-muted hover:text-ink"}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {section === "components" ? (
+        <ComponentsSection
+          sites={sites}
+          onAdd={(component, siteId) => {
+            const node = parseNode(component.node);
+            if (!node) return;
+            // dans le site choisi (première page), ou un nouveau site
+            const target = sites.find((x) => x.id === siteId) ?? newSite(`Site ${sites.length + 1}`, template);
+            const [first, ...rest] = target.pages;
+            const updated = { ...target, pages: [{ ...first, root: insert(first.root, null, node) }, ...rest], updatedAt: new Date().toISOString() };
+            store((list) => (list.some((x) => x.id === updated.id) ? list.map((x) => (x.id === updated.id ? updated : x)) : [...list, updated]));
+            open(updated.id);
+          }}
+        />
+      ) : (
       <main className="mx-auto max-w-[1080px] p-6">
         {pending && <p className="mb-4 rounded-control bg-accent-soft px-3 py-2 text-small">Ouvrez ou créez un site pour y poser le composant choisi.</p>}
         <div className="flex items-center justify-between gap-3">
@@ -107,6 +133,30 @@ function Sites({ companyId }: { companyId: string }) {
           ))}
         </ul>
       </main>
+      )}
     </div>
+  );
+}
+
+/** Section « Composants » : la galerie, aux couleurs du site où l'on va poser. */
+function ComponentsSection({ sites, onAdd }: { sites: Site[]; onAdd: (component: Component, siteId: string) => void }) {
+  const catalog = useCatalog();
+  const [siteId, setSiteId] = useState(sites[0]?.id ?? "");
+  // thème « Clair » tant qu'aucun site n'est choisi
+  const [sample] = useState(() => newSite("Aperçu", "boutique"));
+  return (
+    <main className="mx-auto max-w-[1180px] p-6">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-title font-semibold">Composants</h1>
+        <label className="flex items-center gap-2 text-small">
+          Ajouter dans
+          <select value={siteId} onChange={(e) => setSiteId(e.target.value)} className="h-9 rounded-control border border-border bg-card px-2 text-small">
+            {sites.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            <option value="">Un nouveau site</option>
+          </select>
+        </label>
+      </div>
+      <Gallery catalog={catalog} site={sites.find((s) => s.id === siteId) ?? sample} addLabel="Ajouter" onAdd={(c) => onAdd(c, siteId)} />
+    </main>
   );
 }

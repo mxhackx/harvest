@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { REGISTRY_URL, fetchCatalog, type Component } from "@/lib/cms/library";
+import type { Site } from "@/lib/cms/model";
 import { DRAG_NEW } from "./canvas";
+import { Preview } from "./gallery";
 
 /** Catalogue du registre, chargé une fois par visite. */
 export function useCatalog() {
@@ -21,7 +23,7 @@ export function useCatalog() {
 }
 
 /** Onglet « Composants » : cliquer ou glisser pose une COPIE dans la page. */
-export function LibraryPanel({ catalog, onAdd }: { catalog: ReturnType<typeof useCatalog>; onAdd: (what: string) => void }) {
+export function LibraryPanel({ catalog, site, onAdd }: { catalog: ReturnType<typeof useCatalog>; site: Site; onAdd: (what: string) => void }) {
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
   const shown = catalog.items.filter((c) => !q || `${c.title} ${c.category} ${c.description}`.toLowerCase().includes(q));
@@ -36,8 +38,9 @@ export function LibraryPanel({ catalog, onAdd }: { catalog: ReturnType<typeof us
           <ul className="flex flex-col gap-1">
             {shown.filter((c) => c.category === category).map((c) => (
               <li key={c.name}>
-                <button type="button" draggable title={c.description} onDragStart={(e) => e.dataTransfer.setData(DRAG_NEW, `component:${c.name}`)} onClick={() => onAdd(`component:${c.name}`)} className="flex h-9 w-full cursor-grab items-center rounded-control border border-border px-2 text-left text-small hover:bg-field">
-                  + {c.title}
+                <button type="button" draggable title={c.description} aria-label={`+ ${c.title}`} onDragStart={(e) => e.dataTransfer.setData(DRAG_NEW, `component:${c.name}`)} onClick={() => onAdd(`component:${c.name}`)} className="flex w-full cursor-grab flex-col gap-1 rounded-control border border-border p-1.5 text-left hover:border-accent">
+                  <Preview component={c} site={site} small />
+                  <span className="px-0.5 text-caption font-medium">{c.title}</span>
                 </button>
               </li>
             ))}
