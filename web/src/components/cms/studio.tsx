@@ -9,12 +9,13 @@ import { ChevronIcon, CopyIcon, DownloadIcon, PowerIcon, RedoIcon, TrashIcon, Un
 import { CanvasNode, DRAG_NEW, DRAG_NODE, isDrag, whereFor, type CanvasActions, type Where } from "./canvas";
 import { NodeFields, PageFields, StyleFields } from "./inspector";
 import { LibraryPanel, useCatalog } from "./library-panel";
+import { Gallery } from "./gallery";
 import { parseNode, type Component } from "@/lib/cms/library";
 
 const DEVICES = { mobile: 390, tablet: 768, desktop: 1180 };
 const DEVICE_LABEL = { mobile: "Mobile", tablet: "Tablette", desktop: "Bureau" };
 const icon = "flex size-8 shrink-0 items-center justify-center rounded-control text-muted hover:bg-field hover:text-ink disabled:opacity-30";
-const tab = (on: boolean) => `h-8 rounded-control px-3 text-small font-medium ${on ? "bg-field text-ink" : "text-muted hover:text-ink"}`;
+const tab = (on: boolean) => `h-8 rounded-control px-2.5 text-small font-medium ${on ? "bg-field text-ink" : "text-muted hover:text-ink"}`;
 const heading = "flex items-center justify-between px-3 pt-3 text-caption font-semibold uppercase text-muted";
 
 /** Élément à créer, décrit par ce qu'on a glissé ou cliqué : « element:text », « section:hero » ou « component:badge ». */
@@ -40,6 +41,7 @@ export function Studio({ site, onChange, onBack, saved, pending, onPendingDone }
   const [device, setDevice] = useState<keyof typeof DEVICES>("mobile");
   const [zoom, setZoom] = useState(1);
   const [preview, setPreview] = useState(false);
+  const [gallery, setGallery] = useState(false);
   const canvas = useRef<HTMLDivElement>(null);
 
   const page = site.pages.find((p) => p.id === pageId) ?? site.pages[0];
@@ -88,7 +90,7 @@ export function Studio({ site, onChange, onBack, saved, pending, onPendingDone }
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const typing = e.target instanceof HTMLElement && (e.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName));
-      if (e.key === "Escape" && !typing) { setPreview(false); setSelected(null); }
+      if (e.key === "Escape" && !typing) { setPreview(false); setGallery(false); setSelected(null); }
       if (typing) return;
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
         e.preventDefault();
@@ -172,6 +174,7 @@ export function Studio({ site, onChange, onBack, saved, pending, onPendingDone }
         </div>
         <button type="button" aria-label="Annuler" title="Annuler (Ctrl+Z)" onClick={undo} disabled={!history.past.length} className={icon}><UndoIcon size={16} /></button>
         <button type="button" aria-label="Rétablir" title="Rétablir (Ctrl+Maj+Z)" onClick={redo} disabled={!history.future.length} className={icon}><RedoIcon size={16} /></button>
+        <button type="button" onClick={() => setGallery(true)} className="h-8 rounded-control border border-frame px-3 text-small font-medium hover:bg-field">Composants</button>
         <button type="button" onClick={() => setPreview(true)} className="h-8 rounded-control border border-frame px-3 text-small font-medium hover:bg-field">Aperçu</button>
         <button type="button" onClick={download} className="flex h-8 items-center gap-2 rounded-control bg-accent px-3 text-small font-medium text-white hover:bg-accent-hover"><DownloadIcon size={14} /> Exporter le code</button>
       </header>
@@ -215,7 +218,7 @@ export function Studio({ site, onChange, onBack, saved, pending, onPendingDone }
             {left === "layers" ? (
               <ul aria-label="Calques">{(root.children ?? []).map((c) => layer(c, 0))}</ul>
             ) : left === "library" ? (
-              <LibraryPanel catalog={catalog} onAdd={add} />
+              <LibraryPanel catalog={catalog} site={site} onAdd={add} />
             ) : (
               <>
                 <p className="px-1 pb-1 text-caption font-semibold uppercase text-muted">Éléments</p>
@@ -271,6 +274,18 @@ export function Studio({ site, onChange, onBack, saved, pending, onPendingDone }
           </div>
         </aside>
       </div>
+
+      {gallery && (
+        <div role="dialog" aria-modal="true" aria-label="Galerie de composants" className="fixed inset-0 z-50 overflow-auto bg-field p-6">
+          <div className="mx-auto max-w-[1180px]">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2 className="font-display text-title font-semibold">Ajouter un composant à « {page.name} »</h2>
+              <button type="button" autoFocus onClick={() => setGallery(false)} className="h-9 rounded-control border border-frame bg-card px-3 text-small font-medium">Fermer</button>
+            </div>
+            <Gallery catalog={catalog} site={site} addLabel="Poser" onAdd={(c) => { add(`component:${c.name}`); setGallery(false); }} />
+          </div>
+        </div>
+      )}
 
       {preview && (
         <div role="dialog" aria-modal="true" aria-label="Aperçu du site" className="fixed inset-0 z-50 overflow-auto bg-scrim p-6">
