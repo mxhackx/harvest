@@ -1,0 +1,52 @@
+{
+ "name": "duo-boutons",
+ "title": "Deux boutons",
+ "category": "Actions",
+ "description": "Une action principale et une secondaire, empilées sur mobile.",
+ "atom": "Contact",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Deux boutons",
+  "props": {
+   "direction": "row",
+   "gap": 12,
+   "align": "center",
+   "stack": true,
+   "justify": "center"
+  },
+  "children": [
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$accent",
+     "color": "$fond",
+     "radius": 12,
+     "paddingY": 12,
+     "paddingX": 22,
+     "fontWeight": 600
+    },
+    "text": "Réserver",
+    "href": "#"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "color": "$accent",
+     "borderColor": "$accent",
+     "borderWidth": 2,
+     "radius": 12,
+     "paddingY": 10,
+     "paddingX": 20,
+     "fontWeight": 600
+    },
+    "text": "Voir la carte",
+    "href": "#"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

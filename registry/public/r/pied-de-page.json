@@ -1,0 +1,62 @@
+{
+ "name": "pied-de-page",
+ "title": "Pied de page",
+ "category": "Navigation",
+ "description": "Nom, contact et mentions légales.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Pied de page",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "align": "center",
+   "textAlign": "center",
+   "paddingY": 32,
+   "paddingX": 20
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nom du commerce",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.7
+    },
+    "text": "Cotonou, Bénin",
+    "textStyle": "body"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "color": "$texte",
+     "paddingY": 6,
+     "paddingX": 6,
+     "opacity": 0.7
+    },
+    "text": "Mentions légales",
+    "href": "/mentions"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "fontSize": 13,
+     "opacity": 0.6
+    },
+    "text": "© Tous droits réservés",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

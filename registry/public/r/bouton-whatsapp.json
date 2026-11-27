@@ -1,0 +1,24 @@
+{
+ "name": "bouton-whatsapp",
+ "title": "Bouton WhatsApp",
+ "category": "Actions",
+ "description": "Ouvre une conversation WhatsApp. Complétez le numéro dans le lien.",
+ "atom": "Contact",
+ "version": 1,
+ "node": {
+  "type": "button",
+  "name": "Bouton",
+  "props": {
+   "background": "$accent",
+   "color": "$fond",
+   "radius": 12,
+   "paddingY": 12,
+   "paddingX": 22,
+   "fontWeight": 600
+  },
+  "text": "Écrire sur WhatsApp",
+  "href": "https://wa.me/"
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

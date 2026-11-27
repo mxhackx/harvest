@@ -1,0 +1,58 @@
+{
+ "name": "ligne-plat",
+ "title": "Ligne de menu",
+ "category": "Cartes",
+ "description": "Un plat, sa description et son prix.",
+ "atom": "Catalogue",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Plat",
+  "props": {
+   "direction": "row",
+   "gap": 12,
+   "align": "center",
+   "justify": "space-between",
+   "paddingY": 10
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "Détail",
+    "props": {
+     "direction": "column",
+     "gap": 2
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nom du plat",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.7
+      },
+      "text": "Ingrédients en une ligne",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "color": "$accent"
+    },
+    "text": "4 000 F",
+    "textStyle": "label"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

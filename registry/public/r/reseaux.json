@@ -1,0 +1,67 @@
+{
+ "name": "reseaux",
+ "title": "Réseaux sociaux",
+ "category": "Informations",
+ "description": "Des liens vers les comptes du commerce.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Réseaux",
+  "props": {
+   "direction": "row",
+   "gap": 8,
+   "align": "center",
+   "justify": "center"
+  },
+  "children": [
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "color": "$accent",
+     "borderColor": "$accent",
+     "borderWidth": 2,
+     "radius": 12,
+     "paddingY": 10,
+     "paddingX": 20,
+     "fontWeight": 600
+    },
+    "text": "Facebook",
+    "href": "https://facebook.com/"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "color": "$accent",
+     "borderColor": "$accent",
+     "borderWidth": 2,
+     "radius": 12,
+     "paddingY": 10,
+     "paddingX": 20,
+     "fontWeight": 600
+    },
+    "text": "Instagram",
+    "href": "https://instagram.com/"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "color": "$accent",
+     "borderColor": "$accent",
+     "borderWidth": 2,
+     "radius": 12,
+     "paddingY": 10,
+     "paddingX": 20,
+     "fontWeight": 600
+    },
+    "text": "TikTok",
+    "href": "https://tiktok.com/"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

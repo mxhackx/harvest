@@ -1,0 +1,48 @@
+{
+ "name": "bandeau-promo",
+ "title": "Bandeau promotionnel",
+ "category": "Mise en avant",
+ "description": "Une offre mise en avant sur toute la largeur.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Promo",
+  "props": {
+   "direction": "row",
+   "gap": 12,
+   "align": "center",
+   "justify": "center",
+   "stack": true,
+   "background": "$accent",
+   "color": "$fond",
+   "paddingY": 14,
+   "paddingX": 20
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Offre du moment : -10 % cette semaine",
+    "textStyle": "label"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$fond",
+     "color": "$accent",
+     "radius": 10,
+     "paddingY": 8,
+     "paddingX": 16,
+     "fontWeight": 600
+    },
+    "text": "J'en profite",
+    "href": "#"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

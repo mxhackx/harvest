@@ -1,0 +1,52 @@
+{
+ "name": "appel-action",
+ "title": "Appel à l'action",
+ "category": "Mise en avant",
+ "description": "Un titre, une phrase et un bouton, centrés.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Appel à l'action",
+  "props": {
+   "direction": "column",
+   "gap": 14,
+   "align": "center",
+   "textAlign": "center",
+   "paddingY": 48,
+   "paddingX": 24
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Envie de nous rendre visite ?",
+    "textStyle": "h2"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Réservez en quelques secondes.",
+    "textStyle": "body"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$accent",
+     "color": "$fond",
+     "radius": 12,
+     "paddingY": 12,
+     "paddingX": 22,
+     "fontWeight": 600
+    },
+    "text": "Réserver",
+    "href": "https://wa.me/"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}
