@@ -25,7 +25,7 @@ doppler setup                                        # à la racine, lit doppler
 # les valeurs se saisissent dans le tableau de bord Doppler (jamais dans Git)
 ```
 
-Ensuite : `npm run dev:doppler` dans `api/` et dans `web/` ; `npm run db:migrate:doppler` dans `api/`.
+Ensuite : `npm run dev` dans `api/` et dans `web/` (il passe par Doppler ; `npm run dev:local` s’en passe et lit les fichiers `.env`) ; `npm run db:migrate:doppler` dans `api/`.
 
 | Projet | Variables |
 | --- | --- |
@@ -39,8 +39,8 @@ Ensuite : `npm run dev:doppler` dans `api/` et dans `web/` ; `npm run db:migrate
 ```bash
 scripts/db-local.sh start                      # Postgres local, port 54329
 cd api && npm run db:migrate:doppler           # applique les migrations
-cd api && npm run dev:doppler                  # http://localhost:4000
-cd web && npm run dev:doppler                  # http://localhost:3000
+cd api && npm run dev                  # http://localhost:4000
+cd web && npm run dev                  # http://localhost:3000
 ```
 
 ## Adresses du site
