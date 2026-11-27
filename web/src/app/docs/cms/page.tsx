@@ -7,12 +7,14 @@ export default function Page() {
   return (
     <DocArticle href="/docs/cms">
       <p>
-        <strong>Sites</strong> (réservé au CEO) ouvre le CMS, une application à part. Choisissez un modèle de départ, puis
-        <strong> Nouveau site</strong>.
+        Le CMS (<strong>cms.hivation.tech</strong>) est un produit à part du CRM. Créez un compte directement sur son écran de
+        connexion, ou, si vous avez déjà un compte Hivation, choisissez <strong>Continuer avec Hivation</strong>. Aucune
+        entreprise n’est demandée : vos sites sont à vous seul.
       </p>
-      <Callout title="À savoir">
-        Les sites sont enregistrés dans ce navigateur seulement. L’IA et la publication depuis le CMS ne sont pas encore
-        disponibles : vous exportez le code pour l’héberger.
+      <Callout title="Enregistrement">
+        Chaque modification est enregistrée toute seule sur votre compte ; l’état s’affiche en haut de l’éditeur. Si le site a
+        été modifié dans un autre onglet, rien n’est écrasé : rechargez la page. L’IA et la publication en un clic ne sont pas
+        encore disponibles.
       </Callout>
 
       <h2>Pages, cadres et éléments</h2>
