@@ -40,6 +40,10 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 
 `/dashboard/ai/workflows` : éditeur de chaînes (React Flow). La table `workflows` stocke le dessin en JSON, validé par `api/src/workflows/graph.ts` (un déclencheur, chaîne linéaire, plafond d'autonomie par action, cahier des charges §12). **Aucun moteur d'exécution pour l'instant.** Test navigateur : `web/e2e/workflows.spec.ts`.
 
+## CMS (interface)
+
+`/cms` : éditeur de sites (`components/cms/`), prévu pour `cms.hivation.tech` (`NEXT_PUBLIC_CMS_URL`, à ajouter aussi à `APP_URLS`). Les sites restent dans le navigateur, sans API pour l’instant. Points d’extension : un nouveau **composant** = un type dans `lib/cms/site.ts`, son rendu dans `preview.tsx` et ses champs dans `inspector.tsx` ; un nouveau **modèle** = une entrée de `TEMPLATES` ; l’**IA** devra produire un objet `Site`, validé avant d’être affiché.
+
 ## E-mails depuis le CRM
 
 `POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.
