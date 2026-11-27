@@ -63,7 +63,7 @@ describe("robots.txt", () => {
   it("laisse l'accueil, la connexion et la documentation, ferme l'espace connecté", () => {
     expect(rule.userAgent).toBe("*");
     expect(rule.allow).toEqual(["/", "/login", "/docs"]);
-    expect(rule.disallow).toEqual(["/dashboard"]);
+    expect(rule.disallow).toEqual(["/dashboard", "/cms"]);
   });
   it("annonce le sitemap", () => {
     expect(r.sitemap).toBe("https://harvest.example/sitemap.xml");

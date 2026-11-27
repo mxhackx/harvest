@@ -534,3 +534,10 @@ body {
     animation: none;
   }
 }
+
+/* Canevas du CMS : fond gris à points, comme un plan de travail. */
+.studio-canvas {
+  background-color: var(--color-field);
+  background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

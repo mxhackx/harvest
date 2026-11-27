@@ -39,6 +39,14 @@ describe("hostRedirect", () => {
     expect(to("docs.hivation.tech", "/autre")).toBe(`${SITE}/autre`);
     expect(to("www.hivation.tech", "/")).toBeNull();
   });
+  it("avec un domaine de CMS : /cms y vit, le reste en repart", () => {
+    const CMS = "https://cms.hivation.tech";
+    const to = (host: string, path: string) => hostRedirect(host, path, "", SITE, APP, undefined, CMS);
+    expect(to("app.hivation.tech", "/cms")).toBe(`${CMS}/cms`);
+    expect(to("cms.hivation.tech", "/")).toBe(`${CMS}/cms`);
+    expect(to("cms.hivation.tech", "/cms")).toBeNull();
+    expect(to("cms.hivation.tech", "/login")).toBe(`${APP}/login`);
+  });
   it("autre domaine (prévisualisation, localhost) : jamais de redirection", () => {
     expect(go("hivation-git-x.vercel.app", "/dashboard")).toBeNull();
   });
