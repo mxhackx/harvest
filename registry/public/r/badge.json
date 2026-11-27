@@ -1,0 +1,36 @@
+{
+ "name": "badge",
+ "title": "Badge",
+ "category": "Étiquettes",
+ "description": "Une courte étiquette arrondie.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Badge",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "align": "flex-start"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "background": "$accent",
+     "color": "$fond",
+     "radius": 99,
+     "paddingY": 4,
+     "paddingX": 12,
+     "fontSize": 13,
+     "fontWeight": 600
+    },
+    "text": "Nouveau",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

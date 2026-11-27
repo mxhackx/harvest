@@ -1,0 +1,46 @@
+{
+ "name": "horaires",
+ "title": "Horaires",
+ "category": "Informations",
+ "description": "Les jours et heures d'ouverture.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Horaires",
+  "props": {
+   "direction": "column",
+   "gap": 6,
+   "paddingY": 20,
+   "paddingX": 20,
+   "radius": 16,
+   "borderWidth": 1,
+   "borderColor": "$accent"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Lundi – Vendredi · 9 h – 19 h",
+    "textStyle": "body"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Samedi · 10 h – 22 h",
+    "textStyle": "body"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Dimanche · fermé",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

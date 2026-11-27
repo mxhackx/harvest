@@ -1,0 +1,25 @@
+{
+ "name": "bouton-whatsapp-contour",
+ "title": "Bouton WhatsApp (contour)",
+ "category": "Actions",
+ "description": "La variante discrète du bouton WhatsApp.",
+ "atom": "Contact",
+ "version": 1,
+ "node": {
+  "type": "button",
+  "name": "Bouton",
+  "props": {
+   "color": "$accent",
+   "borderColor": "$accent",
+   "borderWidth": 2,
+   "radius": 12,
+   "paddingY": 10,
+   "paddingX": 20,
+   "fontWeight": 600
+  },
+  "text": "Écrire sur WhatsApp",
+  "href": "https://wa.me/"
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

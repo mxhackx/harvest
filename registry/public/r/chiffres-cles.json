@@ -1,0 +1,108 @@
+{
+ "name": "chiffres-cles",
+ "title": "Chiffres clés",
+ "category": "Mise en avant",
+ "description": "Trois nombres qui parlent.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Chiffres",
+  "props": {
+   "direction": "column",
+   "gap": 16,
+   "columns": 3,
+   "paddingY": 24,
+   "paddingX": 20,
+   "textAlign": "center"
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "Chiffre",
+    "props": {
+     "direction": "column",
+     "gap": 2
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "10 ans",
+      "textStyle": "h2"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.7
+      },
+      "text": "d'expérience",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Chiffre",
+    "props": {
+     "direction": "column",
+     "gap": 2
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "500+",
+      "textStyle": "h2"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.7
+      },
+      "text": "clients",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "frame",
+    "name": "Chiffre",
+    "props": {
+     "direction": "column",
+     "gap": 2
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "7 j / 7",
+      "textStyle": "h2"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.7
+      },
+      "text": "à votre service",
+      "textStyle": "body"
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

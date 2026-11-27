@@ -1,0 +1,79 @@
+{
+ "name": "barre-menu",
+ "title": "Barre de menu",
+ "category": "Navigation",
+ "description": "Le nom et les liens principaux.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Menu",
+  "props": {
+   "direction": "row",
+   "gap": 12,
+   "align": "center",
+   "justify": "space-between",
+   "stack": true,
+   "paddingY": 14,
+   "paddingX": 20
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nom du commerce",
+    "textStyle": "label"
+   },
+   {
+    "type": "frame",
+    "name": "Liens",
+    "props": {
+     "direction": "row",
+     "gap": 4,
+     "align": "center"
+    },
+    "children": [
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "paddingY": 8,
+       "paddingX": 10,
+       "color": "$texte"
+      },
+      "text": "Accueil",
+      "href": "/"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "paddingY": 8,
+       "paddingX": 10,
+       "color": "$texte"
+      },
+      "text": "La carte",
+      "href": "/carte"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "Contact",
+      "href": "#contact"
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

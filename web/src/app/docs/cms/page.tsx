@@ -31,6 +31,13 @@ export default function Page() {
         <li>Ctrl + Z annule, Ctrl + molette zoome.</li>
       </ul>
 
+      <h2>Composants</h2>
+      <p>
+        L’onglet <strong>Composants</strong> propose des éléments prêts (boutons WhatsApp, cartes, horaires, menu, pied de
+        page…). Cliquez ou glissez : une <strong>copie</strong> est posée dans la page, aux couleurs du site, et vous modifiez
+        tout librement. La marketplace permet aussi de les parcourir ; « Ajouter à Hivation » vous ramène au CMS.
+      </p>
+
       <h2>Exporter le code</h2>
       <p>
         Le bouton télécharge un projet Next.js complet : les pages, une API pour le formulaire de contact et le schéma de la

@@ -1,0 +1,41 @@
+{
+ "name": "carte-service",
+ "title": "Carte service",
+ "category": "Cartes",
+ "description": "Un service présenté en trois lignes.",
+ "atom": "Catalogue",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Service",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "paddingY": 20,
+   "paddingX": 20,
+   "radius": 16,
+   "borderWidth": 1,
+   "borderColor": "$accent"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nom du service",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.8
+    },
+    "text": "Ce que le client obtient, en une ou deux phrases.",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

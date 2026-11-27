@@ -1,0 +1,50 @@
+{
+ "name": "adresse",
+ "title": "Adresse et itinéraire",
+ "category": "Informations",
+ "description": "L'adresse et un lien vers l'itinéraire.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Adresse",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "align": "flex-start"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nous trouver",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Quartier, ville",
+    "textStyle": "body"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "color": "$accent",
+     "borderColor": "$accent",
+     "borderWidth": 2,
+     "radius": 12,
+     "paddingY": 10,
+     "paddingX": 20,
+     "fontWeight": 600
+    },
+    "text": "Itinéraire",
+    "href": "https://maps.google.com/"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

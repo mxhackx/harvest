@@ -38,6 +38,12 @@ function Sites({ companyId }: { companyId: string }) {
   const [sites, setSites] = useState<Site[]>(() => loadSites(companyId));
   const [openId, setOpenId] = useState<string | null>(() => window.location.hash.slice(1) || null);
   const [saved, setSaved] = useState(true);
+  // « Ajouter à Hivation » depuis la marketplace : /cms?add=<composant>, posé après confirmation dans le site ouvert
+  const [pending, setPending] = useState<string | null>(() => /^[a-z0-9-]{1,60}$/.exec(new URLSearchParams(window.location.search).get("add") ?? "")?.[0] ?? null);
+  const donePending = () => {
+    setPending(null);
+    window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+  };
 
   const store = useCallback((next: (list: Site[]) => Site[]) => {
     setSites((list) => {
@@ -47,7 +53,7 @@ function Sites({ companyId }: { companyId: string }) {
     });
   }, [companyId]);
   const open = (id: string | null) => {
-    window.history.replaceState(null, "", id ? `#${id}` : window.location.pathname);
+    window.history.replaceState(null, "", window.location.pathname + window.location.search + (id ? `#${id}` : ""));
     setOpenId(id);
   };
   const [template, setTemplate] = useState("restaurant");
@@ -59,7 +65,7 @@ function Sites({ companyId }: { companyId: string }) {
   const current = sites.find((x) => x.id === openId);
   const change = useCallback((site: Site) => store((list) => list.map((x) => (x.id === site.id ? site : x))), [store]);
 
-  if (current) return <Studio key={current.id} site={current} saved={saved} onChange={change} onBack={() => open(null)} />;
+  if (current) return <Studio key={current.id} site={current} saved={saved} onChange={change} onBack={() => open(null)} pending={pending} onPendingDone={donePending} />;
   return (
     <div className="min-h-dvh bg-field">
       <header className="flex h-14 items-center justify-between border-b border-rule bg-card px-6">
@@ -70,6 +76,7 @@ function Sites({ companyId }: { companyId: string }) {
         <Link href={appHref(ROUTES.home)} className="text-small text-link underline">Ouvrir l’application</Link>
       </header>
       <main className="mx-auto max-w-[1080px] p-6">
+        {pending && <p className="mb-4 rounded-control bg-accent-soft px-3 py-2 text-small">Ouvrez ou créez un site pour y poser le composant choisi.</p>}
         <div className="flex items-center justify-between gap-3">
           <h1 className="font-display text-title font-semibold">Mes sites</h1>
           <div className="flex items-center gap-2">
