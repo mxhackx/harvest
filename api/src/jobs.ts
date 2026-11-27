@@ -3,6 +3,7 @@ import { purgeOldAudit } from "./audit/record.js";
 import { purgeExpiredTrash } from "./leads/trash.js";
 import { sendDueReminders } from "./reminders/send.js";
 import { runDelayedAutomations } from "./automations/run.js";
+import { purgeAttachments } from "./storage/cleanup.js";
 
 type Job = { name: string; everyMs: number; run: () => Promise<unknown> };
 
@@ -12,6 +13,7 @@ const JOBS: Job[] = [
   { name: "purge du journal d'audit", everyMs: 24 * 3_600_000, run: purgeOldAudit },
   { name: "automatisations (relances)", everyMs: 15 * 60_000, run: runDelayedAutomations },
   { name: "rappels", everyMs: 5 * 60_000, run: sendDueReminders },
+  { name: "fichiers orphelins", everyMs: 6 * 3_600_000, run: purgeAttachments },
 ];
 
 export function startJobs(log: FastifyBaseLogger, jobs: Job[] = JOBS) {

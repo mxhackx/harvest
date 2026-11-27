@@ -847,3 +847,24 @@ export const workflows = pgTable(
   },
   (t) => [index("workflows_company").on(t.companyId)],
 );
+
+/** Pièce jointe d'un lead. Le fichier est dans un bucket privé ; `ready` : arrivé et vérifié. */
+export const attachments = pgTable(
+  "attachments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id, { onDelete: "cascade" }),
+    // « set null » : la ligne survit au lead effacé, pour que le fichier soit retiré du stockage ensuite
+    leadId: uuid("lead_id").references(() => leads.id, { onDelete: "set null" }),
+    name: text("name").notNull(),
+    mime: text("mime").notNull(),
+    size: integer("size").notNull(),
+    path: text("path").notNull().unique(),
+    ready: boolean("ready").notNull().default(false),
+    uploadedBy: uuid("uploaded_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("attachments_lead").on(t.leadId)],
+);

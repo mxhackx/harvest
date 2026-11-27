@@ -9,6 +9,8 @@ export default defineConfig({
       GOOGLE_CLIENT_SECRET: "",
       GITHUB_CLIENT_ID: "",
       GITHUB_CLIENT_SECRET: "",
+      SUPABASE_URL: "",
+      SUPABASE_SECRET_KEY: "",
     },
     globalSetup: ["./src/test/global-setup.ts"],
     fileParallelism: false,

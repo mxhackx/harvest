@@ -20,6 +20,8 @@ const PHRASES: Record<string, string> = {
   "DELETE /invoices/:id": "a supprimé la facture",
   "POST /invoices/:id/status": "a changé le statut de la facture",
   "PATCH /company": "a modifié l'entreprise",
+  "POST /attachments/:id/complete": "a ajouté la pièce jointe",
+  "DELETE /attachments/:id": "a supprimé la pièce jointe",
   "POST /workflows": "a créé le workflow",
   "PATCH /workflows/:id": "a modifié le workflow",
   "DELETE /workflows/:id": "a supprimé le workflow",
