@@ -1,6 +1,7 @@
 "use client";
 
 import { ROUTES } from "@/lib/routes";
+import { cmsHref } from "@/lib/hosts";
 import { BRAND } from "@/lib/brand";
 import Image from "next/image";
 import Link from "next/link";
@@ -88,6 +89,14 @@ const MODULES: Module[] = [
     icon: SparkIcon,
     needs: "workflow:read",
     pages: [{ label: "Workflows", short: "IA", href: ROUTES.workflows, icon: SparkIcon }],
+  },
+  {
+    key: "sites",
+    label: "Sites",
+    href: cmsHref("/cms"),
+    icon: FormIcon,
+    needs: "company:update",
+    pages: [{ label: "Sites des clients", short: "Sites", href: cmsHref("/cms"), icon: FormIcon }],
   },
   {
     key: "team",

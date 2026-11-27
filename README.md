@@ -9,7 +9,7 @@ Prospection et suivi de leads sur le terrain. Deux projets indépendants :
 
 ## Cahier des charges
 
-La vision, les modules et les exigences du produit sont dans [docs/cahier-des-charges.md](docs/cahier-des-charges.md).
+La vision, les modules et les exigences du produit sont dans [docs/cahier-des-charges.md](docs/cahier-des-charges.md). Le plan du module CMS (document de travail) est dans [docs/cahier-des-charges-cms.md](docs/cahier-des-charges-cms.md).
 
 ## Démarrer
 
@@ -39,6 +39,10 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 ## Workflows (IA)
 
 `/dashboard/ai/workflows` : éditeur de chaînes (React Flow). La table `workflows` stocke le dessin en JSON, validé par `api/src/workflows/graph.ts` (un déclencheur, chaîne linéaire, plafond d'autonomie par action, cahier des charges §12). **Aucun moteur d'exécution pour l'instant.** Test navigateur : `web/e2e/workflows.spec.ts`.
+
+## CMS (interface)
+
+`/cms` : éditeur de sites (`components/cms/`), prévu pour `cms.hivation.tech` (`NEXT_PUBLIC_CMS_URL`, à ajouter aussi à `APP_URLS`). Les sites restent dans le navigateur, sans API pour l’instant. Points d’extension : un nouveau **composant** = un type dans `lib/cms/site.ts`, son rendu dans `preview.tsx` et ses champs dans `inspector.tsx` ; un nouveau **modèle** = une entrée de `TEMPLATES` ; l’**IA** devra produire un objet `Site`, validé avant d’être affiché.
 
 ## E-mails depuis le CRM
 
