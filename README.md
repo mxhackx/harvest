@@ -78,6 +78,14 @@ Les composants animés (avec leur propre code et leurs dépendances) demanderont
 
 Images et PDF des leads (50 Mo au plus), dans un bucket Supabase **privé** (`attachments`). Variables de l'API : `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (absentes : fonction désactivée). Le navigateur envoie directement au stockage par une adresse signée ; l'API vérifie ensuite le type réel (premiers octets) et la taille, et ne délivre que des liens d'une minute ([api/src/routes/attachments.ts](api/src/routes/attachments.ts)). Les fichiers d'un lead effacé sont retirés toutes les 6 h.
 
+## Composants (registre et marketplace)
+
+`registry/` est un **site statique à part** (projet Vercel avec *Root Directory* = `registry`, domaine `ui.hivation.tech`) : la marketplace et son API (`/r/registry.json`, `/r/<nom>.json`). Un composant est une **donnée** (arbre de nœuds), jamais du code ; uniquement des composants maison ou sous licence MIT (avec leur mention).
+
+- Ajouter un composant : [registry/src/components.ts](registry/src/components.ts), puis `npm run registry:build` dans `web/` et commiter `registry/public` (un test vérifie qu'il est à jour).
+- En local : `npm run registry:dev` dans `web/` (http://localhost:3001).
+- Le CMS lit `NEXT_PUBLIC_REGISTRY_URL` et revérifie tout ce qu'il reçoit ([web/src/lib/cms/library.ts](web/src/lib/cms/library.ts)).
+
 ## E-mails depuis le CRM
 
 `POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.
