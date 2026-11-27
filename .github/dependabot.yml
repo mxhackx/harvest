@@ -1,0 +1,21 @@
+# Mises à jour proposées chaque lundi, vers « staging » (jamais directement vers « main »), regroupées pour limiter le bruit.
+# Dependabot crée des branches « dependabot/… » sur GitHub : les supprimer une fois la PR fusionnée ou fermée.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directories: ["/", "/api", "/web"]
+    schedule: { interval: weekly, day: monday }
+    # une version fraîchement publiée peut être piégée : on attend une semaine
+    cooldown: { default-days: 7 }
+    target-branch: staging
+    open-pull-requests-limit: 3
+    groups:
+      mineures:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule: { interval: weekly, day: monday }
+    # une version fraîchement publiée peut être piégée : on attend une semaine
+    cooldown: { default-days: 7 }
+    target-branch: staging
+    open-pull-requests-limit: 2

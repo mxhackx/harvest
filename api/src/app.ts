@@ -41,8 +41,11 @@ import { templateRoutes } from "./routes/templates.js";
 import { taskRoutes } from "./routes/tasks.js";
 import { notificationRoutes } from "./routes/notifications.js";
 
-export async function buildApp(opts: { logger?: boolean } = {}) {
+/** `onRoute` sert aux tests d'isolation : ils exigent que chaque route déclarée soit éprouvée. */
+export async function buildApp(opts: { logger?: boolean; onRoute?: (method: string, url: string) => void } = {}) {
   const app = Fastify({ logger: opts.logger ?? true, trustProxy: config.isProd });
+  const { onRoute } = opts;
+  if (onRoute) app.addHook("onRoute", (r) => [r.method].flat().forEach((m) => m !== "HEAD" && m !== "OPTIONS" && onRoute(m, r.url)));
 
   await app.register(cors, {
     origin: config.appUrls,

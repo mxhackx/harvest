@@ -1,0 +1,42 @@
+# Analyse de sécurité : le code (Semgrep) et les dépendances livrées en production (npm audit).
+# Un signalement fait échouer le contrôle. Faux positif : commentaire « nosemgrep: <règle> » avec la raison.
+name: Sécurité
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+  # chaque lundi : de nouvelles failles sont publiées même quand le code ne change pas
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-latest
+    container: semgrep/semgrep:1.187.0
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: >
+          semgrep scan --error --metrics=off --disable-version-check
+          --config p/javascript --config p/typescript --config p/nodejs --config p/react --config p/nextjs
+          --config p/secrets --config p/github-actions --config p/owasp-top-ten
+          --exclude '*.test.ts' --exclude e2e
+
+  audit:
+    name: Dépendances (npm audit)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: [api, web]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: ${{ matrix.dir }}

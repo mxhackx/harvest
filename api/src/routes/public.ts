@@ -35,6 +35,8 @@ export async function publicRoutes(app: FastifyInstance) {
           to: config.supportEmail,
           subject: `Message depuis la documentation (${body.data.page})`,
           text: `De : ${body.data.email}\nPage : ${body.data.page}\n\n${body.data.message}\n`,
+          // valeurs échappées par esc() ; la règle ne reconnaît pas cette fonction
+          // nosemgrep: javascript.express.security.injection.raw-html-format.raw-html-format
           html: `<p><strong>De :</strong> ${esc(body.data.email)}<br><strong>Page :</strong> ${esc(body.data.page)}</p><div style="white-space:pre-wrap">${esc(body.data.message)}</div>`,
           replyTo: body.data.email,
         },
