@@ -40,9 +40,15 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 
 `/dashboard/ai/workflows` : éditeur de chaînes (React Flow). La table `workflows` stocke le dessin en JSON, validé par `api/src/workflows/graph.ts` (un déclencheur, chaîne linéaire, plafond d'autonomie par action, cahier des charges §12). **Aucun moteur d'exécution pour l'instant.** Test navigateur : `web/e2e/workflows.spec.ts`.
 
-## CMS (interface)
+## CMS
 
-`/cms` : éditeur de sites (`components/cms/`), prévu pour `cms.hivation.tech` (`NEXT_PUBLIC_CMS_URL`, à ajouter aussi à `APP_URLS`). Les sites restent dans le navigateur, sans API pour l’instant. Points d’extension : un nouveau **composant** = un type dans `lib/cms/site.ts`, son rendu dans `preview.tsx` et ses champs dans `inspector.tsx` ; un nouveau **modèle** = une entrée de `TEMPLATES` ; l’**IA** devra produire un objet `Site`, validé avant d’être affiché.
+`/cms` : éditeur de sites façon Figma, prévu pour `cms.hivation.tech` (`NEXT_PUBLIC_CMS_URL`, à ajouter aussi à `APP_URLS`). Les sites restent dans le navigateur, sans API pour l’instant.
+
+- `lib/cms/model.ts` : pages, arbre de nœuds, variables, styles, modèles, contrôles. Un composant importé (React Bits, Bento) ou une IA doit produire ce modèle.
+- `lib/cms/style.ts` : **la seule** traduction propriétés → CSS, partagée par le canevas et l’export ; elle filtre couleurs et liens.
+- `lib/cms/export.ts` : projet Next.js (pages, `/api/contact`, schéma Drizzle), zippé dans le navigateur. Le texte saisi y reste une donnée.
+
+Les composants animés (avec leur propre code et leurs dépendances) demanderont un nouveau type de nœud, rendu sur le canevas et copié dans l’export.
 
 ## E-mails depuis le CRM
 
