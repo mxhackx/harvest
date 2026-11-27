@@ -80,7 +80,7 @@ Images et PDF des leads (50 Mo au plus), dans un bucket Supabase **privé** (`at
 
 ## Composants (registre et marketplace)
 
-`registry/` est un **site statique à part** (projet Vercel avec *Root Directory* = `registry`, domaine `ui.hivation.tech`) : la marketplace et son API (`/r/registry.json`, `/r/<nom>.json`). Un composant est une **donnée** (arbre de nœuds), jamais du code ; uniquement des composants maison ou sous licence MIT (avec leur mention).
+`registry/` est un **site statique à part** (projet Vercel avec *Root Directory* = `registry`, domaine `ui.hivation.tech`) : la marketplace et son API (`/r/registry.json`, `/r/<nom>.json`). Un composant est une **donnée** (arbre de nœuds), jamais du code ; uniquement des composants maison ou sous licence MIT (avec leur mention). La catégorie « shadcn/ui » ([registry/src/shadcn.ts](registry/src/shadcn.ts)) reprend leur allure avec des nœuds, pas leur code React.
 
 - Ajouter un composant : [registry/src/components.ts](registry/src/components.ts), puis `npm run registry:build` dans `web/` et commiter `registry/public` (un test vérifie qu'il est à jour).
 - En local : `npm run registry:dev` dans `web/` (http://localhost:3001).
