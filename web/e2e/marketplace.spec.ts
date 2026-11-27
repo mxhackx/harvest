@@ -14,6 +14,7 @@ test("marketplace : parcourir, ajouter à Hivation, poser dans un site, puis dep
   }
   // le lien « Ajouter à Hivation » vise le CMS de développement en local : ici, celui des tests
   await page.goto("/cms?add=carte-avis");
+  await page.getByRole("button", { name: "Continuer avec Hivation" }).click();
   await page.getByRole("button", { name: "Nouveau site" }).click();
   await page.getByRole("button", { name: "Poser ici" }).click();
   const canvas = page.locator(".studio-canvas");
@@ -24,6 +25,7 @@ test("marketplace : parcourir, ajouter à Hivation, poser dans un site, puis dep
   if (process.env.SHOT3) await page.screenshot({ path: process.env.SHOT3 });
   await page.getByRole("button", { name: "+ Chiffres clés" }).click();
   await expect(canvas.getByText("500+")).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Enregistré");
   await page.reload();
   await expect(page.locator(".studio-canvas").getByText("500+")).toBeVisible();
 

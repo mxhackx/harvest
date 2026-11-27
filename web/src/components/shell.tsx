@@ -95,8 +95,7 @@ const MODULES: Module[] = [
     label: "Sites",
     href: cmsHref("/cms"),
     icon: FormIcon,
-    needs: "company:update",
-    pages: [{ label: "Sites des clients", short: "Sites", href: cmsHref("/cms"), icon: FormIcon }],
+    pages: [{ label: "Mes sites", short: "Sites", href: cmsHref("/cms"), icon: FormIcon }],
   },
   {
     key: "team",

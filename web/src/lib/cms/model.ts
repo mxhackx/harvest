@@ -1,7 +1,7 @@
 /**
  * Modèle d'un site : des pages, chacune faite d'un arbre de cadres et d'éléments, des variables de couleur et des styles
  * de texte. Les composants (React Bits, Bento…) et l'IA produiront ce même objet.
- * Enregistré dans le navigateur tant que l'API du CMS n'existe pas.
+ * Enregistré côté serveur (lib/cms/remote.ts), validé par api/src/cms/site-schema.ts.
  */
 export type NodeType = "frame" | "text" | "button" | "image" | "form";
 export type Font = "sans" | "serif" | "mono" | "rounded";
@@ -174,27 +174,7 @@ export function checkSite(site: Site): Check[] {
   ];
 }
 
-// ---------- Stockage ----------
-const key = (companyId: string) => `hivation.cms2.${companyId}`;
-export function loadSites(companyId: string): Site[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem(key(companyId)) ?? "[]");
-    return Array.isArray(raw) ? raw : [];
-  } catch {
-    return [];
-  }
-}
-/** false quand le navigateur refuse (stockage plein, navigation privée). */
-export function saveSites(companyId: string, sites: Site[]): boolean {
-  try {
-    localStorage.setItem(key(companyId), JSON.stringify(sites));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/** Réduit une photo avant de la garder dans le navigateur. */
+/** Réduit une photo avant de l'enregistrer avec le site. */
 export async function resizeImage(file: File, max = 900): Promise<string> {
   const image = await createImageBitmap(file);
   const k = Math.min(1, max / Math.max(image.width, image.height));

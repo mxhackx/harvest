@@ -11,6 +11,7 @@ import { NodeFields, PageFields, StyleFields } from "./inspector";
 import { LibraryPanel, useCatalog } from "./library-panel";
 import { Gallery } from "./gallery";
 import { parseNode, type Component } from "@/lib/cms/library";
+import type { SaveStatus } from "@/lib/cms/remote";
 
 const DEVICES = { mobile: 390, tablet: 768, desktop: 1180 };
 const DEVICE_LABEL = { mobile: "Mobile", tablet: "Tablette", desktop: "Bureau" };
@@ -27,10 +28,12 @@ const make = (what: string, siteName: string, library: Component[]): Node | null
   return kind === "section" && id in SECTIONS ? SECTIONS[id].build(siteName) : null;
 };
 
-type Props = { site: Site; onChange: (site: Site) => void; onBack: () => void; saved: boolean; /** composant demandé depuis la marketplace */ pending?: string | null; onPendingDone?: () => void };
+const STATUS: Record<SaveStatus, string> = { saved: "Enregistré", saving: "Enregistrement…", error: "Non enregistré : nouvel essai…", conflict: "Modifié ailleurs : rechargez la page" };
+
+type Props = { site: Site; onChange: (site: Site) => void; onBack: () => void; status: SaveStatus; /** composant demandé depuis la marketplace */ pending?: string | null; onPendingDone?: () => void };
 
 /** Éditeur de site, organisé comme Figma : pages et calques à gauche, canevas au centre, propriétés à droite. */
-export function Studio({ site, onChange, onBack, saved, pending, onPendingDone }: Props) {
+export function Studio({ site, onChange, onBack, status, pending, onPendingDone }: Props) {
   const catalog = useCatalog();
   // `key` : des frappes successives dans le même champ ne font qu'une étape d'annulation
   const [history, setHistory] = useState<{ past: Site[]; future: Site[]; key: string }>({ past: [], future: [], key: "" });
@@ -168,7 +171,7 @@ export function Studio({ site, onChange, onBack, saved, pending, onPendingDone }
       <header className="flex h-12 shrink-0 items-center gap-2 border-b border-rule px-3">
         <button type="button" aria-label="Retour à mes sites" onClick={onBack} className={icon}><span className="rotate-90"><ChevronIcon /></span></button>
         <input aria-label="Nom du site" value={site.name} maxLength={60} onChange={(e) => commit({ ...site, name: e.target.value }, "name")} className="h-8 w-40 rounded-control border border-transparent bg-transparent px-2 text-small font-semibold hover:border-border focus:border-accent" />
-        <span className={`truncate text-caption ${saved ? "text-muted" : "text-fail"}`}>{saved ? "Enregistré sur cet appareil" : "Non enregistré : stockage plein"}</span>
+        <span role="status" className={`truncate text-caption ${status === "error" || status === "conflict" ? "text-fail" : "text-muted"}`}>{STATUS[status]}</span>
         <div role="group" aria-label="Taille d’écran" className="mx-auto flex gap-1">
           {(Object.keys(DEVICES) as (keyof typeof DEVICES)[]).map((d) => <button key={d} type="button" aria-pressed={device === d} onClick={() => setDevice(d)} className={tab(device === d)}>{DEVICE_LABEL[d]}</button>)}
         </div>
