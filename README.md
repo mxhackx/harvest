@@ -11,6 +11,30 @@ Prospection et suivi de leads sur le terrain. Deux projets indépendants :
 
 La vision, les modules et les exigences du produit sont dans [docs/cahier-des-charges.md](docs/cahier-des-charges.md). Le plan du module CMS (document de travail) est dans [docs/cahier-des-charges-cms.md](docs/cahier-des-charges-cms.md).
 
+## Variables d'environnement (Doppler)
+
+Les valeurs vivent dans [Doppler](https://www.doppler.com), en deux projets : `hivation-api` et `hivation-web`, chacun avec les configs `dev`, `stg` et `prd`. `doppler.yaml` relie chaque dossier à son projet. Les fichiers `.env` restent possibles pour travailler sans Doppler (les variables de Doppler passent devant).
+
+Première fois :
+
+```bash
+doppler login
+doppler projects create hivation-api
+doppler projects create hivation-web
+doppler setup                                        # à la racine, lit doppler.yaml
+doppler secrets upload api/.env --project hivation-api --config dev
+doppler secrets upload web/.env.local --project hivation-web --config dev
+```
+
+Ensuite : `npm run dev:doppler` dans `api/` et dans `web/` ; `npm run db:migrate:doppler` dans `api/`.
+
+| Projet | Variables |
+| --- | --- |
+| `hivation-api` | `DATABASE_URL`, `APP_URLS`, `API_URL`, `PORT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `RESEND_API_KEY`, `MAIL_FROM`, `SUPPORT_EMAIL`, `ROUTING_URL`, `GEOCODING`, `GEOCODER_URL` |
+| `hivation-web` | `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_DOCS_URL`, `NEXT_PUBLIC_CMS_URL`, `API_PROXY_TARGET` |
+
+**Production.** Remplissez `prd` avec les valeurs **de production** relevées sur Render et Vercel (jamais avec vos fichiers locaux), puis activez les synchronisations Doppler → Render (`hivation-api`) et Doppler → Vercel (`hivation-web`). Comparez les listes avant d'activer : une variable oubliée dans Doppler peut manquer en ligne. Les `NEXT_PUBLIC_*` sont lues à la compilation (redéployer après changement) et visibles dans le navigateur : n'y mettez aucun secret.
+
 ## Démarrer
 
 ```bash
