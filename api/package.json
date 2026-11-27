@@ -6,13 +6,15 @@
   "scripts": {
     "test": "vitest run",
     "dev": "tsx watch src/server.ts",
+    "dev:doppler": "doppler run -- npm run dev",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "typecheck": "tsc --noEmit",
-    "start:prod": "node dist/migrate.js && node dist/server.js"
+    "start:prod": "node dist/migrate.js && node dist/server.js",
+    "db:migrate:doppler": "doppler run -- npm run db:migrate"
   },
   "keywords": [],
   "author": "",

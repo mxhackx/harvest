@@ -11,6 +11,30 @@ Prospection et suivi de leads sur le terrain. Deux projets indépendants :
 
 La vision, les modules et les exigences du produit sont dans [docs/cahier-des-charges.md](docs/cahier-des-charges.md). Le plan du module CMS (document de travail) est dans [docs/cahier-des-charges-cms.md](docs/cahier-des-charges-cms.md).
 
+## Variables d'environnement (Doppler)
+
+Les valeurs vivent dans [Doppler](https://www.doppler.com), en deux projets : `hivation-api` et `hivation-web`, chacun avec les configs `dev`, `stg` et `prd`. `doppler.yaml` relie chaque dossier à son projet. Les fichiers `.env` restent possibles pour travailler sans Doppler (les variables de Doppler passent devant).
+
+Première fois :
+
+```bash
+doppler login
+doppler projects create hivation-api
+doppler projects create hivation-web
+doppler setup                                        # à la racine, lit doppler.yaml
+doppler secrets upload api/.env --project hivation-api --config dev
+doppler secrets upload web/.env.local --project hivation-web --config dev
+```
+
+Ensuite : `npm run dev:doppler` dans `api/` et dans `web/` ; `npm run db:migrate:doppler` dans `api/`.
+
+| Projet | Variables |
+| --- | --- |
+| `hivation-api` | `DATABASE_URL`, `APP_URLS`, `API_URL`, `PORT`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `RESEND_API_KEY`, `MAIL_FROM`, `SUPPORT_EMAIL`, `ROUTING_URL`, `GEOCODING`, `GEOCODER_URL` |
+| `hivation-web` | `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_DOCS_URL`, `NEXT_PUBLIC_CMS_URL`, `API_PROXY_TARGET` |
+
+**Production.** Remplissez `prd` avec les valeurs **de production** relevées sur Render et Vercel (jamais avec vos fichiers locaux), puis activez les synchronisations Doppler → Render (`hivation-api`) et Doppler → Vercel (`hivation-web`). Comparez les listes avant d'activer : une variable oubliée dans Doppler peut manquer en ligne. Les `NEXT_PUBLIC_*` sont lues à la compilation (redéployer après changement) et visibles dans le navigateur : n'y mettez aucun secret.
+
 ## Démarrer
 
 ```bash
@@ -40,9 +64,15 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 
 `/dashboard/ai/workflows` : éditeur de chaînes (React Flow). La table `workflows` stocke le dessin en JSON, validé par `api/src/workflows/graph.ts` (un déclencheur, chaîne linéaire, plafond d'autonomie par action, cahier des charges §12). **Aucun moteur d'exécution pour l'instant.** Test navigateur : `web/e2e/workflows.spec.ts`.
 
-## CMS (interface)
+## CMS
 
-`/cms` : éditeur de sites (`components/cms/`), prévu pour `cms.hivation.tech` (`NEXT_PUBLIC_CMS_URL`, à ajouter aussi à `APP_URLS`). Les sites restent dans le navigateur, sans API pour l’instant. Points d’extension : un nouveau **composant** = un type dans `lib/cms/site.ts`, son rendu dans `preview.tsx` et ses champs dans `inspector.tsx` ; un nouveau **modèle** = une entrée de `TEMPLATES` ; l’**IA** devra produire un objet `Site`, validé avant d’être affiché.
+`/cms` : éditeur de sites façon Figma, prévu pour `cms.hivation.tech` (`NEXT_PUBLIC_CMS_URL`, à ajouter aussi à `APP_URLS`). Les sites restent dans le navigateur, sans API pour l’instant.
+
+- `lib/cms/model.ts` : pages, arbre de nœuds, variables, styles, modèles, contrôles. Un composant importé (React Bits, Bento) ou une IA doit produire ce modèle.
+- `lib/cms/style.ts` : **la seule** traduction propriétés → CSS, partagée par le canevas et l’export ; elle filtre couleurs et liens.
+- `lib/cms/export.ts` : projet Next.js (pages, `/api/contact`, schéma Drizzle), zippé dans le navigateur. Le texte saisi y reste une donnée.
+
+Les composants animés (avec leur propre code et leurs dépendances) demanderont un nouveau type de nœud, rendu sur le canevas et copié dans l’export.
 
 ## E-mails depuis le CRM
 
