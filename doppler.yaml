@@ -1,0 +1,9 @@
+# Quel projet Doppler pour quel dossier. « doppler setup », lancé à la racine, lit ce fichier. Aucun secret ici.
+# Deux projets : le web ne doit jamais recevoir les secrets de l'API.
+setup:
+  - project: hivation-api
+    config: dev
+    path: api/
+  - project: hivation-web
+    config: dev
+    path: web/
