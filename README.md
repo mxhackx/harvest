@@ -13,7 +13,7 @@ La vision, les modules et les exigences du produit sont dans [docs/cahier-des-ch
 
 ## Variables d'environnement (Doppler)
 
-Les valeurs vivent dans [Doppler](https://www.doppler.com), en deux projets : `hivation-api` et `hivation-web`, chacun avec les configs `dev`, `stg` et `prd`. `doppler.yaml` relie chaque dossier à son projet. Les fichiers `.env` restent possibles pour travailler sans Doppler (les variables de Doppler passent devant).
+Les valeurs vivent dans [Doppler](https://www.doppler.com), en deux projets : `hivation-api` et `hivation-web`, chacun avec les configs `dev`, `stg` et `prd`. `doppler.yaml` relie chaque dossier à son projet. Aucun fichier `.env` n'est nécessaire. Toutes les variables, obligatoires et facultatives, sont décrites dans [api/.env.example](api/.env.example) et [web/.env.example](web/.env.example). Sans accès à Doppler, copiez ces fichiers en `api/.env` et `web/.env.local` (les variables de Doppler passent devant).
 
 Première fois :
 
@@ -22,11 +22,10 @@ doppler login
 doppler projects create hivation-api
 doppler projects create hivation-web
 doppler setup                                        # à la racine, lit doppler.yaml
-doppler secrets upload api/.env --project hivation-api --config dev
-doppler secrets upload web/.env.local --project hivation-web --config dev
+# les valeurs se saisissent dans le tableau de bord Doppler (jamais dans Git)
 ```
 
-Ensuite : `npm run dev:doppler` dans `api/` et dans `web/` ; `npm run db:migrate:doppler` dans `api/`.
+Ensuite : `npm run dev` dans `api/` et dans `web/` (il passe par Doppler ; `npm run dev:local` s’en passe et lit les fichiers `.env`) ; `npm run db:migrate:doppler` dans `api/`.
 
 | Projet | Variables |
 | --- | --- |
@@ -38,9 +37,10 @@ Ensuite : `npm run dev:doppler` dans `api/` et dans `web/` ; `npm run db:migrate
 ## Démarrer
 
 ```bash
-scripts/db-local.sh start      # Postgres local, port 54329
-cd api && npm run dev          # http://localhost:4000
-cd web && npm run dev          # http://localhost:3000
+scripts/db-local.sh start                      # Postgres local, port 54329
+cd api && npm run db:migrate:doppler           # applique les migrations
+cd api && npm run dev                  # http://localhost:4000
+cd web && npm run dev                  # http://localhost:3000
 ```
 
 ## Adresses du site
