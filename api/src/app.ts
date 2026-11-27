@@ -29,6 +29,8 @@ import { ticketRoutes } from "./routes/tickets.js";
 import { kbRoutes } from "./routes/kb.js";
 import { workflowRoutes } from "./routes/workflows.js";
 import { attachmentRoutes } from "./routes/attachments.js";
+import { cmsRoutes } from "./routes/cms.js";
+import { checkOrigin } from "./plugins/origin.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -61,6 +63,7 @@ export async function buildApp(opts: { logger?: boolean; onRoute?: (method: stri
 
   app.decorateRequest("user", null);
   app.decorateRequest("member", null);
+  app.addHook("onRequest", checkOrigin);
   app.addHook("onRequest", loadUser);
   app.addHook("onResponse", auditHook);
 
@@ -101,5 +104,6 @@ export async function buildApp(opts: { logger?: boolean; onRoute?: (method: stri
   await app.register(kbRoutes);
   await app.register(workflowRoutes);
   await app.register(attachmentRoutes);
+  await app.register(cmsRoutes);
   return app;
 }

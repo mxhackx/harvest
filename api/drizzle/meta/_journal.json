@@ -281,6 +281,13 @@
       "when": 1795790200457,
       "tag": "0039_attachments",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1795797377442,
+      "tag": "0040_cms_accounts",
+      "breakpoints": true
     }
   ]
 }

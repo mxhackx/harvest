@@ -868,3 +868,27 @@ export const attachments = pgTable(
   },
   (t) => [index("attachments_lead").on(t.leadId)],
 );
+
+/** Espace « Sites » d'un compte : le CMS est un produit à part, ouvert à la demande et indépendant du CRM. */
+export const cmsAccounts = pgTable("cms_accounts", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+/** Un site composé dans le CMS. `version` empêche un onglet d'écraser le travail d'un autre. */
+export const cmsSites = pgTable(
+  "cms_sites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ownerId: uuid("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    data: jsonb("data").notNull(),
+    version: integer("version").notNull().default(1),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("cms_sites_owner").on(t.ownerId)],
+);

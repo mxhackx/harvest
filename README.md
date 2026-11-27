@@ -66,7 +66,9 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 
 ## CMS
 
-`/cms` : éditeur de sites façon Figma, prévu pour `cms.hivation.tech` (`NEXT_PUBLIC_CMS_URL`, à ajouter aussi à `APP_URLS`). Les sites restent dans le navigateur, sans API pour l’instant.
+`/cms` : éditeur de sites façon Figma, sur `cms.hivation.tech` (`NEXT_PUBLIC_CMS_URL`, à mettre aussi dans `APP_URLS`). **Produit séparé du CRM**, même compte : `cms_accounts` (espace ouvert à la demande) et `cms_sites` (un propriétaire, `version` contre l'écrasement). La forme d'un site est vérifiée à chaque enregistrement ([api/src/cms/site-schema.ts](api/src/cms/site-schema.ts)). Publication prévue sur `*.sites.hivation.tech`.
+
+**Origine des écritures.** L'API refuse toute requête de modification venant d'un navigateur dont l'adresse n'est pas dans `APP_URLS` ([api/src/plugins/origin.ts](api/src/plugins/origin.ts)) : les sites publiés, sur un sous-domaine, ne pourront pas agir au nom d'un utilisateur. **Ajoutez à `APP_URLS` chaque adresse web de la plateforme**, sinon ses actions seront refusées ; n'y mettez jamais une adresse de site client.
 
 - `lib/cms/model.ts` : pages, arbre de nœuds, variables, styles, modèles, contrôles. Un composant importé (React Bits, Bento) ou une IA doit produire ce modèle.
 - `lib/cms/style.ts` : **la seule** traduction propriétés → CSS, partagée par le canevas et l’export ; elle filtre couleurs et liens.
