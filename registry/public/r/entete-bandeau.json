@@ -1,0 +1,54 @@
+{
+ "name": "entete-bandeau",
+ "title": "En-tête sur fond coloré",
+ "category": "En-têtes",
+ "description": "Un bloc à la couleur principale, très visible.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Bandeau",
+  "props": {
+   "direction": "column",
+   "gap": 14,
+   "align": "center",
+   "textAlign": "center",
+   "background": "$accent",
+   "color": "$fond",
+   "paddingY": 56,
+   "paddingX": 24
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Une offre à ne pas manquer",
+    "textStyle": "h1"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Expliquez-la en une phrase.",
+    "textStyle": "body"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "background": "$fond",
+     "color": "$accent",
+     "radius": 12,
+     "paddingY": 12,
+     "paddingX": 22,
+     "fontWeight": 600
+    },
+    "text": "J'en profite",
+    "href": "https://wa.me/"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

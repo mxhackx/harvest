@@ -1,0 +1,61 @@
+{
+ "name": "shadcn-etat-vide",
+ "title": "Empty",
+ "category": "shadcn/ui",
+ "description": "Quand il n'y a rien à montrer.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Vide",
+  "props": {
+   "direction": "column",
+   "gap": 10,
+   "radius": 12,
+   "borderWidth": 1,
+   "borderColor": "$texte/15",
+   "paddingY": 40,
+   "paddingX": 24,
+   "align": "center",
+   "textAlign": "center"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Aucun événement prévu",
+    "textStyle": "label"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.65,
+     "fontSize": 14
+    },
+    "text": "Revenez bientôt, ou écrivez-nous.",
+    "textStyle": "body"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 16,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "color": "$texte",
+     "borderColor": "$texte/15"
+    },
+    "text": "Nous écrire",
+    "href": "https://wa.me/"
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

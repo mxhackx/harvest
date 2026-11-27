@@ -1,0 +1,77 @@
+{
+ "name": "galerie-vedette",
+ "title": "Photo en vedette",
+ "category": "Galeries",
+ "description": "Une grande photo et trois petites dessous.",
+ "atom": "Galerie",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Vedette",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "paddingY": 16,
+   "paddingX": 16
+  },
+  "children": [
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 240
+    },
+    "src": "",
+    "alt": "Photo principale"
+   },
+   {
+    "type": "frame",
+    "name": "Vignettes",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "columns": 3
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 90
+      },
+      "src": "",
+      "alt": "Détail 1"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 90
+      },
+      "src": "",
+      "alt": "Détail 2"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 90
+      },
+      "src": "",
+      "alt": "Détail 3"
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

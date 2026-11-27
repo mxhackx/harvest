@@ -1,0 +1,67 @@
+{
+ "name": "galerie-bande",
+ "title": "Bande de photos",
+ "category": "Galeries",
+ "description": "Quatre petites photos sur une ligne.",
+ "atom": "Galerie",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Bande",
+  "props": {
+   "direction": "column",
+   "gap": 6,
+   "columns": 4,
+   "paddingY": 8,
+   "paddingX": 8
+  },
+  "children": [
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 80
+    },
+    "src": "",
+    "alt": "Photo 1"
+   },
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 80
+    },
+    "src": "",
+    "alt": "Photo 2"
+   },
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 80
+    },
+    "src": "",
+    "alt": "Photo 3"
+   },
+   {
+    "type": "image",
+    "name": "Image",
+    "props": {
+     "fit": "cover",
+     "radius": 12,
+     "height": 80
+    },
+    "src": "",
+    "alt": "Photo 4"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

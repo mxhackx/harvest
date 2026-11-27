@@ -19,6 +19,7 @@ describe("registre de composants", () => {
     const items = parseCatalog(JSON.parse(files["r/registry.json"]));
     expect(items.length).toBeGreaterThanOrEqual(15);
     expect(new Set(items.map((i) => i.name)).size).toBe(items.length);
+    expect(new Set(items.map((i) => i.title)).size).toBe(items.length);
     const first = walk(parseNode(items[3].node)!).map((n) => n.id);
     const again = walk(parseNode(items[3].node)!).map((n) => n.id);
     expect(first.some((id) => again.includes(id))).toBe(false);

@@ -1,0 +1,82 @@
+{
+ "name": "entete-centre",
+ "title": "En-tête centré",
+ "category": "En-têtes",
+ "description": "Grand titre, accroche et deux actions.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "En-tête",
+  "props": {
+   "direction": "column",
+   "gap": 16,
+   "align": "center",
+   "textAlign": "center",
+   "paddingY": 64,
+   "paddingX": 24
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Le nom qui donne envie",
+    "textStyle": "h1"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.75
+    },
+    "text": "Une accroche courte qui dit ce que vous proposez.",
+    "textStyle": "body"
+   },
+   {
+    "type": "frame",
+    "name": "Actions",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "stack": true,
+     "justify": "center"
+    },
+    "children": [
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "Réserver",
+      "href": "#contact"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "color": "$accent",
+       "borderColor": "$accent",
+       "borderWidth": 2,
+       "radius": 12,
+       "paddingY": 10,
+       "paddingX": 20,
+       "fontWeight": 600
+      },
+      "text": "Voir la carte",
+      "href": "/carte"
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

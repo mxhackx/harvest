@@ -1,0 +1,105 @@
+{
+ "name": "shadcn-carte",
+ "title": "Card",
+ "category": "shadcn/ui",
+ "description": "Titre, description, contenu et actions.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Card",
+  "props": {
+   "direction": "column",
+   "gap": 16,
+   "radius": 12,
+   "borderWidth": 1,
+   "borderColor": "$texte/15",
+   "paddingY": 24,
+   "paddingX": 24
+  },
+  "children": [
+   {
+    "type": "frame",
+    "name": "En-tête",
+    "props": {
+     "direction": "column",
+     "gap": 4
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Titre de la carte",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Une courte description.",
+      "textStyle": "body"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Le contenu principal de la carte.",
+    "textStyle": "body"
+   },
+   {
+    "type": "frame",
+    "name": "Pied",
+    "props": {
+     "direction": "row",
+     "gap": 8,
+     "align": "center",
+     "justify": "flex-end"
+    },
+    "children": [
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "radius": 8,
+       "paddingY": 9,
+       "paddingX": 16,
+       "fontSize": 14,
+       "fontWeight": 500,
+       "borderWidth": 1,
+       "color": "$texte",
+       "borderColor": "$texte/15"
+      },
+      "text": "Annuler",
+      "href": "#"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "radius": 8,
+       "paddingY": 9,
+       "paddingX": 16,
+       "fontSize": 14,
+       "fontWeight": 500,
+       "borderWidth": 1,
+       "background": "$texte",
+       "color": "$fond",
+       "borderColor": "$texte"
+      },
+      "text": "Confirmer",
+      "href": "#"
+     }
+    ]
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

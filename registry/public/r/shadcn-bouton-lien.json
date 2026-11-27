@@ -1,0 +1,27 @@
+{
+ "name": "shadcn-bouton-lien",
+ "title": "Button · link",
+ "category": "shadcn/ui",
+ "description": "Un lien présenté comme un bouton.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "button",
+  "name": "Bouton",
+  "props": {
+   "radius": 8,
+   "paddingY": 9,
+   "paddingX": 0,
+   "fontSize": 14,
+   "fontWeight": 500,
+   "borderWidth": 1,
+   "color": "$accent",
+   "borderColor": "$texte/0"
+  },
+  "text": "Voir les détails →",
+  "href": "#"
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

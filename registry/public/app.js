@@ -19,4 +19,3 @@ for (const b of document.querySelectorAll("[data-copy]"))
     b.textContent = "Copié";
     setTimeout(() => (b.textContent = "Copier le JSON"), 1500);
   });
-if (location.hostname === "localhost") for (const a of document.querySelectorAll("[data-add]")) a.href = `http://localhost:3000/cms?add=${a.dataset.add}`;

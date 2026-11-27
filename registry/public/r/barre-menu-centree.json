@@ -1,0 +1,87 @@
+{
+ "name": "barre-menu-centree",
+ "title": "Menu centré",
+ "category": "Navigation",
+ "description": "Le nom au-dessus, les liens centrés dessous.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Menu centré",
+  "props": {
+   "direction": "column",
+   "gap": 6,
+   "align": "center",
+   "textAlign": "center",
+   "paddingY": 18,
+   "paddingX": 20
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Nom du commerce",
+    "textStyle": "h2"
+   },
+   {
+    "type": "frame",
+    "name": "Liens",
+    "props": {
+     "direction": "row",
+     "gap": 4,
+     "align": "center",
+     "justify": "center"
+    },
+    "children": [
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "paddingY": 8,
+       "paddingX": 10,
+       "color": "$texte"
+      },
+      "text": "Accueil",
+      "href": "/"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "paddingY": 8,
+       "paddingX": 10,
+       "color": "$texte"
+      },
+      "text": "La carte",
+      "href": "/carte"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "paddingY": 8,
+       "paddingX": 10,
+       "color": "$texte"
+      },
+      "text": "Galerie",
+      "href": "#galerie"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "paddingY": 8,
+       "paddingX": 10,
+       "color": "$texte"
+      },
+      "text": "Contact",
+      "href": "#contact"
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

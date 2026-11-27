@@ -1,0 +1,66 @@
+{
+ "name": "entete-sobre",
+ "title": "En-tête sobre",
+ "category": "En-têtes",
+ "description": "Aligné à gauche, avec une étiquette.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Sobre",
+  "props": {
+   "direction": "column",
+   "gap": 12,
+   "align": "flex-start",
+   "paddingY": 48,
+   "paddingX": 24
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "color": "$accent",
+     "fontWeight": 700,
+     "fontSize": 13,
+     "letterSpacing": 2
+    },
+    "text": "COTONOU",
+    "textStyle": "body"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Un titre simple et clair",
+    "textStyle": "h1"
+   },
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "opacity": 0.75
+    },
+    "text": "Pour les activités qui veulent aller droit au but.",
+    "textStyle": "body"
+   },
+   {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "color": "$accent",
+     "borderColor": "$accent",
+     "borderWidth": 2,
+     "radius": 12,
+     "paddingY": 10,
+     "paddingX": 20,
+     "fontWeight": 600
+    },
+    "text": "En savoir plus",
+    "href": "#"
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

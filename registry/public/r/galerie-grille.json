@@ -1,0 +1,106 @@
+{
+ "name": "galerie-grille",
+ "title": "Galerie en grille",
+ "category": "Galeries",
+ "description": "Six photos de même taille.",
+ "atom": "Galerie",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Galerie",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "paddingY": 24,
+   "paddingX": 20
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {},
+    "text": "Galerie",
+    "textStyle": "h2"
+   },
+   {
+    "type": "frame",
+    "name": "Photos",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "columns": 3
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 110
+      },
+      "src": "",
+      "alt": "Photo 1"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 110
+      },
+      "src": "",
+      "alt": "Photo 2"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 110
+      },
+      "src": "",
+      "alt": "Photo 3"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 110
+      },
+      "src": "",
+      "alt": "Photo 4"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 110
+      },
+      "src": "",
+      "alt": "Photo 5"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 110
+      },
+      "src": "",
+      "alt": "Photo 6"
+     }
+    ]
+   }
+  ]
+ },
+ "license": "Hivation",
+ "author": "Hivation"
+}

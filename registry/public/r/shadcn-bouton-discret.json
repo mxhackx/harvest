@@ -1,0 +1,27 @@
+{
+ "name": "shadcn-bouton-discret",
+ "title": "Button · ghost",
+ "category": "shadcn/ui",
+ "description": "Bouton sans fond ni contour.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "button",
+  "name": "Bouton",
+  "props": {
+   "radius": 8,
+   "paddingY": 9,
+   "paddingX": 16,
+   "fontSize": 14,
+   "fontWeight": 500,
+   "borderWidth": 1,
+   "color": "$texte",
+   "borderColor": "$texte/0"
+  },
+  "text": "Plus tard",
+  "href": "#"
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}

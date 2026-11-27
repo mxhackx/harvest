@@ -3,6 +3,1028 @@
  "homepage": "https://ui.hivation.tech",
  "items": [
   {
+   "name": "shadcn-bouton",
+   "title": "Button",
+   "category": "shadcn/ui",
+   "description": "Bouton principal, plein.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 16,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "background": "$texte",
+     "color": "$fond",
+     "borderColor": "$texte"
+    },
+    "text": "Continuer",
+    "href": "#"
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-bouton-secondaire",
+   "title": "Button · secondary",
+   "category": "shadcn/ui",
+   "description": "Bouton secondaire, fond atténué.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 16,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "background": "$texte/10",
+     "color": "$texte",
+     "borderColor": "$texte/10"
+    },
+    "text": "Annuler",
+    "href": "#"
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-bouton-contour",
+   "title": "Button · outline",
+   "category": "shadcn/ui",
+   "description": "Bouton à contour fin.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 16,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "color": "$texte",
+     "borderColor": "$texte/15"
+    },
+    "text": "En savoir plus",
+    "href": "#"
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-bouton-discret",
+   "title": "Button · ghost",
+   "category": "shadcn/ui",
+   "description": "Bouton sans fond ni contour.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 16,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "color": "$texte",
+     "borderColor": "$texte/0"
+    },
+    "text": "Plus tard",
+    "href": "#"
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-bouton-destructif",
+   "title": "Button · destructive",
+   "category": "shadcn/ui",
+   "description": "Bouton pour une action à risque.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 16,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "background": "#dc2626",
+     "color": "#ffffff",
+     "borderColor": "#dc2626"
+    },
+    "text": "Annuler la réservation",
+    "href": "#"
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-bouton-lien",
+   "title": "Button · link",
+   "category": "shadcn/ui",
+   "description": "Un lien présenté comme un bouton.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "button",
+    "name": "Bouton",
+    "props": {
+     "radius": 8,
+     "paddingY": 9,
+     "paddingX": 0,
+     "fontSize": 14,
+     "fontWeight": 500,
+     "borderWidth": 1,
+     "color": "$accent",
+     "borderColor": "$texte/0"
+    },
+    "text": "Voir les détails →",
+    "href": "#"
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-badge",
+   "title": "Badge",
+   "category": "shadcn/ui",
+   "description": "Étiquette pleine.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Badge",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "align": "flex-start"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "radius": 99,
+       "paddingY": 2,
+       "paddingX": 10,
+       "fontSize": 12,
+       "fontWeight": 600,
+       "borderWidth": 1,
+       "background": "$texte",
+       "color": "$fond",
+       "borderColor": "$texte"
+      },
+      "text": "Nouveau",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-badge-contour",
+   "title": "Badge · outline",
+   "category": "shadcn/ui",
+   "description": "Étiquette à contour.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Badge",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "align": "flex-start"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "radius": 99,
+       "paddingY": 2,
+       "paddingX": 10,
+       "fontSize": 12,
+       "fontWeight": 600,
+       "borderWidth": 1,
+       "borderColor": "$texte/15"
+      },
+      "text": "Disponible",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-carte",
+   "title": "Card",
+   "category": "shadcn/ui",
+   "description": "Titre, description, contenu et actions.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Card",
+    "props": {
+     "direction": "column",
+     "gap": 16,
+     "radius": 12,
+     "borderWidth": 1,
+     "borderColor": "$texte/15",
+     "paddingY": 24,
+     "paddingX": 24
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "En-tête",
+      "props": {
+       "direction": "column",
+       "gap": 4
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Titre de la carte",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.65,
+         "fontSize": 14
+        },
+        "text": "Une courte description.",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Le contenu principal de la carte.",
+      "textStyle": "body"
+     },
+     {
+      "type": "frame",
+      "name": "Pied",
+      "props": {
+       "direction": "row",
+       "gap": 8,
+       "align": "center",
+       "justify": "flex-end"
+      },
+      "children": [
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "radius": 8,
+         "paddingY": 9,
+         "paddingX": 16,
+         "fontSize": 14,
+         "fontWeight": 500,
+         "borderWidth": 1,
+         "color": "$texte",
+         "borderColor": "$texte/15"
+        },
+        "text": "Annuler",
+        "href": "#"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "radius": 8,
+         "paddingY": 9,
+         "paddingX": 16,
+         "fontSize": 14,
+         "fontWeight": 500,
+         "borderWidth": 1,
+         "background": "$texte",
+         "color": "$fond",
+         "borderColor": "$texte"
+        },
+        "text": "Confirmer",
+        "href": "#"
+       }
+      ]
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-carte-statistique",
+   "title": "Card · statistique",
+   "category": "shadcn/ui",
+   "description": "Un chiffre et son évolution.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Statistique",
+    "props": {
+     "direction": "column",
+     "gap": 4,
+     "radius": 12,
+     "borderWidth": 1,
+     "borderColor": "$texte/15",
+     "paddingY": 24,
+     "paddingX": 24
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Réservations ce mois",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "128",
+      "textStyle": "h2"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "+ 12 % par rapport au mois dernier",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-alerte",
+   "title": "Alert",
+   "category": "shadcn/ui",
+   "description": "Un message d'information.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Alert",
+    "props": {
+     "direction": "column",
+     "gap": 4,
+     "radius": 12,
+     "borderWidth": 1,
+     "borderColor": "$texte/15",
+     "paddingY": 14,
+     "paddingX": 16
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Bon à savoir",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Réservation conseillée le week-end.",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-alerte-destructive",
+   "title": "Alert · destructive",
+   "category": "shadcn/ui",
+   "description": "Un avertissement.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Alert",
+    "props": {
+     "direction": "column",
+     "gap": 4,
+     "radius": 12,
+     "borderWidth": 1,
+     "borderColor": "#dc2626",
+     "paddingY": 14,
+     "paddingX": 16,
+     "color": "#dc2626"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Fermeture exceptionnelle",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "fontSize": 14
+      },
+      "text": "Le commerce sera fermé ce lundi.",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-avatar",
+   "title": "Avatar",
+   "category": "shadcn/ui",
+   "description": "Portrait rond avec nom et rôle.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Avatar",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center"
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "height": 44,
+       "maxWidth": 44,
+       "radius": 99,
+       "fit": "cover"
+      },
+      "src": "",
+      "alt": ""
+     },
+     {
+      "type": "frame",
+      "name": "Identité",
+      "props": {
+       "direction": "column",
+       "gap": 0
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Prénom Nom",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.65,
+         "fontSize": 14
+        },
+        "text": "Responsable",
+        "textStyle": "body"
+       }
+      ]
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-separateur",
+   "title": "Separator",
+   "category": "shadcn/ui",
+   "description": "Un trait fin entre deux parties.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Séparation",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "paddingY": 12
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "Séparateur",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "height": 1,
+       "background": "$texte/15"
+      },
+      "children": []
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-tableau",
+   "title": "Table",
+   "category": "shadcn/ui",
+   "description": "Des lignes et des colonnes simples.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Table",
+    "props": {
+     "direction": "column",
+     "gap": 0,
+     "radius": 12,
+     "borderWidth": 1,
+     "borderColor": "$texte/15",
+     "paddingY": 8,
+     "paddingX": 16
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "Ligne",
+      "props": {
+       "direction": "row",
+       "gap": 8,
+       "align": "center",
+       "justify": "space-between",
+       "paddingY": 10
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.65,
+         "fontSize": 14
+        },
+        "text": "Formule",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.65,
+         "fontSize": 14
+        },
+        "text": "Prix",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Séparateur",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "height": 1,
+       "background": "$texte/15"
+      },
+      "children": []
+     },
+     {
+      "type": "frame",
+      "name": "Ligne",
+      "props": {
+       "direction": "row",
+       "gap": 8,
+       "align": "center",
+       "justify": "space-between",
+       "paddingY": 10
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Essentiel",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "fontWeight": 600
+        },
+        "text": "5 000 F",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Séparateur",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "height": 1,
+       "background": "$texte/15"
+      },
+      "children": []
+     },
+     {
+      "type": "frame",
+      "name": "Ligne",
+      "props": {
+       "direction": "row",
+       "gap": 8,
+       "align": "center",
+       "justify": "space-between",
+       "paddingY": 10
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Confort",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "fontWeight": 600
+        },
+        "text": "10 000 F",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Séparateur",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "height": 1,
+       "background": "$texte/15"
+      },
+      "children": []
+     },
+     {
+      "type": "frame",
+      "name": "Ligne",
+      "props": {
+       "direction": "row",
+       "gap": 8,
+       "align": "center",
+       "justify": "space-between",
+       "paddingY": 10
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Premium",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "fontWeight": 600
+        },
+        "text": "20 000 F",
+        "textStyle": "body"
+       }
+      ]
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-fil-ariane",
+   "title": "Breadcrumb",
+   "category": "shadcn/ui",
+   "description": "Le chemin jusqu'à la page.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Fil d'Ariane",
+    "props": {
+     "direction": "row",
+     "gap": 4,
+     "align": "center"
+    },
+    "children": [
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "radius": 8,
+       "paddingY": 9,
+       "paddingX": 16,
+       "fontSize": 14,
+       "fontWeight": 500,
+       "borderWidth": 1,
+       "color": "$texte",
+       "borderColor": "$texte/0"
+      },
+      "text": "Accueil",
+      "href": "/"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "›",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "radius": 8,
+       "paddingY": 9,
+       "paddingX": 16,
+       "fontSize": 14,
+       "fontWeight": 500,
+       "borderWidth": 1,
+       "color": "$texte",
+       "borderColor": "$texte/0"
+      },
+      "text": "La carte",
+      "href": "/carte"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "› Desserts",
+      "textStyle": "body"
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-etat-vide",
+   "title": "Empty",
+   "category": "shadcn/ui",
+   "description": "Quand il n'y a rien à montrer.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Vide",
+    "props": {
+     "direction": "column",
+     "gap": 10,
+     "radius": 12,
+     "borderWidth": 1,
+     "borderColor": "$texte/15",
+     "paddingY": 40,
+     "paddingX": 24,
+     "align": "center",
+     "textAlign": "center"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Aucun événement prévu",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.65,
+       "fontSize": 14
+      },
+      "text": "Revenez bientôt, ou écrivez-nous.",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "radius": 8,
+       "paddingY": 9,
+       "paddingX": 16,
+       "fontSize": 14,
+       "fontWeight": 500,
+       "borderWidth": 1,
+       "color": "$texte",
+       "borderColor": "$texte/15"
+      },
+      "text": "Nous écrire",
+      "href": "https://wa.me/"
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
+   "name": "shadcn-faq",
+   "title": "FAQ (cartes)",
+   "category": "shadcn/ui",
+   "description": "Questions et réponses, toutes visibles.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "FAQ",
+    "props": {
+     "direction": "column",
+     "gap": 0,
+     "paddingY": 8,
+     "paddingX": 16
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "Question",
+      "props": {
+       "direction": "column",
+       "gap": 4,
+       "paddingY": 14
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Faut-il réserver ?",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.65,
+         "fontSize": 14
+        },
+        "text": "C'est conseillé le week-end.",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Séparateur",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "height": 1,
+       "background": "$texte/15"
+      },
+      "children": []
+     },
+     {
+      "type": "frame",
+      "name": "Question",
+      "props": {
+       "direction": "column",
+       "gap": 4,
+       "paddingY": 14
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Quels moyens de paiement ?",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.65,
+         "fontSize": 14
+        },
+        "text": "Espèces et Mobile Money.",
+        "textStyle": "body"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Séparateur",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "height": 1,
+       "background": "$texte/15"
+      },
+      "children": []
+     },
+     {
+      "type": "frame",
+      "name": "Question",
+      "props": {
+       "direction": "column",
+       "gap": 4,
+       "paddingY": 14
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Livrez-vous ?",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.65,
+         "fontSize": 14
+        },
+        "text": "Oui, dans un rayon de 5 km.",
+        "textStyle": "body"
+       }
+      ]
+     }
+    ]
+   },
+   "origin": "shadcn/ui",
+   "license": "MIT",
+   "author": "adapté de shadcn/ui"
+  },
+  {
    "name": "bouton-whatsapp",
    "title": "Bouton WhatsApp",
    "category": "Actions",
@@ -129,7 +1151,7 @@
   },
   {
    "name": "badge",
-   "title": "Badge",
+   "title": "Étiquette « Nouveau »",
    "category": "Étiquettes",
    "description": "Une courte étiquette arrondie.",
    "atom": "Page vitrine",
@@ -972,6 +1994,1579 @@
         "textStyle": "body"
        }
       ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "barre-menu-centree",
+   "title": "Menu centré",
+   "category": "Navigation",
+   "description": "Le nom au-dessus, les liens centrés dessous.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Menu centré",
+    "props": {
+     "direction": "column",
+     "gap": 6,
+     "align": "center",
+     "textAlign": "center",
+     "paddingY": 18,
+     "paddingX": 20
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nom du commerce",
+      "textStyle": "h2"
+     },
+     {
+      "type": "frame",
+      "name": "Liens",
+      "props": {
+       "direction": "row",
+       "gap": 4,
+       "align": "center",
+       "justify": "center"
+      },
+      "children": [
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$texte"
+        },
+        "text": "Accueil",
+        "href": "/"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$texte"
+        },
+        "text": "La carte",
+        "href": "/carte"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$texte"
+        },
+        "text": "Galerie",
+        "href": "#galerie"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$texte"
+        },
+        "text": "Contact",
+        "href": "#contact"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "barre-menu-appel",
+   "title": "Menu avec bouton d'appel",
+   "category": "Navigation",
+   "description": "Compact, pensé pour être appelé depuis un téléphone.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Menu appel",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "justify": "space-between",
+     "paddingY": 12,
+     "paddingX": 16
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nom du commerce",
+      "textStyle": "label"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 8,
+       "paddingX": 16,
+       "fontWeight": 600
+      },
+      "text": "Appeler",
+      "href": "tel:"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "barre-menu-couleur",
+   "title": "Menu coloré",
+   "category": "Navigation",
+   "description": "Une barre à la couleur principale du site.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Menu coloré",
+    "props": {
+     "direction": "row",
+     "gap": 12,
+     "align": "center",
+     "justify": "space-between",
+     "stack": true,
+     "background": "$accent",
+     "color": "$fond",
+     "paddingY": 14,
+     "paddingX": 20
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nom du commerce",
+      "textStyle": "label"
+     },
+     {
+      "type": "frame",
+      "name": "Liens",
+      "props": {
+       "direction": "row",
+       "gap": 4,
+       "align": "center"
+      },
+      "children": [
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$fond"
+        },
+        "text": "Accueil",
+        "href": "/"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$fond"
+        },
+        "text": "La carte",
+        "href": "/carte"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "paddingY": 8,
+         "paddingX": 10,
+         "color": "$accent",
+         "background": "$fond",
+         "radius": 10,
+         "fontWeight": 600
+        },
+        "text": "Réserver",
+        "href": "#contact"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "entete-centre",
+   "title": "En-tête centré",
+   "category": "En-têtes",
+   "description": "Grand titre, accroche et deux actions.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "En-tête",
+    "props": {
+     "direction": "column",
+     "gap": 16,
+     "align": "center",
+     "textAlign": "center",
+     "paddingY": 64,
+     "paddingX": 24
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Le nom qui donne envie",
+      "textStyle": "h1"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.75
+      },
+      "text": "Une accroche courte qui dit ce que vous proposez.",
+      "textStyle": "body"
+     },
+     {
+      "type": "frame",
+      "name": "Actions",
+      "props": {
+       "direction": "row",
+       "gap": 12,
+       "align": "center",
+       "stack": true,
+       "justify": "center"
+      },
+      "children": [
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "background": "$accent",
+         "color": "$fond",
+         "radius": 12,
+         "paddingY": 12,
+         "paddingX": 22,
+         "fontWeight": 600
+        },
+        "text": "Réserver",
+        "href": "#contact"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "color": "$accent",
+         "borderColor": "$accent",
+         "borderWidth": 2,
+         "radius": 12,
+         "paddingY": 10,
+         "paddingX": 20,
+         "fontWeight": 600
+        },
+        "text": "Voir la carte",
+        "href": "/carte"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "entete-image-cote",
+   "title": "En-tête avec image à côté",
+   "category": "En-têtes",
+   "description": "Le texte et une photo, l'un sous l'autre sur mobile.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "En-tête image",
+    "props": {
+     "direction": "column",
+     "gap": 24,
+     "columns": 2,
+     "align": "center",
+     "paddingY": 40,
+     "paddingX": 24
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "Texte",
+      "props": {
+       "direction": "column",
+       "gap": 14,
+       "align": "flex-start"
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Votre titre ici sur deux lignes",
+        "textStyle": "h1"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Une phrase sur votre savoir-faire.",
+        "textStyle": "body"
+       },
+       {
+        "type": "button",
+        "name": "Bouton",
+        "props": {
+         "background": "$accent",
+         "color": "$fond",
+         "radius": 12,
+         "paddingY": 12,
+         "paddingX": 22,
+         "fontWeight": 600
+        },
+        "text": "Nous écrire",
+        "href": "https://wa.me/"
+       }
+      ]
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 280
+      },
+      "src": "",
+      "alt": "Photo principale"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "entete-photo-dessus",
+   "title": "En-tête photo en premier",
+   "category": "En-têtes",
+   "description": "Une grande photo, puis le titre.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "En-tête photo",
+    "props": {
+     "direction": "column",
+     "gap": 14,
+     "align": "center",
+     "textAlign": "center",
+     "paddingY": 16,
+     "paddingX": 16
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 260
+      },
+      "src": "",
+      "alt": "Photo principale"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Bienvenue",
+      "textStyle": "h1"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.75
+      },
+      "text": "Ouvert tous les jours à Cotonou.",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "Réserver",
+      "href": "https://wa.me/"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "entete-bandeau",
+   "title": "En-tête sur fond coloré",
+   "category": "En-têtes",
+   "description": "Un bloc à la couleur principale, très visible.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Bandeau",
+    "props": {
+     "direction": "column",
+     "gap": 14,
+     "align": "center",
+     "textAlign": "center",
+     "background": "$accent",
+     "color": "$fond",
+     "paddingY": 56,
+     "paddingX": 24
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Une offre à ne pas manquer",
+      "textStyle": "h1"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Expliquez-la en une phrase.",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$fond",
+       "color": "$accent",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "J'en profite",
+      "href": "https://wa.me/"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "entete-sobre",
+   "title": "En-tête sobre",
+   "category": "En-têtes",
+   "description": "Aligné à gauche, avec une étiquette.",
+   "atom": "Page vitrine",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Sobre",
+    "props": {
+     "direction": "column",
+     "gap": 12,
+     "align": "flex-start",
+     "paddingY": 48,
+     "paddingX": 24
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent",
+       "fontWeight": 700,
+       "fontSize": 13,
+       "letterSpacing": 2
+      },
+      "text": "COTONOU",
+      "textStyle": "body"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Un titre simple et clair",
+      "textStyle": "h1"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.75
+      },
+      "text": "Pour les activités qui veulent aller droit au but.",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "color": "$accent",
+       "borderColor": "$accent",
+       "borderWidth": 2,
+       "radius": 12,
+       "paddingY": 10,
+       "paddingX": 20,
+       "fontWeight": 600
+      },
+      "text": "En savoir plus",
+      "href": "#"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "tarifs-trois-formules",
+   "title": "Trois formules",
+   "category": "Tarifs",
+   "description": "Trois offres côte à côte, celle du milieu mise en avant.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Tarifs",
+    "props": {
+     "direction": "column",
+     "gap": 16,
+     "paddingY": 32,
+     "paddingX": 20,
+     "textAlign": "center"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nos formules",
+      "textStyle": "h2"
+     },
+     {
+      "type": "frame",
+      "name": "Formules",
+      "props": {
+       "direction": "column",
+       "gap": 12,
+       "columns": 3
+      },
+      "children": [
+       {
+        "type": "frame",
+        "name": "Essentiel",
+        "props": {
+         "direction": "column",
+         "gap": 8,
+         "paddingY": 20,
+         "paddingX": 20,
+         "radius": 16,
+         "borderWidth": 1,
+         "borderColor": "$accent",
+         "align": "stretch",
+         "textAlign": "center"
+        },
+        "children": [
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {},
+          "text": "Essentiel",
+          "textStyle": "label"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {
+           "color": "$accent"
+          },
+          "text": "5 000 F",
+          "textStyle": "h2"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {
+           "opacity": 0.75
+          },
+          "text": "Le principal",
+          "textStyle": "body"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {
+           "opacity": 0.75
+          },
+          "text": "Sans engagement",
+          "textStyle": "body"
+         },
+         {
+          "type": "frame",
+          "name": "Action",
+          "props": {
+           "direction": "column",
+           "gap": 8,
+           "align": "center"
+          },
+          "children": [
+           {
+            "type": "button",
+            "name": "Bouton",
+            "props": {
+             "color": "$accent",
+             "borderColor": "$accent",
+             "borderWidth": 2,
+             "radius": 12,
+             "paddingY": 10,
+             "paddingX": 20,
+             "fontWeight": 600
+            },
+            "text": "Choisir",
+            "href": "https://wa.me/"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "frame",
+        "name": "Confort",
+        "props": {
+         "direction": "column",
+         "gap": 8,
+         "paddingY": 20,
+         "paddingX": 20,
+         "radius": 16,
+         "borderWidth": 1,
+         "borderColor": "$accent",
+         "align": "stretch",
+         "textAlign": "center",
+         "background": "$accent",
+         "color": "$fond"
+        },
+        "children": [
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {},
+          "text": "Confort",
+          "textStyle": "label"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {},
+          "text": "10 000 F",
+          "textStyle": "h2"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {
+           "opacity": 0.75
+          },
+          "text": "Tout l'essentiel",
+          "textStyle": "body"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {
+           "opacity": 0.75
+          },
+          "text": "Service en plus",
+          "textStyle": "body"
+         },
+         {
+          "type": "frame",
+          "name": "Action",
+          "props": {
+           "direction": "column",
+           "gap": 8,
+           "align": "center"
+          },
+          "children": [
+           {
+            "type": "button",
+            "name": "Bouton",
+            "props": {
+             "background": "$fond",
+             "color": "$accent",
+             "radius": 12,
+             "paddingY": 12,
+             "paddingX": 22,
+             "fontWeight": 600
+            },
+            "text": "Choisir",
+            "href": "https://wa.me/"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "frame",
+        "name": "Premium",
+        "props": {
+         "direction": "column",
+         "gap": 8,
+         "paddingY": 20,
+         "paddingX": 20,
+         "radius": 16,
+         "borderWidth": 1,
+         "borderColor": "$accent",
+         "align": "stretch",
+         "textAlign": "center"
+        },
+        "children": [
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {},
+          "text": "Premium",
+          "textStyle": "label"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {
+           "color": "$accent"
+          },
+          "text": "20 000 F",
+          "textStyle": "h2"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {
+           "opacity": 0.75
+          },
+          "text": "Tout le confort",
+          "textStyle": "body"
+         },
+         {
+          "type": "text",
+          "name": "Texte",
+          "props": {
+           "opacity": 0.75
+          },
+          "text": "Sur mesure",
+          "textStyle": "body"
+         },
+         {
+          "type": "frame",
+          "name": "Action",
+          "props": {
+           "direction": "column",
+           "gap": 8,
+           "align": "center"
+          },
+          "children": [
+           {
+            "type": "button",
+            "name": "Bouton",
+            "props": {
+             "color": "$accent",
+             "borderColor": "$accent",
+             "borderWidth": 2,
+             "radius": 12,
+             "paddingY": 10,
+             "paddingX": 20,
+             "fontWeight": 600
+            },
+            "text": "Choisir",
+            "href": "https://wa.me/"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "tarifs-deux-formules",
+   "title": "Deux formules",
+   "category": "Tarifs",
+   "description": "Un choix simple entre deux offres.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Deux formules",
+    "props": {
+     "direction": "column",
+     "gap": 16,
+     "columns": 2,
+     "paddingY": 24,
+     "paddingX": 20
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "Sur place",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "paddingY": 20,
+       "paddingX": 20,
+       "radius": 16,
+       "borderWidth": 1,
+       "borderColor": "$accent",
+       "align": "stretch",
+       "textAlign": "center"
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Sur place",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "4 000 F",
+        "textStyle": "h2"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Menu du jour",
+        "textStyle": "body"
+       },
+       {
+        "type": "frame",
+        "name": "Action",
+        "props": {
+         "direction": "column",
+         "gap": 8,
+         "align": "center"
+        },
+        "children": [
+         {
+          "type": "button",
+          "name": "Bouton",
+          "props": {
+           "color": "$accent",
+           "borderColor": "$accent",
+           "borderWidth": 2,
+           "radius": 12,
+           "paddingY": 10,
+           "paddingX": 20,
+           "fontWeight": 600
+          },
+          "text": "Choisir",
+          "href": "https://wa.me/"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Soirée",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "paddingY": 20,
+       "paddingX": 20,
+       "radius": 16,
+       "borderWidth": 1,
+       "borderColor": "$accent",
+       "align": "stretch",
+       "textAlign": "center",
+       "background": "$accent",
+       "color": "$fond"
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Soirée",
+        "textStyle": "label"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "12 000 F",
+        "textStyle": "h2"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "opacity": 0.75
+        },
+        "text": "Entrée, plat et boisson",
+        "textStyle": "body"
+       },
+       {
+        "type": "frame",
+        "name": "Action",
+        "props": {
+         "direction": "column",
+         "gap": 8,
+         "align": "center"
+        },
+        "children": [
+         {
+          "type": "button",
+          "name": "Bouton",
+          "props": {
+           "background": "$fond",
+           "color": "$accent",
+           "radius": 12,
+           "paddingY": 12,
+           "paddingX": 22,
+           "fontWeight": 600
+          },
+          "text": "Choisir",
+          "href": "https://wa.me/"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "tarifs-liste",
+   "title": "Liste de tarifs",
+   "category": "Tarifs",
+   "description": "Des prestations et leurs prix, ligne par ligne.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Liste",
+    "props": {
+     "direction": "column",
+     "gap": 4,
+     "paddingY": 20,
+     "paddingX": 20,
+     "radius": 16,
+     "borderWidth": 1,
+     "borderColor": "$accent"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Nos tarifs",
+      "textStyle": "h2"
+     },
+     {
+      "type": "frame",
+      "name": "Ligne",
+      "props": {
+       "direction": "row",
+       "gap": 12,
+       "align": "center",
+       "justify": "space-between",
+       "paddingY": 8
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Prestation simple",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "3 000 F",
+        "textStyle": "label"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Ligne",
+      "props": {
+       "direction": "row",
+       "gap": 12,
+       "align": "center",
+       "justify": "space-between",
+       "paddingY": 8
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Prestation complète",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "7 500 F",
+        "textStyle": "label"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "Ligne",
+      "props": {
+       "direction": "row",
+       "gap": 12,
+       "align": "center",
+       "justify": "space-between",
+       "paddingY": 8
+      },
+      "children": [
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "Forfait mensuel",
+        "textStyle": "body"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {
+         "color": "$accent"
+        },
+        "text": "25 000 F",
+        "textStyle": "label"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "tarif-offre-unique",
+   "title": "Offre unique",
+   "category": "Tarifs",
+   "description": "Un seul prix, ce qu'il comprend et un bouton.",
+   "atom": "Catalogue",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Offre",
+    "props": {
+     "direction": "column",
+     "gap": 10,
+     "paddingY": 32,
+     "paddingX": 20,
+     "radius": 16,
+     "borderWidth": 1,
+     "borderColor": "$accent",
+     "align": "center",
+     "textAlign": "center"
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Tout compris",
+      "textStyle": "label"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "color": "$accent"
+      },
+      "text": "15 000 F",
+      "textStyle": "h1"
+     },
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {
+       "opacity": 0.75
+      },
+      "text": "Installation, mise en ligne et un mois de suivi.",
+      "textStyle": "body"
+     },
+     {
+      "type": "button",
+      "name": "Bouton",
+      "props": {
+       "background": "$accent",
+       "color": "$fond",
+       "radius": 12,
+       "paddingY": 12,
+       "paddingX": 22,
+       "fontWeight": 600
+      },
+      "text": "Commander",
+      "href": "https://wa.me/"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "galerie-grille",
+   "title": "Galerie en grille",
+   "category": "Galeries",
+   "description": "Six photos de même taille.",
+   "atom": "Galerie",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Galerie",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "paddingY": 24,
+     "paddingX": 20
+    },
+    "children": [
+     {
+      "type": "text",
+      "name": "Texte",
+      "props": {},
+      "text": "Galerie",
+      "textStyle": "h2"
+     },
+     {
+      "type": "frame",
+      "name": "Photos",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "columns": 3
+      },
+      "children": [
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 110
+        },
+        "src": "",
+        "alt": "Photo 1"
+       },
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 110
+        },
+        "src": "",
+        "alt": "Photo 2"
+       },
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 110
+        },
+        "src": "",
+        "alt": "Photo 3"
+       },
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 110
+        },
+        "src": "",
+        "alt": "Photo 4"
+       },
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 110
+        },
+        "src": "",
+        "alt": "Photo 5"
+       },
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 110
+        },
+        "src": "",
+        "alt": "Photo 6"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "galerie-deux-grandes",
+   "title": "Deux grandes photos",
+   "category": "Galeries",
+   "description": "Pour montrer un lieu ou deux réalisations.",
+   "atom": "Galerie",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Deux photos",
+    "props": {
+     "direction": "column",
+     "gap": 12,
+     "columns": 2,
+     "paddingY": 16,
+     "paddingX": 16
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 240
+      },
+      "src": "",
+      "alt": "Photo 1"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 240
+      },
+      "src": "",
+      "alt": "Photo 2"
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "galerie-vedette",
+   "title": "Photo en vedette",
+   "category": "Galeries",
+   "description": "Une grande photo et trois petites dessous.",
+   "atom": "Galerie",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Vedette",
+    "props": {
+     "direction": "column",
+     "gap": 8,
+     "paddingY": 16,
+     "paddingX": 16
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 240
+      },
+      "src": "",
+      "alt": "Photo principale"
+     },
+     {
+      "type": "frame",
+      "name": "Vignettes",
+      "props": {
+       "direction": "column",
+       "gap": 8,
+       "columns": 3
+      },
+      "children": [
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 90
+        },
+        "src": "",
+        "alt": "Détail 1"
+       },
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 90
+        },
+        "src": "",
+        "alt": "Détail 2"
+       },
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 90
+        },
+        "src": "",
+        "alt": "Détail 3"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "galerie-legendes",
+   "title": "Galerie avec légendes",
+   "category": "Galeries",
+   "description": "Chaque photo a son titre.",
+   "atom": "Galerie",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Légendes",
+    "props": {
+     "direction": "column",
+     "gap": 12,
+     "columns": 3,
+     "paddingY": 20,
+     "paddingX": 20,
+     "textAlign": "center"
+    },
+    "children": [
+     {
+      "type": "frame",
+      "name": "La salle",
+      "props": {
+       "direction": "column",
+       "gap": 6
+      },
+      "children": [
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 130
+        },
+        "src": "",
+        "alt": "La salle"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "La salle",
+        "textStyle": "label"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "La terrasse",
+      "props": {
+       "direction": "column",
+       "gap": 6
+      },
+      "children": [
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 130
+        },
+        "src": "",
+        "alt": "La terrasse"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "La terrasse",
+        "textStyle": "label"
+       }
+      ]
+     },
+     {
+      "type": "frame",
+      "name": "La cuisine",
+      "props": {
+       "direction": "column",
+       "gap": 6
+      },
+      "children": [
+       {
+        "type": "image",
+        "name": "Image",
+        "props": {
+         "fit": "cover",
+         "radius": 12,
+         "height": 130
+        },
+        "src": "",
+        "alt": "La cuisine"
+       },
+       {
+        "type": "text",
+        "name": "Texte",
+        "props": {},
+        "text": "La cuisine",
+        "textStyle": "label"
+       }
+      ]
+     }
+    ]
+   },
+   "license": "Hivation",
+   "author": "Hivation"
+  },
+  {
+   "name": "galerie-bande",
+   "title": "Bande de photos",
+   "category": "Galeries",
+   "description": "Quatre petites photos sur une ligne.",
+   "atom": "Galerie",
+   "version": 1,
+   "node": {
+    "type": "frame",
+    "name": "Bande",
+    "props": {
+     "direction": "column",
+     "gap": 6,
+     "columns": 4,
+     "paddingY": 8,
+     "paddingX": 8
+    },
+    "children": [
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 80
+      },
+      "src": "",
+      "alt": "Photo 1"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 80
+      },
+      "src": "",
+      "alt": "Photo 2"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 80
+      },
+      "src": "",
+      "alt": "Photo 3"
+     },
+     {
+      "type": "image",
+      "name": "Image",
+      "props": {
+       "fit": "cover",
+       "radius": 12,
+       "height": 80
+      },
+      "src": "",
+      "alt": "Photo 4"
      }
     ]
    },

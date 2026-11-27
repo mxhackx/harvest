@@ -1,0 +1,39 @@
+{
+ "name": "shadcn-badge",
+ "title": "Badge",
+ "category": "shadcn/ui",
+ "description": "Étiquette pleine.",
+ "atom": "Page vitrine",
+ "version": 1,
+ "node": {
+  "type": "frame",
+  "name": "Badge",
+  "props": {
+   "direction": "column",
+   "gap": 8,
+   "align": "flex-start"
+  },
+  "children": [
+   {
+    "type": "text",
+    "name": "Texte",
+    "props": {
+     "radius": 99,
+     "paddingY": 2,
+     "paddingX": 10,
+     "fontSize": 12,
+     "fontWeight": 600,
+     "borderWidth": 1,
+     "background": "$texte",
+     "color": "$fond",
+     "borderColor": "$texte"
+    },
+    "text": "Nouveau",
+    "textStyle": "body"
+   }
+  ]
+ },
+ "origin": "shadcn/ui",
+ "license": "MIT",
+ "author": "adapté de shadcn/ui"
+}
