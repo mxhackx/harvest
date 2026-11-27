@@ -74,6 +74,10 @@ Le produit tourne autour des **vagues** : une région couverte pendant une péri
 
 Les composants animés (avec leur propre code et leurs dépendances) demanderont un nouveau type de nœud, rendu sur le canevas et copié dans l’export.
 
+## Pièces jointes
+
+Images et PDF des leads (50 Mo au plus), dans un bucket Supabase **privé** (`attachments`). Variables de l'API : `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (absentes : fonction désactivée). Le navigateur envoie directement au stockage par une adresse signée ; l'API vérifie ensuite le type réel (premiers octets) et la taille, et ne délivre que des liens d'une minute ([api/src/routes/attachments.ts](api/src/routes/attachments.ts)). Les fichiers d'un lead effacé sont retirés toutes les 6 h.
+
 ## E-mails depuis le CRM
 
 `POST /leads/:id/emails` envoie via Resend (`MAIL_FROM` comme expéditeur, l'adresse de la personne en `reply_to`), garde une ligne dans `email_log` et une entrée « E-mail à … » dans le fil du lead. Le CRM n'a pas de boîte de réception : les réponses arrivent chez l'expéditeur, donc aucune boîte mail n'est à créer pour l'envoi. Plafond de 100 envois par personne et par jour. Les lignes sont incluses dans l'export RGPD d'un contact et effacées avec lui.
@@ -129,6 +133,12 @@ Pour rendre `main` inviolable, activez dans GitHub (Settings › Branches › r�
 - Le push vers `staging` (comme vers `main`) lance le contrôle complet : types, tests unitaires du web, tests de l'API (base de test obligatoire). Un nom de branche doit commencer par `feat/`, `test/`, `fix/`, `chore/` ou `docs/` ; `main` et `staging` sont libres.
 
 Passer outre exceptionnellement : `git commit --no-verify`, ou `SKIP_PREPUSH=1 git push`.
+
+## Sécurité
+
+- **Isolation entre entreprises** : [api/src/test/isolation.test.ts](api/src/test/isolation.test.ts) fait essayer par l'entreprise B de lire, modifier, supprimer et rattacher les données de A, sur chaque route, puis rejoue les requêtes avec A (témoin). **Toute nouvelle route doit y être décrite**, sinon le test échoue.
+- **Analyse automatique** : `.github/workflows/security.yml` lance Semgrep et `npm audit` (PR, `main`, `staging`, et chaque lundi). Faux positif : `// nosemgrep: <règle>` avec la raison.
+- **Dépendances** : `.github/dependabot.yml` propose des mises à jour vers `staging`, après 7 jours.
 
 ## Tests
 

@@ -123,6 +123,13 @@ export default function Page() {
         Le fil, les contacts et les tâches d’un lead suivent les droits sur ce lead. Si vous ne pouvez pas lire un lead,
         sa fiche vous répond « introuvable » : on ne révèle pas son existence.
       </Callout>
+
+      <h2>Pièces jointes</h2>
+      <p>
+        La carte <strong>Pièces jointes</strong> accepte les images (JPEG, PNG, WebP, GIF) et les PDF, jusqu’à 50 Mo chacun et
+        cinquante par lead. Les fichiers sont privés : le lien de téléchargement ne vaut qu’une minute et seules les personnes
+        qui peuvent lire le lead y ont accès. Ils sont effacés quand le lead est définitivement supprimé.
+      </p>
     </DocArticle>
   );
 }

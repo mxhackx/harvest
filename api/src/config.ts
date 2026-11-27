@@ -48,6 +48,12 @@ export const config = {
     apiKey: process.env.RESEND_API_KEY ?? "",
     from: process.env.MAIL_FROM ?? `${BRAND_NAME} <onboarding@resend.dev>`,
   },
+  /** Pièces jointes : stockage Supabase (bucket PRIVÉ). La clé secrète ignore les règles RLS : côté API uniquement. */
+  storage: {
+    url: process.env.SUPABASE_URL ?? "",
+    key: process.env.SUPABASE_SECRET_KEY ?? "",
+    bucket: process.env.SUPABASE_BUCKET ?? "attachments",
+  },
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID ?? "",
     clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",

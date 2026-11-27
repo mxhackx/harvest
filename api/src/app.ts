@@ -28,6 +28,7 @@ import { automationRoutes } from "./routes/automations.js";
 import { ticketRoutes } from "./routes/tickets.js";
 import { kbRoutes } from "./routes/kb.js";
 import { workflowRoutes } from "./routes/workflows.js";
+import { attachmentRoutes } from "./routes/attachments.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -41,8 +42,11 @@ import { templateRoutes } from "./routes/templates.js";
 import { taskRoutes } from "./routes/tasks.js";
 import { notificationRoutes } from "./routes/notifications.js";
 
-export async function buildApp(opts: { logger?: boolean } = {}) {
+/** `onRoute` sert aux tests d'isolation : ils exigent que chaque route déclarée soit éprouvée. */
+export async function buildApp(opts: { logger?: boolean; onRoute?: (method: string, url: string) => void } = {}) {
   const app = Fastify({ logger: opts.logger ?? true, trustProxy: config.isProd });
+  const { onRoute } = opts;
+  if (onRoute) app.addHook("onRoute", (r) => [r.method].flat().forEach((m) => m !== "HEAD" && m !== "OPTIONS" && onRoute(m, r.url)));
 
   await app.register(cors, {
     origin: config.appUrls,
@@ -96,5 +100,6 @@ export async function buildApp(opts: { logger?: boolean } = {}) {
   await app.register(ticketRoutes);
   await app.register(kbRoutes);
   await app.register(workflowRoutes);
+  await app.register(attachmentRoutes);
   return app;
 }

@@ -60,6 +60,12 @@ services:
       - key: SUPPORT_EMAIL
         sync: false
 
+      # Pièces jointes : adresse du projet Supabase et clé secrète (bucket privé « attachments »). Facultatif.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+
       # E-mails (invitations, mot de passe oublié) : clé API Resend. Facultatif : sans elle, les liens s'affichent à l'écran.
       - key: RESEND_API_KEY
         sync: false
