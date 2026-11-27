@@ -28,6 +28,7 @@ import { automationRoutes } from "./routes/automations.js";
 import { ticketRoutes } from "./routes/tickets.js";
 import { kbRoutes } from "./routes/kb.js";
 import { workflowRoutes } from "./routes/workflows.js";
+import { attachmentRoutes } from "./routes/attachments.js";
 import { auditHook } from "./audit/record.js";
 import { eventRoutes } from "./routes/events.js";
 import { stageRoutes } from "./routes/stages.js";
@@ -99,5 +100,6 @@ export async function buildApp(opts: { logger?: boolean; onRoute?: (method: stri
   await app.register(ticketRoutes);
   await app.register(kbRoutes);
   await app.register(workflowRoutes);
+  await app.register(attachmentRoutes);
   return app;
 }

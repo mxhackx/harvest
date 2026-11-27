@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { FastifyInstance } from "fastify";
 import { buildApp } from "../app.js";
 import { client } from "../db/index.js";
+import { setStorage } from "../storage/index.js";
 
 /**
  * Isolation entre entreprises (cahier des charges SEC-01 et SEC-02).
@@ -86,6 +87,8 @@ async function seed(s: S, tag: string) {
   x.field = await id("POST", "/custom-fields", { label: `${tag.slice(0, 40)} champ`, type: "text" });
   x.role = await id("POST", "/roles", { name: `${tag.slice(0, 30)} role`, grants: [{ permission: "lead:read", scope: "own" }] });
   x.team = await id("POST", "/teams", { name: `${tag} equipe` });
+  x.attachment = await id("POST", `/leads/${x.lead}/attachments`, { name: `${tag}.pdf`, size: 100, type: "application/pdf" });
+  await must(s, "POST", `/attachments/${x.attachment}/complete`, {});
   const other = await register(tag === MARK ? "a" : "b");
   const roles = (await must(s, "GET", "/roles")) as { id: string; key: string }[];
   x.sysRole = roles.find((r) => r.key === "prospecteur")!.id;
@@ -99,6 +102,8 @@ let A: S, B: S;
 let a: Record<string, string>, b: Record<string, string>;
 let aStages: string[];
 beforeAll(async () => {
+  // stockage factice : tout fichier « arrivé » est un PDF
+  setStorage({ signUpload: async (p) => `https://stockage.test/envoi/${p}`, signDownload: async (p) => `https://stockage.test/${p}`, head: async () => ({ size: 100, start: new TextEncoder().encode("%PDF-1.7") }), remove: async () => {} });
   app = await buildApp({ logger: false, onRoute: (m, url) => routes.add(`${m} ${url}`) });
   base = await app.listen({ port: 0, host: "127.0.0.1" });
   A = await company("a");
@@ -108,6 +113,7 @@ beforeAll(async () => {
   aStages = ((await must(A, "GET", "/stages")) as { id: string }[]).map((x) => x.id);
 }, 120_000);
 afterAll(async () => {
+  setStorage(undefined);
   await app.close();
   await client.end();
 });
@@ -120,6 +126,10 @@ const on = (route: string, url?: () => string, body?: () => unknown, soft = fals
 const ATTACKS: Attack[] = [
   on("GET /accounts/:id", () => `/accounts/${a.account}`),
   on("PATCH /accounts/:id", () => `/accounts/${a.account}`, () => ({ name: "pris" })),
+  on("GET /leads/:id/attachments", () => `/leads/${a.lead}/attachments`),
+  on("POST /leads/:id/attachments", () => `/leads/${a.lead}/attachments`, () => ({ name: "intrus.pdf", size: 10, type: "application/pdf" })),
+  on("POST /attachments/:id/complete", () => `/attachments/${a.attachment}/complete`, () => ({})),
+  on("GET /attachments/:id/url", () => `/attachments/${a.attachment}/url`),
   on("POST /leads/:id/account", () => `/leads/${a.lead2}/account`, () => ({})),
   on("PATCH /activities/:id", () => `/activities/${a.activity}`, () => ({ body: "pris" })),
   on("PATCH /contacts/:id", () => `/contacts/${a.contact}`, () => ({ name: "pris" })),
@@ -183,6 +193,7 @@ const ATTACKS: Attack[] = [
   // suppressions
   on("POST /contacts/:id/erase", () => `/contacts/${a.erasable}/erase`, () => ({ confirm: true })),
   on("DELETE /contacts/:id", () => `/contacts/${a.contact}`),
+  on("DELETE /attachments/:id", () => `/attachments/${a.attachment}`),
   on("DELETE /activities/:id", () => `/activities/${a.activity}`),
   on("DELETE /invoices/:id", () => `/invoices/${a.invoice}`),
   on("DELETE /quotes/:id", () => `/quotes/${a.quote}`),
