@@ -55,6 +55,8 @@ const lines = (label: string) => [{ label, quantity: 1, unitPrice: 1000 }];
 const CONFIG = { tab: "all", query: "", sort: "recent", filters: { mode: "all", visit: "all", position: "all", sector: "all" } };
 const GRAPH = { nodes: [{ id: "start", type: "start", label: "Start", position: { x: 0, y: 0 }, config: { trigger: "manual" } }], edges: [] };
 
+const siteData = (name: string) => ({ name: name.slice(0, 60), variables: [], styles: [], pages: [{ id: "p", name: "Accueil", path: "", root: { id: "r", type: "frame", name: "Page", props: {}, children: [] } }] });
+
 /** Crée dans une entreprise une ressource de chaque sorte et renvoie leurs identifiants. */
 async function seed(s: S, tag: string) {
   const id = async (method: string, url: string, body?: unknown) => (await must(s, method, url, body)).id as string;
@@ -89,6 +91,8 @@ async function seed(s: S, tag: string) {
   x.team = await id("POST", "/teams", { name: `${tag} equipe` });
   x.attachment = await id("POST", `/leads/${x.lead}/attachments`, { name: `${tag}.pdf`, size: 100, type: "application/pdf" });
   await must(s, "POST", `/attachments/${x.attachment}/complete`, {});
+  await must(s, "POST", "/cms/account", {});
+  x.site = await id("POST", "/cms/sites", { data: siteData(tag) });
   const other = await register(tag === MARK ? "a" : "b");
   const roles = (await must(s, "GET", "/roles")) as { id: string; key: string }[];
   x.sysRole = roles.find((r) => r.key === "prospecteur")!.id;
@@ -126,6 +130,7 @@ const on = (route: string, url?: () => string, body?: () => unknown, soft = fals
 const ATTACKS: Attack[] = [
   on("GET /accounts/:id", () => `/accounts/${a.account}`),
   on("PATCH /accounts/:id", () => `/accounts/${a.account}`, () => ({ name: "pris" })),
+  on("PUT /cms/sites/:id", () => `/cms/sites/${a.site}`, () => ({ data: siteData("pris"), version: 1 })),
   on("GET /leads/:id/attachments", () => `/leads/${a.lead}/attachments`),
   on("POST /leads/:id/attachments", () => `/leads/${a.lead}/attachments`, () => ({ name: "intrus.pdf", size: 10, type: "application/pdf" })),
   on("POST /attachments/:id/complete", () => `/attachments/${a.attachment}/complete`, () => ({})),
@@ -193,6 +198,7 @@ const ATTACKS: Attack[] = [
   // suppressions
   on("POST /contacts/:id/erase", () => `/contacts/${a.erasable}/erase`, () => ({ confirm: true })),
   on("DELETE /contacts/:id", () => `/contacts/${a.contact}`),
+  on("DELETE /cms/sites/:id", () => `/cms/sites/${a.site}`),
   on("DELETE /attachments/:id", () => `/attachments/${a.attachment}`),
   on("DELETE /activities/:id", () => `/activities/${a.activity}`),
   on("DELETE /invoices/:id", () => `/invoices/${a.invoice}`),
@@ -223,7 +229,7 @@ const ATTACKS: Attack[] = [
 
 /** Routes de lecture ou de liste : la réponse faite à B ne doit rien contenir de A, même en cherchant son nom. */
 const LISTS: string[] = [
-  "/accounts", "/audit", "/automations", "/contacts", "/custom-fields", "/events?from=2030-01-01T00:00:00.000Z&to=2030-01-31T00:00:00.000Z", "/events/export.ics",
+  "/accounts", "/cms/account", "/cms/sites", "/audit", "/automations", "/contacts", "/custom-fields", "/events?from=2030-01-01T00:00:00.000Z&to=2030-01-31T00:00:00.000Z", "/events/export.ics",
   "/invitations", "/invoices", "/kb", "/leads", "/leads/duplicates", "/leads/trash", "/members", "/me", "/notifications", "/objectives", "/permissions",
   `/quotes/export?format=json`, "/regions", "/reports", "/reports/forecast", "/roles", `/search?q=${MARK}`, "/segments", "/stages", "/tasks?status=all",
   "/teams", "/templates", "/tickets", "/tours", "/waves", "/webhooks", "/workflows", "/health", "/auth/providers",
@@ -259,6 +265,7 @@ const EXEMPT: Record<string, string> = {
   "POST /auth/forgot": "public", "POST /auth/reset": "jeton à usage unique", "GET /auth/:provider": "OAuth", "GET /auth/:provider/callback": "OAuth",
   "GET /auth/google": "OAuth", "GET /auth/google/callback": "OAuth", "GET /auth/github": "OAuth", "GET /auth/github/callback": "OAuth",
   "POST /invitations/accept": "jeton secret", "POST /invitations/preview": "jeton secret", "POST /public/contact": "public", "POST /public/feedback": "public",
+  "POST /cms/account": "ouvre son propre espace", "POST /cms/sites": "crée chez soi",
   "POST /companies": "crée sa propre entreprise", "PATCH /company": "agit sur l'entreprise de la session (en-tête éprouvé plus bas)",
   "PATCH /me/preferences": "ses propres réglages", "POST /accounts": "crée chez soi", "POST /custom-fields": "crée chez soi", "POST /regions": "crée chez soi",
   "POST /roles": "crée chez soi", "POST /segments": "crée chez soi", "POST /stages": "crée chez soi", "POST /teams": "crée chez soi",
@@ -353,7 +360,8 @@ describe("isolation entre entreprises", { timeout: 180_000 }, () => {
   });
 
   it("se déclarer dans l'entreprise A (en-tête) ou ne pas être connecté est refusé", async () => {
-    const guarded = [...ATTACKS, ...LISTS.filter((u) => !["/health", "/auth/providers", "/me"].includes(listPath(u))).map((u) => on(`GET ${listPath(u)}`, () => u)), on("PATCH /company", undefined, () => ({ name: "pris" }))];
+    const company = (x: Attack) => !x.route.includes(" /cms/"); // le CMS ne dépend pas d'une entreprise (couvert par ATTACKS et cms.test.ts)
+    const guarded = [...ATTACKS.filter(company), ...LISTS.filter((u) => !["/health", "/auth/providers", "/me"].includes(listPath(u)) && !u.startsWith("/cms/")).map((u) => on(`GET ${listPath(u)}`, () => u)), on("PATCH /company", undefined, () => ({ name: "pris" }))];
     const problems: string[] = [];
     for (const x of guarded) {
       const spoof = await send(B, x, A.companyId);
