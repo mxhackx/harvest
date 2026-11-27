@@ -130,6 +130,12 @@ Pour rendre `main` inviolable, activez dans GitHub (Settings › Branches › r�
 
 Passer outre exceptionnellement : `git commit --no-verify`, ou `SKIP_PREPUSH=1 git push`.
 
+## Sécurité
+
+- **Isolation entre entreprises** : [api/src/test/isolation.test.ts](api/src/test/isolation.test.ts) fait essayer par l'entreprise B de lire, modifier, supprimer et rattacher les données de A, sur chaque route, puis rejoue les requêtes avec A (témoin). **Toute nouvelle route doit y être décrite**, sinon le test échoue.
+- **Analyse automatique** : `.github/workflows/security.yml` lance Semgrep et `npm audit` (PR, `main`, `staging`, et chaque lundi). Faux positif : `// nosemgrep: <règle>` avec la raison.
+- **Dépendances** : `.github/dependabot.yml` propose des mises à jour vers `staging`, après 7 jours.
+
 ## Tests
 
 ```bash
