@@ -6,13 +6,13 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { getActiveCompanyId, withActiveFirst } from "@/lib/active-company";
 import { BRAND } from "@/lib/brand";
-import { TEMPLATES, loadSites, newSite, saveSites, type Site, type TemplateId } from "@/lib/cms/site";
+import { TEMPLATES, loadSites, newSite, saveSites, walk, type Site } from "@/lib/cms/model";
+import { rootVariables } from "@/lib/cms/style";
 import { appHref } from "@/lib/hosts";
 import { ROUTES } from "@/lib/routes";
 import { useMe } from "@/lib/use-me";
 import { PlusIcon, TrashIcon } from "../icons";
 import { Button, Notice } from "../ui";
-import { themeStyle } from "./preview";
 import { Studio } from "./studio";
 
 /** Application CMS, à part de l'application principale : la liste des sites, puis l'éditeur. Réservée au CEO. */
@@ -50,7 +50,7 @@ function Sites({ companyId }: { companyId: string }) {
     window.history.replaceState(null, "", id ? `#${id}` : window.location.pathname);
     setOpenId(id);
   };
-  const [template, setTemplate] = useState<TemplateId>("restaurant");
+  const [template, setTemplate] = useState("restaurant");
   const create = () => {
     const site = newSite(`Site ${sites.length + 1}`, template);
     store((list) => [...list, site]);
@@ -73,19 +73,19 @@ function Sites({ companyId }: { companyId: string }) {
         <div className="flex items-center justify-between gap-3">
           <h1 className="font-display text-title font-semibold">Mes sites</h1>
           <div className="flex items-center gap-2">
-            <select aria-label="Modèle de départ" value={template} onChange={(e) => setTemplate(e.target.value as TemplateId)} className="h-9 rounded-control border border-border bg-card px-2 text-small">
+            <select aria-label="Modèle de départ" value={template} onChange={(e) => setTemplate(e.target.value)} className="h-9 rounded-control border border-border bg-card px-2 text-small">
               {Object.entries(TEMPLATES).map(([id, t]) => <option key={id} value={id}>{t.label}</option>)}
             </select>
             <Button className="h-9 w-auto" onClick={create}><PlusIcon size={16} /> Nouveau site</Button>
           </div>
         </div>
-        <p className="mt-1 text-small text-muted">Première version de l’éditeur : les sites restent sur cet appareil et ne sont pas encore publiables.</p>
+        <p className="mt-1 text-small text-muted">Les sites restent sur cet appareil. Exportez le code pour les héberger.</p>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sites.map((site) => (
             <li key={site.id} className="overflow-hidden rounded-card border border-border bg-card">
-              <button type="button" onClick={() => open(site.id)} aria-label={`Ouvrir ${site.name}`} className="block h-36 w-full p-4 text-left" style={themeStyle(site.theme)}>
-                <span className="block text-lead font-bold">{site.blocks.find((b) => b.type === "hero")?.title || site.name}</span>
-                <span className="mt-3 block h-2 w-24 rounded-full bg-[var(--s-accent)]" />
+              <button type="button" onClick={() => open(site.id)} aria-label={`Ouvrir ${site.name}`} className="block h-36 w-full p-4 text-left" style={{ ...rootVariables(site), background: "var(--fond)", color: "var(--texte)" }}>
+                <span className="block text-lead font-bold">{walk(site.pages[0].root).find((n) => n.textStyle === "h1")?.text || site.name}</span>
+                <span className="mt-3 block h-2 w-24 rounded-full bg-[var(--accent)]" />
               </button>
               <div className="flex items-center justify-between gap-2 border-t border-rule px-3 py-2">
                 <span className="min-w-0">
