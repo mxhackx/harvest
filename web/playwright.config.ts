@@ -30,6 +30,7 @@ export default defineConfig({
     },
   },
   webServer: [
+    { command: "bash -c \"exec env PORT=3101 node ../registry/serve.mjs\"", url: "http://localhost:3101/r/registry.json", reuseExistingServer: !process.env.CI },
     {
       // NODE_ENV=test : limites de requêtes relevées, géocodage coupé (aucun appel à un service tiers).
       command: `bash -c "cd ../api && DATABASE_URL=${DB} npx drizzle-kit migrate && exec env NODE_ENV=test PORT=4100 API_URL=${API} APP_URLS=${WEB} DATABASE_URL=${DB} GOOGLE_CLIENT_ID= GOOGLE_CLIENT_SECRET= GITHUB_CLIENT_ID= GITHUB_CLIENT_SECRET= npx tsx src/server.ts"`,
@@ -38,7 +39,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: `bash -c "node scripts/copy-maplibre.mjs && exec env NEXT_PUBLIC_API_URL=${API} NEXT_PUBLIC_SITE_URL=${WEB} NEXT_DIST_DIR=.next-e2e npx next dev -p 3100"`,
+      command: `bash -c "node scripts/copy-maplibre.mjs && exec env NEXT_PUBLIC_API_URL=${API} NEXT_PUBLIC_SITE_URL=${WEB} NEXT_PUBLIC_REGISTRY_URL=http://localhost:3101 NEXT_DIST_DIR=.next-e2e npx next dev -p 3100"`,
       url: `${WEB}/login`,
       timeout: 180_000,
       reuseExistingServer: !process.env.CI,
