@@ -35,7 +35,9 @@ export default function Page() {
       <p>
         L’onglet <strong>Composants</strong> propose des éléments prêts (boutons WhatsApp, cartes, horaires, menu, pied de
         page…). Cliquez ou glissez : une <strong>copie</strong> est posée dans la page, aux couleurs du site, et vous modifiez
-        tout librement. La marketplace permet aussi de les parcourir ; « Ajouter à Hivation » vous ramène au CMS.
+        tout librement. Pour les voir en grand avec leur aspect, utilisez le bouton <strong>Composants</strong> en haut de l’éditeur (aux couleurs du
+        site ouvert) ou la section <strong>Composants</strong> à l’accueil du CMS. La marketplace permet aussi de les parcourir ;
+        « Ajouter à Hivation » vous ramène au CMS.
       </p>
 
       <h2>Exporter le code</h2>
